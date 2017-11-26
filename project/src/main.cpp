@@ -5,6 +5,8 @@
 #include "menu.h"
 #include "events.h"
 #include "gui_ids.h"
+#include "characters.h"
+#include "player.h"
 
 namespace is = irr::scene;
 namespace iv = irr::video;
@@ -39,16 +41,12 @@ int main()
     // Attachement de notre personnage dans la scène
     is::IAnimatedMeshSceneNode *nodePlayer = smgr->addAnimatedMeshSceneNode(mesh);
     nodePlayer->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-    nodePlayer->setMD2Animation(irr::scene::EMAT_STAND);
+    //nodePlayer->setMD2Animation(irr::scene::EMAT_STAND);
     textures.push_back(driver->getTexture("data/base.pcx"));
     textures.push_back(driver->getTexture("data/red_texture.pcx"));
     textures.push_back(driver->getTexture("data/blue_texture.pcx"));
     nodePlayer->setMaterialTexture(0, textures[0]);
-    nodePlayer ->setPosition(core:: vector3df ( 0 , 30 , -0));
-
-    receiver.set_gui(gui);
-    receiver.set_node(nodePlayer);
-    receiver.set_textures(textures);
+    nodePlayer ->setPosition(core:: vector3df ( 100 , 130 , 100));
 
     is::ICameraSceneNode *camera;
     //camera = smgr->addCameraSceneNode(nodePlayer, ic::vector3df(-20, 30, -1), ic::vector3df(0, 0, 0));
@@ -56,9 +54,9 @@ int main()
     camera = smgr->addCameraSceneNodeMaya();
 
     // Création du triangle selector
-    scene::ITriangleSelector *selector;
+    scene::ITriangleSelector* selector;
     selector = smgr->createOctreeTriangleSelector(nodeMap->getMesh(), nodeMap);
-    nodePlayer->setTriangleSelector(selector);
+    nodeMap->setTriangleSelector(selector);
 
     //Calcul radius de la BBox du node player
     const core::aabbox3d<f32>& box = nodePlayer->getBoundingBox();
@@ -68,9 +66,18 @@ int main()
     anim = smgr->createCollisionResponseAnimator(selector,
                                                  nodePlayer,  // Le noeud que l'on veut gérer
                                                  radius, // "rayons" de la caméra
-                                                 ic::vector3df(0, -10, 0),  // gravité
-                                                 ic::vector3df(0, 0, 0));  // décalage du centre
+                                                 ic::vector3df(0, -1, 0),  // gravité
+                                                 ic::vector3df(0, -10, 0));  // décalage du centre
     nodePlayer->addAnimator(anim);
+    selector->drop();
+    anim->drop();
+
+    /// TEST ///
+    Player player(nodePlayer, is::EMAT_STAND);
+
+    receiver.set_gui(gui);
+    receiver.set_player(&player);
+    receiver.set_textures(textures);
 
     // Création de la GUI
     // Choix de la police de caractères
@@ -91,9 +98,10 @@ int main()
         const u32 now = device->getTimer()->getTime();
         const f32 frameDeltaTime = (f32)(now - then) / 1000.f; // Time in seconds
         then = now;
+        receiver.keyboard_handler(frameDeltaTime);
 
         driver->beginScene(true, true, iv::SColor(0,50,100,255));
-        receiver.keyboard_handler(frameDeltaTime);
+
 
         //Set camera target to player
         camera->setTarget(nodePlayer->getPosition() + ic::vector3df(0,20,0));

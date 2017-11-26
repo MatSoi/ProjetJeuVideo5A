@@ -11,7 +11,7 @@
  * EventReceiver::EventReceiver                                           *
 \**************************************************************************/
 EventReceiver::EventReceiver()
-    : gui(nullptr), node(nullptr), button_pressed(false), current_texture(0)
+    : gui(nullptr), player(nullptr), button_pressed(false), current_texture(0)
 {
     //Initialize the key arrays
     for (u32 i=0; i<KEY_KEY_CODES_COUNT; ++i)
@@ -26,40 +26,31 @@ EventReceiver::EventReceiver()
 \*------------------------------------------------------------------------*/
 bool EventReceiver::keyboard_handler(const f32 frameDeltaTime)
 {
-    ic::vector3df position = node->getPosition();
-    ic::vector3df rotation = node->getRotation();
-
     if(IsKeyDown(KEY_ESCAPE))
         exit(0);
 
-    /*if(IsKeyTriggered(KEY_KEY_Z) || IsKeyTriggered(KEY_KEY_S))
-        node->setMD2Animation(is::EMAT_RUN);
-    if(IsKeyReleased(KEY_KEY_Z) || IsKeyReleased(KEY_KEY_S))
-        node->setMD2Animation(is::EMAT_STAND);
-    if(IsKeyTriggered(KEY_KEY_D) || IsKeyTriggered(KEY_KEY_Q))
-        node->setMD2Animation(is::EMAT_RUN);
-    if(IsKeyReleased(KEY_KEY_D) || IsKeyReleased(KEY_KEY_Q))
-        node->setMD2Animation(is::EMAT_STAND);*/
+    if((IsKeyTriggered(KEY_KEY_Z) || IsKeyTriggered(KEY_KEY_S) || IsKeyTriggered(KEY_KEY_D) || IsKeyTriggered(KEY_KEY_Q)))
+        player->setWalkAnimation(); // on lance l animation de marche si une des touches de deplacement est pressee
+    if((IsKeyReleased(KEY_KEY_Z) || IsKeyReleased(KEY_KEY_S) || IsKeyReleased(KEY_KEY_D) || IsKeyReleased(KEY_KEY_Q)) &&
+            !(IsKeyDown(KEY_KEY_Z) || IsKeyDown(KEY_KEY_S) || IsKeyDown(KEY_KEY_D) || IsKeyDown(KEY_KEY_Q)))
+        player->setIdle();          // on arrete la marche si une des touches est relachee et que les autres ne sont pas pressees
+                                    // on pourrait enlever la partie IsKeyReleased mais on appelerait tout le temps setIdle
+
+    if(IsKeyTriggered(KEY_KEY_C))
+        player->setStealth();
 
     //KEY DOWN
-    if(IsKeyDown(KEY_KEY_Z)) {
-        position.X += 8 * cos(rotation.Y * M_PI / 180.0);
-        position.Z += -8 * sin(rotation.Y * M_PI / 180.0);
-    }
-    else if(IsKeyDown(KEY_KEY_S)) {
-        position.X -= 4 * cos(rotation.Y * M_PI / 180.0);
-        position.Z -= -4 * sin(rotation.Y * M_PI / 180.0);
-    }
+    if(IsKeyDown(KEY_KEY_Z))
+        player->moveForward(frameDeltaTime);
+    else if(IsKeyDown(KEY_KEY_S))
+        player->moveBackward(frameDeltaTime);
     if(IsKeyDown(KEY_KEY_D))
-        rotation.Y += 5;
+        player->rotate(frameDeltaTime, 150.0f);
     else if(IsKeyDown(KEY_KEY_Q))
-        rotation.Y -= 5;
+        player->rotate(frameDeltaTime, -150.0f);
 
-    if(IsKeyDown(KEY_SPACE))
-        position.Y += 100 * frameDeltaTime;
-
-    node->setPosition(position);
-    node->setRotation(rotation);
+    /*if(IsKeyDown(KEY_SPACE))
+        position.Y += 100 * frameDeltaTime;*/
 
     //Reset released or first pressed keys
     updateKeyState ();
@@ -107,7 +98,7 @@ bool EventReceiver::mouse_handler(const SEvent &event)
 \*------------------------------------------------------------------------*/
 bool EventReceiver::gui_handler(const SEvent &event)
 {
-    if (!node) return false;
+    if (!player) return false;
     switch(event.GUIEvent.EventType)
     {
     // Gestion des menus de la barre de menu
@@ -116,7 +107,6 @@ bool EventReceiver::gui_handler(const SEvent &event)
         ig::IGUIContextMenu *menu = (ig::IGUIContextMenu*)event.GUIEvent.Caller;
         s32 item = menu->getSelectedItem();
         s32 id = menu->getItemCommandId(item);
-        u32 debug_info = node->isDebugDataVisible();
 
         switch(id)
         {
@@ -128,22 +118,22 @@ bool EventReceiver::gui_handler(const SEvent &event)
 
         case MENU_BOUNDING_BOX:
             menu->setItemChecked(item, !menu->isItemChecked(item));
-            node->setDebugDataVisible(debug_info ^ is::EDS_BBOX);
+            player->debug(is::EDS_BBOX);
             break;
 
         case MENU_NORMALS:
             menu->setItemChecked(item, !menu->isItemChecked(item));
-            node->setDebugDataVisible(debug_info ^ is::EDS_NORMALS);
+            player->debug(is::EDS_NORMALS);
             break;
 
         case MENU_TRIANGLES:
             menu->setItemChecked(item, !menu->isItemChecked(item));
-            node->setDebugDataVisible(debug_info ^ is::EDS_MESH_WIRE_OVERLAY);
+            player->debug(is::EDS_MESH_WIRE_OVERLAY);
             break;
 
         case MENU_TRANSPARENCY:
             menu->setItemChecked(item, !menu->isItemChecked(item));
-            node->setDebugDataVisible(debug_info ^ is::EDS_HALF_TRANSPARENCY);
+            player->debug(is::EDS_HALF_TRANSPARENCY);
             break;
 
         case MENU_ABOUT:
@@ -243,7 +233,7 @@ bool EventReceiver::gui_handler(const SEvent &event)
 \**************************************************************************/
 bool EventReceiver::OnEvent(const SEvent &event)
 {
-    if (!node) return false;
+    if (!player) return false;
 
     switch (event.EventType)
     {
@@ -265,9 +255,9 @@ bool EventReceiver::OnEvent(const SEvent &event)
 /**************************************************************************\
  * EventReceiver::set_node                                                *
 \**************************************************************************/
-void EventReceiver::set_node(scene::IAnimatedMeshSceneNode *n)
+void EventReceiver::set_player(Player* _player)
 {
-    node = n;
+    player = _player;
 }
 
 /**************************************************************************\
