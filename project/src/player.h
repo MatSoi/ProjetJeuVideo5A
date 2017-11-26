@@ -21,7 +21,7 @@ class Player : public Characters
 {  
 public:
     /// constructeur avec heritage
-    Player (is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation, float _speed = NORMAL_SPEED)
+    Player (is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation = is::EMAT_STAND, float _speed = NORMAL_SPEED)
         : Characters (_node, _animation, _speed) {}
 
     /// destructeur

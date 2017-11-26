@@ -24,7 +24,7 @@ class Characters
 public:
     /// constructeur
     Characters(is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation, float _speed)
-        : node(_node), animation(_animation), speed(_speed) {}
+        : node(_node), animation(_animation), speed(_speed) {node->setMD2Animation(animation);}
 
     /// destructeur virtual
     virtual ~Characters() {}

@@ -73,7 +73,7 @@ int main()
     anim->drop();
 
     /// TEST ///
-    Player player(nodePlayer, is::EMAT_STAND);
+    Player player(nodePlayer);
 
     receiver.set_gui(gui);
     receiver.set_player(&player);
