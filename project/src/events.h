@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <irrlicht.h>
+#include "player.h"
 
 using namespace irr;
 
@@ -16,15 +17,20 @@ namespace ig = irr::gui;
 
 class EventReceiver : public IEventReceiver
 {
+public:
+    EventReceiver();
+
+    bool OnEvent(const irr::SEvent &event);
+
+    bool keyboard_handler(const f32 frameDeltaTime);
+
+    void set_gui(irr::gui::IGUIEnvironment *gui);
+
+    void set_player(Player* _player);
+
+    void set_textures(const std::vector<irr::video::ITexture *> &tex){textures=tex;}
+
 private:
-    irr::gui::IGUIEnvironment *gui;
-    irr::scene::IAnimatedMeshSceneNode *node;
-    bool button_pressed;
-    int  old_x, old_y;
-    std::vector<irr::video::ITexture*> textures;
-    int current_texture;
-
-
     bool mouse_handler(const irr::SEvent &event);
     bool gui_handler(const irr::SEvent &event);
 
@@ -48,13 +54,12 @@ private:
     bool KeyIsDown[KEY_KEY_CODES_COUNT];
     bool KeyEvent[KEY_KEY_CODES_COUNT];
 
-public:
-    EventReceiver();
-    bool OnEvent(const irr::SEvent &event);
-    bool keyboard_handler(const f32 frameDeltaTime);
-    void set_gui(irr::gui::IGUIEnvironment *gui);
-    void set_node(irr::scene::IAnimatedMeshSceneNode *node);
-    void set_textures(const std::vector<irr::video::ITexture *> &tex){textures=tex;}
+    irr::gui::IGUIEnvironment *gui;
+    Player* player;
+    bool button_pressed;
+    int  old_x, old_y;
+    std::vector<irr::video::ITexture*> textures;
+    int current_texture;
 };
 
 #endif
