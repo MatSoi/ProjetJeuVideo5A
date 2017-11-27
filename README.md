@@ -1,3 +1,3 @@
-# Branche de test
-Nouvelle implémentation de classes (Characters et Player).
-Gestion des animations du joueur en déplacement et prémices d'un mode furtif.
+# Projet Jeux Video - 5A CPE Lyon
+
+Crétaion d'un jeu vidéo de discrétion avec le moteur de jeu Irrlicht. 
