@@ -1,6 +1,7 @@
 // main.cpp
 
 #include <irrlicht.h>
+#include <iostream>
 
 #include "menu.h"
 #include "events.h"
@@ -25,6 +26,7 @@ int main()
     is::ISceneManager   *smgr = device->getSceneManager();
     ig::IGUIEnvironment *gui = device->getGUIEnvironment();
 
+
     //******************** AJOUT DE LA MAP ********************//
     //  Ajout de l’archive  qui  contient  entre  autres  un  niveau  complet
     device ->getFileSystem()-> addFileArchive("data/map-20kdm2.pk3");
@@ -34,6 +36,13 @@ int main()
     nodeMap = smgr ->addOctreeSceneNode(meshMap ->getMesh (0), nullptr , -1, 1024);
     //  Translation  pour  que  nos  personnages  soient  dans le décor
     nodeMap ->setPosition(core:: vector3df ( -1300 , -104 , -1249));
+
+    ///////// Debug ///////////
+    is::IAnimatedMeshSceneNode* nodeMapDebug = smgr->addAnimatedMeshSceneNode(meshMap);
+    nodeMapDebug->setPosition(core:: vector3df ( -1300 , -103 , -1249));
+    u32 debug_info = nodeMapDebug->isDebugDataVisible();
+    nodeMapDebug->setDebugDataVisible(debug_info ^ is::EDS_MESH_WIRE_OVERLAY);
+    ///////////////////////////
 
     // Chargement de notre personnage
     is::IAnimatedMesh *mesh = smgr->getMesh("data/tris.md2");
@@ -46,12 +55,13 @@ int main()
     textures.push_back(driver->getTexture("data/red_texture.pcx"));
     textures.push_back(driver->getTexture("data/blue_texture.pcx"));
     nodePlayer->setMaterialTexture(0, textures[0]);
-    nodePlayer ->setPosition(core:: vector3df ( 100 , 130 , 100));
+    nodePlayer->setPosition(core:: vector3df ( 100 , 130 , 100));
 
+    // Placement camera
     is::ICameraSceneNode *camera;
-    //camera = smgr->addCameraSceneNode(nodePlayer, ic::vector3df(-20, 30, -1), ic::vector3df(0, 0, 0));
-    //camera = smgr ->addCameraSceneNodeFPS ();
-    camera = smgr->addCameraSceneNodeMaya();
+    camera = smgr->addCameraSceneNode();
+    //    camera = smgr ->addCameraSceneNodeFPS ();
+    //    camera = smgr->addCameraSceneNodeMaya();
 
     // Création du triangle selector
     scene::ITriangleSelector* selector;
@@ -66,7 +76,7 @@ int main()
     anim = smgr->createCollisionResponseAnimator(selector,
                                                  nodePlayer,  // Le noeud que l'on veut gérer
                                                  radius, // "rayons" de la caméra
-                                                 ic::vector3df(0, -1, 0),  // gravité
+                                                 ic::vector3df(0, -0.5, 0),  // gravité
                                                  ic::vector3df(0, -10, 0));  // décalage du centre
     nodePlayer->addAnimator(anim);
     selector->drop();
@@ -77,7 +87,11 @@ int main()
 
     receiver.set_gui(gui);
     receiver.set_player(&player);
+    ig::ICursorControl* cursor = device->getCursorControl();
+    receiver.set_camera(camera, cursor, device->getVideoDriver()->getScreenSize().Width, device->getVideoDriver()->getScreenSize().Height);
     receiver.set_textures(textures);
+
+//    device->getCursorControl()->setVisible(false);
 
     // Création de la GUI
     // Choix de la police de caractères
@@ -98,13 +112,11 @@ int main()
         const u32 now = device->getTimer()->getTime();
         const f32 frameDeltaTime = (f32)(now - then) / 1000.f; // Time in seconds
         then = now;
-        receiver.keyboard_handler(frameDeltaTime);
+        receiver.event_handler(frameDeltaTime, device->getVideoDriver()->getScreenSize().Width, device->getVideoDriver()->getScreenSize().Height);
 
         driver->beginScene(true, true, iv::SColor(0,50,100,255));
+//        device->getCursorControl()->setPosition(0.5f,0.5f);
 
-
-        //Set camera target to player
-        camera->setTarget(nodePlayer->getPosition() + ic::vector3df(0,20,0));
         // Dessin de la scène :
         smgr->drawAll();
         // Dessin de l'interface utilisateur :

@@ -32,6 +32,9 @@ public:
     /// mise a jour de l animation si celle ci est differente
     void updateAnimation (is::EMD2_ANIMATION_TYPE _animation);
 
+    /// assesseur de position
+    const core::vector3df &getPosition();
+
 protected:
     is::IAnimatedMeshSceneNode* node;
     is::EMD2_ANIMATION_TYPE animation;

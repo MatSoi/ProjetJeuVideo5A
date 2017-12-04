@@ -3,9 +3,14 @@
 #include <iostream>
 
 #include <irrlicht.h>
+#include <cmath>
 
 #include "events.h"
 #include "gui_ids.h"
+
+#define PHI_MIN -45.0f
+#define PHI_MAX 80.0f
+
 
 /**************************************************************************\
  * EventReceiver::EventReceiver                                           *
@@ -21,6 +26,15 @@ EventReceiver::EventReceiver()
     }
 }
 
+bool EventReceiver::event_handler(const f32 frameDeltaTime, float width, float height)
+{
+    screen_width = width;
+    screen_height = height;
+    mouse_handler(frameDeltaTime);
+    keyboard_handler(frameDeltaTime);
+    return false;
+}
+
 /*------------------------------------------------------------------------*\
  * EventReceiver::keyboard_handler                                        *
 \*------------------------------------------------------------------------*/
@@ -34,23 +48,34 @@ bool EventReceiver::keyboard_handler(const f32 frameDeltaTime)
     if((IsKeyReleased(KEY_KEY_Z) || IsKeyReleased(KEY_KEY_S) || IsKeyReleased(KEY_KEY_D) || IsKeyReleased(KEY_KEY_Q)) &&
             !(IsKeyDown(KEY_KEY_Z) || IsKeyDown(KEY_KEY_S) || IsKeyDown(KEY_KEY_D) || IsKeyDown(KEY_KEY_Q)))
         player->setIdle();          // on arrete la marche si une des touches est relachee et que les autres ne sont pas pressees
-                                    // on pourrait enlever la partie IsKeyReleased mais on appelerait tout le temps setIdle
+    // on pourrait enlever la partie IsKeyReleased mais on appelerait tout le temps setIdle
 
     if(IsKeyTriggered(KEY_KEY_C))
         player->setStealth();
 
     //KEY DOWN
-    if(IsKeyDown(KEY_KEY_Z))
-        player->moveForward(frameDeltaTime);
+    if(IsKeyDown(KEY_KEY_Z) && IsKeyDown(KEY_KEY_D))
+        player->move(frameDeltaTime, angle_camera + M_PI/4.0f);
+    else if(IsKeyDown(KEY_KEY_Z) && IsKeyDown(KEY_KEY_Q))
+        player->move(frameDeltaTime, angle_camera - M_PI/4.0f);
+    else if(IsKeyDown(KEY_KEY_S) && IsKeyDown(KEY_KEY_D))
+        player->move(frameDeltaTime, angle_camera + M_PI - M_PI/4.0f);
+    else if(IsKeyDown(KEY_KEY_S) && IsKeyDown(KEY_KEY_Q))
+        player->move(frameDeltaTime, angle_camera + M_PI + M_PI/4.0f);
+    else if(IsKeyDown(KEY_KEY_Z))
+        player->move(frameDeltaTime, angle_camera);
     else if(IsKeyDown(KEY_KEY_S))
-        player->moveBackward(frameDeltaTime);
-    if(IsKeyDown(KEY_KEY_D))
-        player->rotate(frameDeltaTime, 150.0f);
+        player->move(frameDeltaTime, angle_camera + M_PI);
+    else if(IsKeyDown(KEY_KEY_D))
+        player->move(frameDeltaTime, angle_camera + M_PI_2);
     else if(IsKeyDown(KEY_KEY_Q))
-        player->rotate(frameDeltaTime, -150.0f);
+        player->move(frameDeltaTime, angle_camera - M_PI_2);
 
-    /*if(IsKeyDown(KEY_SPACE))
-        position.Y += 100 * frameDeltaTime;*/
+    if(IsKeyDown(KEY_SPACE))
+        player->jump(frameDeltaTime);
+
+    if(IsKeyTriggered(KEY_KEY_I))
+        focus_mouse = !focus_mouse;
 
     //Reset released or first pressed keys
     updateKeyState ();
@@ -60,37 +85,115 @@ bool EventReceiver::keyboard_handler(const f32 frameDeltaTime)
 /*------------------------------------------------------------------------*\
  * EventReceiver::mouse_handler                                           *
 \*------------------------------------------------------------------------*/
-bool EventReceiver::mouse_handler(const SEvent &event)
+bool EventReceiver::mouse_handler(const f32 frameDeltaTime)
 {
-    /*switch(event.MouseInput.Event)
+    if (focus_mouse)
+    {
+        camera_handler();
+        cursor->setPosition(0.5f, 0.5f);
+    }
+    return false;
+}
+
+void EventReceiver::camera_handler()
+{
+    ic::vector3df position;
+    ic::vector3df target = player->getPosition() + ic::vector3df(0, 20, 0);
+    float theta = MouseState.Position.X * M_PI/180.0f - M_PI_2;
+    float phi = MouseState.Position.Y * (-M_PI)/180.0f + M_PI_2;
+
+    position.X = 50.0f * std::sin(phi) * std::sin(theta) + target.X;
+    position.Y = 50.0f * std::cos(phi) + target.Y;
+    position.Z = 50.0f * std::sin(phi) * std::cos(theta) + target.Z;
+    camera->setPosition(position);
+    camera->setTarget(target);
+
+    angle_camera = theta + M_PI_2;
+}
+
+bool EventReceiver::mouse_event(const SEvent &event)
+{
+    switch(event.MouseInput.Event)
     {
     case EMIE_LMOUSE_PRESSED_DOWN:
-      button_pressed = true;
-      old_x = event.MouseInput.X;
-      old_y = event.MouseInput.Y;
-      break;
+        MouseState.LeftButtonDown = true;
+        break;
+
     case EMIE_LMOUSE_LEFT_UP:
-      button_pressed = false;
-      break;
+        MouseState.LeftButtonDown = false;
+        break;
+
     case EMIE_MOUSE_MOVED:
-      if (button_pressed)
-      {
-        ic::vector3df rotation = node->getRotation();
-        rotation.Y -= (event.MouseInput.X - old_x);
-        old_x = event.MouseInput.X;
-        old_y = event.MouseInput.Y;
-        node->setRotation(rotation);
-      }
-      break;
-    case EMIE_MOUSE_WHEEL:
-      current_texture = (current_texture + 1) % textures.size();
-      node->setMaterialTexture(0, textures[current_texture]);
-      break;
+        MouseState.Position.X += event.MouseInput.X - screen_width/2.0f;
+        MouseState.Position.Y += event.MouseInput.Y - screen_height/2.0f;
+        break;
     default:
-      ;
-    }*/
+        // We won't use the wheel
+        break;
+    }
+
+    MouseState.Position.Y = std::max(PHI_MIN, std::min(PHI_MAX, float(MouseState.Position.Y)));
 
     return false;
+}
+
+const SMouseState& EventReceiver::GetMouseState(void) const
+{
+    return MouseState;
+}
+
+/**************************************************************************\
+ * EventReceiver::OnEvent                                                 *
+\**************************************************************************/
+bool EventReceiver::OnEvent(const SEvent &event)
+{
+    if (!player) return false;
+
+    switch (event.EventType)
+    {
+    case EET_KEY_INPUT_EVENT:
+        //Release/FirstPress gestion
+        KeyEvent[event.KeyInput.Key] = (KeyIsDown[event.KeyInput.Key] != event.KeyInput.PressedDown);
+        KeyIsDown[event.KeyInput.Key] = event.KeyInput.PressedDown;
+        break;
+    case EET_MOUSE_INPUT_EVENT:
+        return mouse_event(event);
+    case EET_GUI_EVENT:
+        return gui_handler(event);
+    default:;
+    }
+
+    return false;
+}
+
+/**************************************************************************\
+ * EventReceiver::set_node                                                *
+\**************************************************************************/
+void EventReceiver::set_player(Player* _player)
+{
+    player = _player;
+}
+
+void EventReceiver::set_camera(is::ICameraSceneNode* _camera, ig::ICursorControl* _cursor, float width, float height)
+{
+    camera =_camera;
+    cursor = _cursor;
+    screen_width = width;
+    screen_height = height;
+}
+
+/**************************************************************************\
+ * EventReceiver::set_gui                                                 *
+\**************************************************************************/
+void EventReceiver::set_gui(irr::gui::IGUIEnvironment *g)
+{
+    gui = g;
+}
+
+void EventReceiver::updateKeyState ()
+{
+    for (u32 i=0; i<KEY_KEY_CODES_COUNT; ++i)
+        KeyEvent[i] = false;
 }
 
 /*------------------------------------------------------------------------*\
@@ -226,51 +329,5 @@ bool EventReceiver::gui_handler(const SEvent &event)
     default:;
     }
     return false;
-}
-
-/**************************************************************************\
- * EventReceiver::OnEvent                                                 *
-\**************************************************************************/
-bool EventReceiver::OnEvent(const SEvent &event)
-{
-    if (!player) return false;
-
-    switch (event.EventType)
-    {
-    case EET_KEY_INPUT_EVENT:
-        //Release/FirstPress gestion
-        KeyEvent[event.KeyInput.Key] = (KeyIsDown[event.KeyInput.Key] != event.KeyInput.PressedDown);
-        KeyIsDown[event.KeyInput.Key] = event.KeyInput.PressedDown;
-        break;
-    case EET_MOUSE_INPUT_EVENT:
-        return mouse_handler(event);
-    case EET_GUI_EVENT:
-        return gui_handler(event);
-    default:;
-    }
-
-    return false;
-}
-
-/**************************************************************************\
- * EventReceiver::set_node                                                *
-\**************************************************************************/
-void EventReceiver::set_player(Player* _player)
-{
-    player = _player;
-}
-
-/**************************************************************************\
- * EventReceiver::set_gui                                                 *
-\**************************************************************************/
-void EventReceiver::set_gui(irr::gui::IGUIEnvironment *g)
-{
-    gui = g;
-}
-
-void EventReceiver::updateKeyState ()
-{
-    for (u32 i=0; i<KEY_KEY_CODES_COUNT; ++i)
-        KeyEvent[i] = false;
 }
 

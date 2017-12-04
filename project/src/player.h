@@ -27,14 +27,17 @@ public:
     /// destructeur
     virtual ~Player () {}
 
-    /// le joueur avance
-    void moveForward (const f32 frameDeltaTime);
+    /// le joueur avance dans le sens de l angle
+    void move (const f32 frameDeltaTime, float angle);
 
     /// le joueur recule
     void moveBackward (const f32 frameDeltaTime);
 
     /// le joueur tourne
     void rotate (const f32 frameDeltaTime, float angle);
+
+    /// le joueur saute
+    void jump (const f32 frameDeltaTime);
 
     /// passe ou quitte le mode furtif
     void setStealth ();
