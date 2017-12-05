@@ -32,6 +32,10 @@ bool EventReceiver::event_handler(const f32 frameDeltaTime, float width, float h
     screen_height = height;
     mouse_handler(frameDeltaTime);
     keyboard_handler(frameDeltaTime);
+    if(arrowParentDebug->isVisible())
+        arrowParentDebug->setPosition(player->getPosition());
+
+    menu->window->getElementFromId(0)->setText(L"Lol");
     return false;
 }
 
@@ -124,8 +128,8 @@ bool EventReceiver::mouse_event(const SEvent &event)
         break;
 
     case EMIE_MOUSE_MOVED:
-        MouseState.Position.X += event.MouseInput.X - screen_width/2.0f;
-        MouseState.Position.Y += event.MouseInput.Y - screen_height/2.0f;
+        MouseState.Position.X += event.MouseInput.X - int(screen_width/2.0f);
+        MouseState.Position.Y += event.MouseInput.Y - int(screen_height/2.0f);
         break;
     default:
         // We won't use the wheel
@@ -239,6 +243,11 @@ bool EventReceiver::gui_handler(const SEvent &event)
             player->debug(is::EDS_HALF_TRANSPARENCY);
             break;
 
+        case MENU_ARROW:
+            menu->setItemChecked(item, !menu->isItemChecked(item));
+            arrowParentDebug->setVisible(!arrowParentDebug->isVisible());
+            break;
+
         case MENU_ABOUT:
             gui->addMessageBox(L"Boite About", L"Texte présentant ce super jeu\nd'un intérêt incroyable");
             break;
@@ -252,6 +261,8 @@ bool EventReceiver::gui_handler(const SEvent &event)
         if (id == WINDOW_VALUE)
         {
             ic::stringc s = event.GUIEvent.Caller->getText();
+            ig::IGUIEditBox *cbox = (ig::IGUIEditBox*)event.GUIEvent.Caller;
+
             std::cout << "editbox changed:" << s.c_str() << std::endl;
         }
     }

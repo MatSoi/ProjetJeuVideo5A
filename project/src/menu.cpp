@@ -6,17 +6,17 @@
 
 #include "menu.h"
 #include "gui_ids.h"
-
+using namespace irr;
 
 /*===========================================================================*\
  * create_menu                                                               *
 \*===========================================================================*/
-void create_menu(ig::IGUIEnvironment *gui)
+void Menu::create_menu(ig::IGUIEnvironment *gui)
 {
   ig::IGUIContextMenu *submenu;
 
   // Les trois entrées principales :
-  ig::IGUIContextMenu *menu = gui->addMenu();
+  ig::IGUIContextMenu* menu = gui->addMenu();
   menu->addItem(L"File", -1, true, true);
   menu->addItem(L"Debug", -1, true, true);
   menu->addItem(L"Help", -1, true, true);
@@ -33,6 +33,8 @@ void create_menu(ig::IGUIEnvironment *gui)
   submenu->addItem(L"Show Normals",   MENU_NORMALS);
   submenu->addItem(L"Show Triangles", MENU_TRIANGLES);
   submenu->addItem(L"Transparency",   MENU_TRANSPARENCY);
+  submenu->addItem(L"Show Axis",   MENU_ARROW);
+  submenu->addItem(L"Debug Bidibidibox",   MENU_DEBUG_BOX);
 
   // Le contenu du menu Help :
   submenu = menu->getSubMenu(2);
@@ -42,10 +44,10 @@ void create_menu(ig::IGUIEnvironment *gui)
 /*===========================================================================*\
  * create_window                                                             *
 \*===========================================================================*/
-void create_window(ig::IGUIEnvironment *gui)
+void Menu::create_window(ig::IGUIEnvironment *gui)
 {
   // La fenêtre
-  ig::IGUIWindow *window = gui->addWindow(ic::rect<s32>(420,25, 620,460), false, L"Settings");
+  window = gui->addWindow(ic::rect<s32>(0,20, 300,500), false, L"Bidibidibox de Debug");
 
   // Une zone d'édition de texte, précédée d'un label
   gui->addStaticText(L"Value", ic::rect<s32>(22,48, 65,66), false, false, window);
@@ -76,4 +78,9 @@ void create_window(ig::IGUIEnvironment *gui)
 
   // Une spin box
   gui->addSpinBox(L"18.0", ic::rect<s32>(40,280, 160,298), true, window, WINDOW_SPIN_BOX);
+}
+
+bool Menu::isDebugWindowVisible()
+{
+
 }

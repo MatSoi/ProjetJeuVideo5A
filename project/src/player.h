@@ -20,6 +20,8 @@ namespace ig = irr::gui;
 class Player : public Characters
 {  
 public:
+    Player () {}
+
     /// constructeur avec heritage
     Player (is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation = is::EMAT_STAND, float _speed = NORMAL_SPEED)
         : Characters (_node, _animation, _speed) {}
