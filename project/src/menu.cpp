@@ -47,10 +47,13 @@ void Menu::create_menu(ig::IGUIEnvironment *gui)
 void Menu::create_window(ig::IGUIEnvironment *gui)
 {
   // La fenêtre
-  window = gui->addWindow(ic::rect<s32>(0,20, 400,200), false, L"Bidibidibox de Debug");
+  window = gui->addWindow(ic::rect<s32>(0,20, 400,80), false, L"Bidibidibox de Debug");
 
   // Une zone d'édition de texte, précédée d'un label
   gui->addStaticText(L"Value", ic::rect<s32>(20, 30, 400,200), false, false, window, 0);
+  window->getCloseButton()->setVisible(false);
+  window->setDrawBackground(true);
+  window->setVisible(false);
 //  gui->addEditBox(L"1.0", ic::rect<s32>(65,46, 160,66), true, window, WINDOW_VALUE);
 
 //  // Un bouton à clicker

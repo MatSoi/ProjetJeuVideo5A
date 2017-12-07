@@ -26,3 +26,5 @@ add_executable(
 
 
 TARGET_LINK_LIBRARIES(pgm -lIrrlicht)
+
+

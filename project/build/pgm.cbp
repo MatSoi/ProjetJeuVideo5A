@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+   <FileVersion major="1" minor="6" />
+   <Project>
+      <Option title="pgm" />
+      <Option makefile_is_custom="1" />
+      <Option compiler="gcc" />
+      <Option virtualFolders="CMake Files\;" />
+      <Build>
+      <Target title="all">
+         <Option working_dir="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/Makefile&quot;  VERBOSE=1 all" />
+            <CompileFile command="/usr/bin/make -f &quot;/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="edit_cache">
+         <Option working_dir="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/Makefile&quot;  VERBOSE=1 edit_cache" />
+            <CompileFile command="/usr/bin/make -f &quot;/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="pgm">
+         <Option output="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/pgm" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/include/c++/4.8" />
+            <Add directory="/usr/include/c++/4.8/backward" />
+            <Add directory="/usr/include/irrlicht" />
+            <Add directory="/usr/include/x86_64-linux-gnu" />
+            <Add directory="/usr/include/x86_64-linux-gnu/c++/4.8" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.8/include" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/Makefile&quot;  VERBOSE=1 pgm" />
+            <CompileFile command="/usr/bin/make -f &quot;/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="pgm/fast">
+         <Option output="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/pgm" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build" />
+            <Add directory="/usr/include" />
+            <Add directory="/usr/include/c++/4.8" />
+            <Add directory="/usr/include/c++/4.8/backward" />
+            <Add directory="/usr/include/irrlicht" />
+            <Add directory="/usr/include/x86_64-linux-gnu" />
+            <Add directory="/usr/include/x86_64-linux-gnu/c++/4.8" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.8/include" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/Makefile&quot;  VERBOSE=1 pgm/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="rebuild_cache">
+         <Option working_dir="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/Makefile&quot;  VERBOSE=1 rebuild_cache" />
+            <CompileFile command="/usr/bin/make -f &quot;/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      </Build>
+      <Unit filename="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/src/characters.cpp">
+      </Unit>
+      <Unit filename="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/src/enemy.cpp">
+      </Unit>
+      <Unit filename="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/src/events.cpp">
+      </Unit>
+      <Unit filename="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/src/main.cpp">
+      </Unit>
+      <Unit filename="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/src/menu.cpp">
+      </Unit>
+      <Unit filename="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/src/player.cpp">
+      </Unit>
+      <Unit filename="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/src/scene.cpp">
+      </Unit>
+      <Unit filename="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/src/characters.h">
+      </Unit>
+      <Unit filename="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/src/enemy.h">
+      </Unit>
+      <Unit filename="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/src/events.h">
+      </Unit>
+      <Unit filename="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/src/gui_ids.h">
+      </Unit>
+      <Unit filename="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/src/menu.h">
+      </Unit>
+      <Unit filename="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/src/player.h">
+      </Unit>
+      <Unit filename="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/src/scene.h">
+      </Unit>
+      <Unit filename="/fs03/share/users/matthieu.soignon/home/Bureau/ProjetJeuVideo5A_latest/project/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\" />
+      </Unit>
+   </Project>
+</CodeBlocks_project_file>

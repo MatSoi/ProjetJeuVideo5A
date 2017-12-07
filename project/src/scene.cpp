@@ -4,7 +4,7 @@ Scene::Scene()
 {
     // Création de la fenêtre et du système de rendu.
     device = createDevice(iv::EDT_OPENGL,
-                          ic::dimension2d<u32>(1280, 960),
+                          ic::dimension2d<u32>(960, 720),
                           16, false, false, false, &receiver);
     driver = device->getVideoDriver();
     smgr = device->getSceneManager();
@@ -95,7 +95,7 @@ void Scene::initEnemy()
     nodeEnemy = smgr->addAnimatedMeshSceneNode(meshEnemy);
     nodeEnemy->setMaterialFlag(iv::EMF_LIGHTING, false);
     nodeEnemy->setMaterialTexture(0, textures[1]);
-    nodeEnemy->setPosition(core:: vector3df ( 100 , 130 , 100));
+    nodeEnemy->setPosition(core:: vector3df ( 100 , 0 , 100));
 
     // Création du triangle selector
     scene::ITriangleSelector* selector;
