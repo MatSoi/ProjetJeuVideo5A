@@ -6,8 +6,9 @@
 #include <vector>
 
 #include <irrlicht.h>
-#include "menu.h"
 #include "player.h"
+
+using namespace irr;
 
 namespace ic = irr::core;
 namespace is = irr::scene;
@@ -31,17 +32,15 @@ public:
 
     bool event_handler(const f32 frameDeltaTime, float width, float height);
 
-    void set_gui(ig::IGUIEnvironment *gui);
+    void set_gui(irr::gui::IGUIEnvironment *gui);
 
     void set_player(Player* _player);
 
-    void set_camera(is::ICameraSceneNode* _camera, ig::ICursorControl *_cursor, float width, float height);
+    void set_camera(is::ICameraSceneNode* _camera, gui::ICursorControl *_cursor, float width, float height);
 
     void set_textures(const std::vector<iv::ITexture *> &tex){textures=tex;}
 
     void set_debug(is::ISceneNode * _arrowParentDebug) {arrowParentDebug=_arrowParentDebug;}
-
-    void set_menu(Menu *_menu) {menu=_menu;}
 
 private:
     bool keyboard_handler(const f32 frameDeltaTime);
@@ -91,8 +90,6 @@ private:
     bool focus_mouse = true;
 
     is::ISceneNode * arrowParentDebug;
-
-    Menu* menu;
 };
 
 #endif

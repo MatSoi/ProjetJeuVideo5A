@@ -1,72 +1,71 @@
 #include "scene.h"
 
-Scene::Scene ()
+Scene::Scene()
 {
     // Création de la fenêtre et du système de rendu.
     device = createDevice(iv::EDT_OPENGL,
-                          ic::dimension2d<u32>(1280, 960),
+                          ic::dimension2d<u32>(640, 480),
                           16, false, false, false, &receiver);
     driver = device->getVideoDriver();
     smgr = device->getSceneManager();
     gui = device->getGUIEnvironment();
-    cursor = device->getCursorControl();
-    camera = smgr->addCameraSceneNode();
 
+    // Création de la GUI
+    // Choix de la police de caractères
     skin = gui->getSkin();
     font = gui->getFont("data/fontlucida.png");
     skin->setFont(font);
 
-    textures.push_back(driver->getTexture("data/base.pcx"));
-    textures.push_back(driver->getTexture("data/red_texture.pcx"));
-    textures.push_back(driver->getTexture("data/blue_texture.pcx"));
-
     // La barre de menu
-    menu->create_menu(gui);
+    create_menu(gui);
     // Une fenêtre pour différents réglages
-    menu->create_window(gui);
+    create_window(gui);
 }
 
 void Scene::init()
 {
-    initSceneMap();
-    initScenePlayer();
-    initSceneEnemy();
+    initMap();
+    initPlayer();
+    initCamera();
     initArrowDebug();
-    initSceneReceiver();
+    initReceiver();
 }
 
-void Scene::initSceneMap()
+void Scene::initMap()
 {
     //******************** AJOUT DE LA MAP ********************//
     //  Ajout de l’archive  qui  contient  entre  autres  un  niveau  complet
-    device->getFileSystem()->addFileArchive("data/map-20kdm2.pk3");
+    device ->getFileSystem()-> addFileArchive("data/map-20kdm2.pk3");
     // On  charge  un bsp (un  niveau) en  particulier :
-    is:: IAnimatedMesh *meshMap = smgr ->getMesh("20kdm2.bsp");
+    meshMap = smgr ->getMesh("20kdm2.bsp");
+    nodeMap;
     nodeMap = smgr ->addOctreeSceneNode(meshMap ->getMesh (0), nullptr , -1, 1024);
     //  Translation  pour  que  nos  personnages  soient  dans le décor
-    nodeMap ->setPosition(ic::vector3df ( -1300 , -104 , -1249));
-
-    meshMap->drop();
+    nodeMap ->setPosition(core:: vector3df ( -1300 , -104 , -1249));
 }
-
-void Scene::initScenePlayer()
+void Scene::initPlayer()
 {
     // Chargement de notre personnage
-    is::IAnimatedMesh *mesh = smgr->getMesh("data/tris.md2");
+    meshPlayer = smgr->getMesh("data/tris.md2");
+
     // Attachement de notre personnage dans la scène
-    nodePlayer = smgr->addAnimatedMeshSceneNode(mesh);
+    nodePlayer = smgr->addAnimatedMeshSceneNode(meshPlayer);
     nodePlayer->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-    nodePlayer->setMaterialTexture(0, textures[2]);
-    nodePlayer->setPosition(core:: vector3df (100 , 130 , 100));
+    //nodePlayer->setMD2Animation(irr::scene::EMAT_STAND);
+    textures.push_back(driver->getTexture("data/base.pcx"));
+    textures.push_back(driver->getTexture("data/red_texture.pcx"));
+    textures.push_back(driver->getTexture("data/blue_texture.pcx"));
+    nodePlayer->setMaterialTexture(0, textures[0]);
+    nodePlayer->setPosition(core:: vector3df ( 100 , 130 , 100));
 
     // Création du triangle selector
-    is::ITriangleSelector* selector;
+    scene::ITriangleSelector* selector;
     selector = smgr->createOctreeTriangleSelector(nodeMap->getMesh(), nodeMap);
     nodeMap->setTriangleSelector(selector);
 
     //Calcul radius de la BBox du node player
-    const ic::aabbox3d<f32>& box = nodePlayer->getBoundingBox();
-    ic::vector3df radius = 1.3f*(box.MaxEdge - box.getCenter());
+    const core::aabbox3d<f32>& box = nodePlayer->getBoundingBox();
+    core::vector3df radius = 1.3f*(box.MaxEdge - box.getCenter());
     // Et l'animateur/collisionneur
     scene::ISceneNodeAnimator *anim;
     anim = smgr->createCollisionResponseAnimator(selector,
@@ -77,52 +76,26 @@ void Scene::initScenePlayer()
     nodePlayer->addAnimator(anim);
     selector->drop();
     anim->drop();
-    mesh->drop();
 
-    player = Player(nodePlayer);
+    player=Player(nodePlayer);
 }
 
-void Scene::initSceneEnemy()
+void Scene::initCamera()
 {
-    // Chargement de l'enemie
-    is::IAnimatedMesh *mesh = smgr->getMesh("data/tris.md2");
-    // Attachement de notre personnage dans la scène
-    nodeEnemy.push_back(smgr->addAnimatedMeshSceneNode(mesh));
-    nodeEnemy[0]->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-    nodeEnemy[0]->setMaterialTexture(0, textures[1]);
-    nodeEnemy[0]->setPosition(core:: vector3df (120, 130, 100));
-
-    // Création du triangle selector
-    is::ITriangleSelector* selector;
-    selector = smgr->createOctreeTriangleSelector(nodeMap->getMesh(), nodeMap);
-    nodeMap->setTriangleSelector(selector);
-
-    //Calcul radius de la BBox du node player
-    const ic::aabbox3d<f32>& box = nodeEnemy[0]->getBoundingBox();
-    ic::vector3df radius = 1.3f*(box.MaxEdge - box.getCenter());
-    // Et l'animateur/collisionneur
-    scene::ISceneNodeAnimator *anim;
-    anim = smgr->createCollisionResponseAnimator(selector,
-                                                 nodeEnemy[0],  // Le noeud que l'on veut gérer
-                                                 radius, // "rayons" de la caméra
-                                                 ic::vector3df(0, -10, 0),  // gravité
-                                                 ic::vector3df(0, -10, 0));  // décalage du centre
-    nodeEnemy[0]->addAnimator(anim);
-    selector->drop();
-    anim->drop();
-    mesh->drop();
-
-    enemy.push_back(Enemy(nodeEnemy[0]));
+    // Placement camera
+    camera = smgr->addCameraSceneNode();
+    //    camera = smgr ->addCameraSceneNodeFPS ();
+    //    camera = smgr->addCameraSceneNodeMaya();
 }
 
-void Scene::initSceneReceiver()
+void Scene::initReceiver()
 {
-    receiver.set_debug(arrowParentDebug);
     receiver.set_gui(gui);
     receiver.set_player(&player);
+    ig::ICursorControl* cursor = device->getCursorControl();
     receiver.set_camera(camera, cursor, device->getVideoDriver()->getScreenSize().Width, device->getVideoDriver()->getScreenSize().Height);
     receiver.set_textures(textures);
-    receiver.set_menu(menu);
+    receiver.set_debug(arrowParentDebug);
 }
 
 void Scene::initArrowDebug()
@@ -164,6 +137,7 @@ void Scene::run()
         receiver.event_handler(frameDeltaTime, device->getVideoDriver()->getScreenSize().Width, device->getVideoDriver()->getScreenSize().Height);
 
         driver->beginScene(true, true, iv::SColor(0,50,100,255));
+        //        device->getCursorControl()->setPosition(0.5f,0.5f);
 
         // Dessin de la scène :
         smgr->drawAll();

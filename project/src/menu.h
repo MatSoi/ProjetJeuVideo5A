@@ -6,19 +6,13 @@
 
 #include <irrlicht.h>
 
+using namespace irr;
+
 namespace ic = irr::core;
 namespace ig = irr::gui;
 
-class Menu
-{
-public:
-    void create_menu(ig::IGUIEnvironment *gui);
-    void create_window(ig::IGUIEnvironment *gui);
-    bool isDebugWindowVisible();
-
-
-    ig::IGUIWindow* window ;
-};
+void create_menu(ig::IGUIEnvironment *gui);
+void create_window(ig::IGUIEnvironment *gui);
 
 #endif
 
