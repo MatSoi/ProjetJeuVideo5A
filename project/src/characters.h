@@ -35,6 +35,9 @@ public:
     /// assesseur de position
     const ic::vector3df &getPosition();
 
+    /// assesseur d orientation
+    const ic::vector3df &getRotation();
+
 protected:
     is::IAnimatedMeshSceneNode* node;
     is::EMD2_ANIMATION_TYPE animation;

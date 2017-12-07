@@ -4,7 +4,7 @@ Scene::Scene()
 {
     // Création de la fenêtre et du système de rendu.
     device = createDevice(iv::EDT_OPENGL,
-                          ic::dimension2d<u32>(640, 480),
+                          ic::dimension2d<u32>(1280, 960),
                           16, false, false, false, &receiver);
     driver = device->getVideoDriver();
     smgr = device->getSceneManager();
@@ -26,10 +26,19 @@ Scene::Scene()
 void Scene::init()
 {
     initMap();
+    initTextures();
     initPlayer();
+    initEnemy();
     initCamera();
     initArrowDebug();
     initReceiver();
+}
+
+void Scene::initTextures()
+{
+    textures.push_back(driver->getTexture("data/base.pcx"));
+    textures.push_back(driver->getTexture("data/red_texture.pcx"));
+    textures.push_back(driver->getTexture("data/blue_texture.pcx"));
 }
 
 void Scene::initMap()
@@ -41,8 +50,9 @@ void Scene::initMap()
     meshMap = smgr ->getMesh("20kdm2.bsp");
     nodeMap = smgr ->addOctreeSceneNode(meshMap ->getMesh (0), nullptr , -1, 1024);
     //  Translation  pour  que  nos  personnages  soient  dans le décor
-    nodeMap ->setPosition(core:: vector3df ( -1300 , -104 , -1249));
+    nodeMap ->setPosition(ic:: vector3df ( -1300 , -104 , -1249));
 }
+
 void Scene::initPlayer()
 {
     // Chargement de notre personnage
@@ -50,13 +60,9 @@ void Scene::initPlayer()
 
     // Attachement de notre personnage dans la scène
     nodePlayer = smgr->addAnimatedMeshSceneNode(meshPlayer);
-    nodePlayer->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-    //nodePlayer->setMD2Animation(irr::scene::EMAT_STAND);
-    textures.push_back(driver->getTexture("data/base.pcx"));
-    textures.push_back(driver->getTexture("data/red_texture.pcx"));
-    textures.push_back(driver->getTexture("data/blue_texture.pcx"));
-    nodePlayer->setMaterialTexture(0, textures[0]);
-    nodePlayer->setPosition(core:: vector3df ( 100 , 130 , 100));
+    nodePlayer->setMaterialFlag(iv::EMF_LIGHTING, false);
+    nodePlayer->setMaterialTexture(0, textures[2]);
+    nodePlayer->setPosition(ic:: vector3df ( 0 , 0 , 0));
 
     // Création du triangle selector
     scene::ITriangleSelector* selector;
@@ -77,7 +83,40 @@ void Scene::initPlayer()
     selector->drop();
     anim->drop();
 
-    player=Player(nodePlayer);
+    player = Player(nodePlayer);
+}
+
+void Scene::initEnemy()
+{
+    // Chargement de notre personnage
+    meshEnemy = smgr->getMesh("data/tris.md2");
+
+    // Attachement de notre personnage dans la scène
+    nodeEnemy = smgr->addAnimatedMeshSceneNode(meshEnemy);
+    nodeEnemy->setMaterialFlag(iv::EMF_LIGHTING, false);
+    nodeEnemy->setMaterialTexture(0, textures[1]);
+    nodeEnemy->setPosition(core:: vector3df ( 100 , 130 , 100));
+
+    // Création du triangle selector
+    scene::ITriangleSelector* selector;
+    selector = smgr->createOctreeTriangleSelector(nodeMap->getMesh(), nodeMap);
+    nodeMap->setTriangleSelector(selector);
+
+    //Calcul radius de la BBox du node Enemy
+    const core::aabbox3d<f32>& box = nodeEnemy->getBoundingBox();
+    core::vector3df radius = 1.3f*(box.MaxEdge - box.getCenter());
+    // Et l'animateur/collisionneur
+    scene::ISceneNodeAnimator *anim;
+    anim = smgr->createCollisionResponseAnimator(selector,
+                                                 nodeEnemy,  // Le noeud que l'on veut gérer
+                                                 radius, // "rayons" de la caméra
+                                                 ic::vector3df(0, -10, 0),  // gravité
+                                                 ic::vector3df(0, -10, 0));  // décalage du centre
+    nodeEnemy->addAnimator(anim);
+    selector->drop();
+    anim->drop();
+
+    enemy = Enemy(nodeEnemy);
 }
 
 void Scene::initCamera()

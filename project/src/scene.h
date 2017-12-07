@@ -2,6 +2,7 @@
 #define SCENE_H
 
 #include "player.h"
+#include "enemy.h"
 #include "events.h"
 #include "menu.h"
 
@@ -15,7 +16,9 @@ public:
 private:
 
     void initMap();
+    void initTextures();
     void initPlayer();
+    void initEnemy();
     void initCamera();
     void initArrowDebug();
     void initReceiver();
@@ -38,6 +41,9 @@ private:
     is::IAnimatedMesh *meshPlayer;
     is::IAnimatedMeshSceneNode *nodePlayer;
 
+    is::IAnimatedMesh *meshEnemy;
+    is::IAnimatedMeshSceneNode *nodeEnemy;
+
     is::ICameraSceneNode *camera;
 
     // Choix de la police de caractères
@@ -47,6 +53,7 @@ private:
     ig::ICursorControl* cursor;
 
     Player player;
+    Enemy enemy;
 
     is::ISceneNode * arrowParentDebug;
     std::vector<is::ISceneNode *> arrowsDebug;
