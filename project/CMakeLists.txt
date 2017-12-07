@@ -5,9 +5,6 @@ cmake_minimum_required(VERSION 2.6)
 
 project(pgm)
 
-FIND_PACKAGE(OpenGL REQUIRED)
-set(QT_USE_OPENGL TRUE)
-
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories("/usr/include/irrlicht")
 
@@ -28,6 +25,4 @@ add_executable(
 )
 
 
-TARGET_LINK_LIBRARIES(pgm -lm -ldl -lGLEW -lGL -lIrrlicht  ${OPENGL_LIBRARIES} ${QT_LIBRARIES} ${QT_GL_LIBRARIES} ${QT_QTOPENGL_LIBRARY})
-
-
+TARGET_LINK_LIBRARIES(pgm -lIrrlicht)
