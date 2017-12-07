@@ -17,9 +17,10 @@ Scene::Scene()
     skin->setFont(font);
 
     // La barre de menu
-    create_menu(gui);
+    menu = new Menu();
+    menu->create_menu(gui);
     // Une fenêtre pour différents réglages
-    create_window(gui);
+    menu->create_window(gui);
 }
 
 void Scene::init()
@@ -38,7 +39,6 @@ void Scene::initMap()
     device ->getFileSystem()-> addFileArchive("data/map-20kdm2.pk3");
     // On  charge  un bsp (un  niveau) en  particulier :
     meshMap = smgr ->getMesh("20kdm2.bsp");
-    nodeMap;
     nodeMap = smgr ->addOctreeSceneNode(meshMap ->getMesh (0), nullptr , -1, 1024);
     //  Translation  pour  que  nos  personnages  soient  dans le décor
     nodeMap ->setPosition(core:: vector3df ( -1300 , -104 , -1249));
@@ -84,18 +84,17 @@ void Scene::initCamera()
 {
     // Placement camera
     camera = smgr->addCameraSceneNode();
-    //    camera = smgr ->addCameraSceneNodeFPS ();
-    //    camera = smgr->addCameraSceneNodeMaya();
 }
 
 void Scene::initReceiver()
 {
     receiver.set_gui(gui);
     receiver.set_player(&player);
-    ig::ICursorControl* cursor = device->getCursorControl();
+    cursor = device->getCursorControl();
     receiver.set_camera(camera, cursor, device->getVideoDriver()->getScreenSize().Width, device->getVideoDriver()->getScreenSize().Height);
     receiver.set_textures(textures);
     receiver.set_debug(arrowParentDebug);
+    receiver.set_menu(menu);
 }
 
 void Scene::initArrowDebug()

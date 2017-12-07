@@ -11,8 +11,6 @@
 #define STEALTH_SPEED 100.0f
 #define ENEMY_SPEED 80.0f
 
-using namespace irr;
-
 namespace ic = irr::core;
 namespace is = irr::scene;
 namespace iv = irr::video;
@@ -22,7 +20,7 @@ namespace ig = irr::gui;
 class Characters
 {  
 public:
-    Characters(){}
+    Characters () {}
 
     /// constructeur
     Characters(is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation, float _speed)
@@ -35,7 +33,7 @@ public:
     void updateAnimation (is::EMD2_ANIMATION_TYPE _animation);
 
     /// assesseur de position
-    const core::vector3df &getPosition();
+    const ic::vector3df &getPosition();
 
 protected:
     is::IAnimatedMeshSceneNode* node;

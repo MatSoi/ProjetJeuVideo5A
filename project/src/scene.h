@@ -30,6 +30,7 @@ private:
     iv::IVideoDriver    *driver;
     is::ISceneManager   *smgr;
     ig::IGUIEnvironment *gui;
+    Menu* menu;
 
     is:: IAnimatedMesh *meshMap;
     is:: IMeshSceneNode *nodeMap;
