@@ -6,6 +6,22 @@
 #include "events.h"
 #include "menu.h"
 
+enum
+{
+    // I use this ISceneNode ID to indicate a scene node that is
+    // not pickable by getSceneNodeAndCollisionPointFromRay()
+    ID_IsNotPickable = 0,
+
+    // I use this flag in ISceneNode IDs to indicate that the
+    // scene node can be picked by ray selection.
+    IDFlag_IsPickable = 1 << 0,
+
+    // I use this flag in ISceneNode IDs to indicate that the
+    // scene node can be highlighted.  In this example, the
+    // homonids can be highlighted, but the level mesh can't.
+    IDFlag_IsHighlightable = 1 << 1
+};
+
 class Scene
 {
 public:
@@ -13,14 +29,13 @@ public:
     void init();
     void run();
 
-private:
+protected:
 
     void initMap();
     void initTextures();
     void initPlayer();
     void initEnemy();
     void initCamera();
-    void initArrowDebug();
     void initReceiver();
 
 
@@ -56,8 +71,6 @@ private:
     Player player;
     Enemy enemy;
 
-    is::ISceneNode * arrowParentDebug;
-    std::vector<is::ISceneNode *> arrowsDebug;
 };
 
 #endif // SCENE_H

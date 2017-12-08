@@ -33,7 +33,6 @@ void Menu::create_menu(ig::IGUIEnvironment *gui)
   submenu->addItem(L"Show Normals",   MENU_NORMALS);
   submenu->addItem(L"Show Triangles", MENU_TRIANGLES);
   submenu->addItem(L"Transparency",   MENU_TRANSPARENCY);
-  submenu->addItem(L"Show Axis",   MENU_ARROW);
   submenu->addItem(L"Debug Bidibidibox",   MENU_DEBUG_BOX);
 
   // Le contenu du menu Help :

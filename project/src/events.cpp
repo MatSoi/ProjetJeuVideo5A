@@ -32,47 +32,6 @@ bool EventReceiver::event_handler(const f32 frameDeltaTime, float width, float h
     screen_height = height;
     mouse_handler(frameDeltaTime);
     keyboard_handler(frameDeltaTime);
-
-    if(arrowParentDebug->isVisible())
-        arrowParentDebug->setPosition(player->getPosition());
-
-    std::wstring player_display = player->to_string();
-    const wchar_t* szName = player_display.c_str();
-    menu->window->getElementFromId(0)->setText(szName);
-
-    ic::line3d<f32> ray;
-    ray.start = camera->getTarget();
-    ray.end = ray.start + (camera->getTarget() - camera->getPosition()).normalize() * 1000.0f;
-
-    // Tracks the current intersection point with the level or a mesh
-    core::vector3df intersection;
-    // Used to show with triangle has been hit
-    core::triangle3df hitTriangle;
-
-    // This call is all you need to perform ray/triangle collision on every scene node
-    is::ISceneNode * selectedSceneNode =
-            collMan->getSceneNodeAndCollisionPointFromRay(
-                ray,
-                intersection,   // This will be the position of the collision
-                hitTriangle,    // This will be the triangle hit in the collision
-                0,              // This ensures that only nodes that we have
-                // set up to be pickable are considered
-                0);             // Check the entire scene (this is actually the implicit default)
-
-    if(selectedSceneNode)
-    {
-        std::wstring str;
-        f64 dist = intersection.getDistanceFrom(camera->getTarget());
-        str = L"Collision: x[" + std::to_wstring(intersection.X) + L"], y[" + std::to_wstring(intersection.Y) + L"], z[" + std::to_wstring(intersection.Z) + L"]";
-        const wchar_t* szName = str.c_str();
-        menu->window->getElementFromId(1)->setText(szName);
-
-        str = L"Distance: "+ std::to_wstring(dist);
-        szName = str.c_str();
-        menu->window->getElementFromId(2)->setText(szName);
-    }
-
-    return false;
 }
 
 /*------------------------------------------------------------------------*\
@@ -278,11 +237,6 @@ bool EventReceiver::gui_handler(const SEvent &event)
         case MENU_TRANSPARENCY:
             menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
             player->debug(is::EDS_HALF_TRANSPARENCY);
-            break;
-
-        case MENU_ARROW:
-            menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
-            arrowParentDebug->setVisible(!arrowParentDebug->isVisible());
             break;
 
         case MENU_DEBUG_BOX:

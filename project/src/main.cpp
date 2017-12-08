@@ -1,10 +1,11 @@
 // main.cpp
 
 #include "scene.h"
+#include "scenedebug.h"
 
 int main()
 {
-    Scene* scene = new Scene();
+    SceneDebug* scene = new SceneDebug();
     scene->init();
     scene->run();
 

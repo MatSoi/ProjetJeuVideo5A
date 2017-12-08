@@ -39,8 +39,6 @@ public:
 
     void set_textures(const std::vector<iv::ITexture *> &tex){textures=tex;}
 
-    void set_debug(is::ISceneNode * _arrowParentDebug) {arrowParentDebug=_arrowParentDebug;}
-
     void set_menu(Menu *_menu) {menu=_menu;}
 
 private:
@@ -89,8 +87,6 @@ private:
     float angle_camera;
     float screen_width, screen_height;
     bool focus_mouse = true;
-
-    is::ISceneNode * arrowParentDebug;
 
     Menu* menu;
 };
