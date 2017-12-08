@@ -33,6 +33,7 @@ private:
     iv::IVideoDriver    *driver;
     is::ISceneManager   *smgr;
     ig::IGUIEnvironment *gui;
+    is::ISceneCollisionManager* collMan;
     Menu* menu;
 
     is:: IAnimatedMesh *meshMap;

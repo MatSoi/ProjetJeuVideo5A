@@ -26,7 +26,7 @@ EventReceiver::EventReceiver()
     }
 }
 
-bool EventReceiver::event_handler(const f32 frameDeltaTime, float width, float height)
+bool EventReceiver::event_handler(const f32 frameDeltaTime, float width, float height, is::ISceneCollisionManager* collMan)
 {
     screen_width = width;
     screen_height = height;
@@ -39,6 +39,39 @@ bool EventReceiver::event_handler(const f32 frameDeltaTime, float width, float h
     std::wstring player_display = player->to_string();
     const wchar_t* szName = player_display.c_str();
     menu->window->getElementFromId(0)->setText(szName);
+
+    ic::line3d<f32> ray;
+    ray.start = camera->getTarget();
+    ray.end = ray.start + (camera->getTarget() - camera->getPosition()).normalize() * 1000.0f;
+
+    // Tracks the current intersection point with the level or a mesh
+    core::vector3df intersection;
+    // Used to show with triangle has been hit
+    core::triangle3df hitTriangle;
+
+    // This call is all you need to perform ray/triangle collision on every scene node
+    is::ISceneNode * selectedSceneNode =
+        collMan->getSceneNodeAndCollisionPointFromRay(
+                ray,
+                intersection,   // This will be the position of the collision
+                hitTriangle,    // This will be the triangle hit in the collision
+                0,              // This ensures that only nodes that we have
+                                // set up to be pickable are considered
+                0);             // Check the entire scene (this is actually the implicit default)
+
+    if(selectedSceneNode)
+    {
+        std::wstring str;
+        f64 dist = intersection.getDistanceFrom(camera->getTarget());
+        str = L"Collision: x[" + std::to_wstring(intersection.X) + L"], y[" + std::to_wstring(intersection.Y) + L"], z[" + std::to_wstring(intersection.Z) + L"]";
+        const wchar_t* szName = str.c_str();
+        menu->window->getElementFromId(1)->setText(szName);
+
+        str = L"Distance: "+ std::to_wstring(dist);
+        szName = str.c_str();
+        menu->window->getElementFromId(2)->setText(szName);
+    }
+
     return false;
 }
 
@@ -214,9 +247,9 @@ bool EventReceiver::gui_handler(const SEvent &event)
     // Gestion des menus de la barre de menu
     case ig::EGET_MENU_ITEM_SELECTED:
     {
-        ig::IGUIContextMenu *menuSelected = (ig::IGUIContextMenu*)event.GUIEvent.Caller;
-        s32 item = menuSelected->getSelectedItem();
-        s32 id = menuSelected->getItemCommandId(item);
+        ig::IGUIContextMenu *menu = (ig::IGUIContextMenu*)event.GUIEvent.Caller;
+        s32 item = menu->getSelectedItem();
+        s32 id = menu->getItemCommandId(item);
 
         switch(id)
         {
@@ -227,33 +260,28 @@ bool EventReceiver::gui_handler(const SEvent &event)
             exit(0);
 
         case MENU_BOUNDING_BOX:
-            menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
+            menu->setItemChecked(item, !menu->isItemChecked(item));
             player->debug(is::EDS_BBOX);
             break;
 
         case MENU_NORMALS:
-            menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
+            menu->setItemChecked(item, !menu->isItemChecked(item));
             player->debug(is::EDS_NORMALS);
             break;
 
         case MENU_TRIANGLES:
-            menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
+            menu->setItemChecked(item, !menu->isItemChecked(item));
             player->debug(is::EDS_MESH_WIRE_OVERLAY);
             break;
 
         case MENU_TRANSPARENCY:
-            menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
+            menu->setItemChecked(item, !menu->isItemChecked(item));
             player->debug(is::EDS_HALF_TRANSPARENCY);
             break;
 
         case MENU_ARROW:
-            menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
+            menu->setItemChecked(item, !menu->isItemChecked(item));
             arrowParentDebug->setVisible(!arrowParentDebug->isVisible());
-            break;
-
-        case MENU_DEBUG_BOX:
-            menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
-            menu->window->setVisible(!menu->window->isVisible());
             break;
 
         case MENU_ABOUT:
