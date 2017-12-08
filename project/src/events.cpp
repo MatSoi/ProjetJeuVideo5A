@@ -51,12 +51,12 @@ bool EventReceiver::event_handler(const f32 frameDeltaTime, float width, float h
 
     // This call is all you need to perform ray/triangle collision on every scene node
     is::ISceneNode * selectedSceneNode =
-        collMan->getSceneNodeAndCollisionPointFromRay(
+            collMan->getSceneNodeAndCollisionPointFromRay(
                 ray,
                 intersection,   // This will be the position of the collision
                 hitTriangle,    // This will be the triangle hit in the collision
                 0,              // This ensures that only nodes that we have
-                                // set up to be pickable are considered
+                // set up to be pickable are considered
                 0);             // Check the entire scene (this is actually the implicit default)
 
     if(selectedSceneNode)
@@ -236,6 +236,7 @@ void EventReceiver::updateKeyState ()
         KeyEvent[i] = false;
 }
 
+
 /*------------------------------------------------------------------------*\
  * EventReceiver::gui_handler                                             *
 \*------------------------------------------------------------------------*/
@@ -247,9 +248,9 @@ bool EventReceiver::gui_handler(const SEvent &event)
     // Gestion des menus de la barre de menu
     case ig::EGET_MENU_ITEM_SELECTED:
     {
-        ig::IGUIContextMenu *menu = (ig::IGUIContextMenu*)event.GUIEvent.Caller;
-        s32 item = menu->getSelectedItem();
-        s32 id = menu->getItemCommandId(item);
+        ig::IGUIContextMenu *menuSelected = (ig::IGUIContextMenu*)event.GUIEvent.Caller;
+        s32 item = menuSelected->getSelectedItem();
+        s32 id = menuSelected->getItemCommandId(item);
 
         switch(id)
         {
@@ -260,28 +261,33 @@ bool EventReceiver::gui_handler(const SEvent &event)
             exit(0);
 
         case MENU_BOUNDING_BOX:
-            menu->setItemChecked(item, !menu->isItemChecked(item));
+            menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
             player->debug(is::EDS_BBOX);
             break;
 
         case MENU_NORMALS:
-            menu->setItemChecked(item, !menu->isItemChecked(item));
+            menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
             player->debug(is::EDS_NORMALS);
             break;
 
         case MENU_TRIANGLES:
-            menu->setItemChecked(item, !menu->isItemChecked(item));
+            menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
             player->debug(is::EDS_MESH_WIRE_OVERLAY);
             break;
 
         case MENU_TRANSPARENCY:
-            menu->setItemChecked(item, !menu->isItemChecked(item));
+            menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
             player->debug(is::EDS_HALF_TRANSPARENCY);
             break;
 
         case MENU_ARROW:
-            menu->setItemChecked(item, !menu->isItemChecked(item));
+            menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
             arrowParentDebug->setVisible(!arrowParentDebug->isVisible());
+            break;
+
+        case MENU_DEBUG_BOX:
+            menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
+            menu->window->setVisible(!menu->window->isVisible());
             break;
 
         case MENU_ABOUT:
@@ -377,4 +383,3 @@ bool EventReceiver::gui_handler(const SEvent &event)
     }
     return false;
 }
-
