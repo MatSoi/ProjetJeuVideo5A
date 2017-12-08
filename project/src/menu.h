@@ -16,6 +16,7 @@ public:
     void create_window(ig::IGUIEnvironment *gui);
     bool isDebugWindowVisible();
 
+
     ig::IGUIWindow* window ;
 };
 

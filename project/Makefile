@@ -1,7 +1,7 @@
 CPPFLAGS = -I/usr/include/irrlicht
 CXXFLAGS = -Wall -Wextra -O2 -g -std=c++11 -Wno-unused-parameter
 
-irrlicht-gui: main.o events.o characters.o menu.o player.o scene.o
+irrlicht-gui: main.o events.o
 	g++ $^ -o $@ -lIrrlicht
 
 main.o events.o: events.h gui_ids.h

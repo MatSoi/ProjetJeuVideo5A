@@ -29,7 +29,7 @@ public:
 
     bool OnEvent(const SEvent &event);
 
-    bool event_handler(const f32 frameDeltaTime, float width, float height);
+    bool event_handler(const f32 frameDeltaTime, float width, float height, is::ISceneCollisionManager *collMan);
 
     void set_gui(ig::IGUIEnvironment *gui);
 

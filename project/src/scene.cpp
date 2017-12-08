@@ -4,7 +4,7 @@ Scene::Scene()
 {
     // Création de la fenêtre et du système de rendu.
     device = createDevice(iv::EDT_OPENGL,
-                          ic::dimension2d<u32>(960, 720),
+                          ic::dimension2d<u32>(1280, 960),
                           16, false, false, false, &receiver);
     driver = device->getVideoDriver();
     smgr = device->getSceneManager();
@@ -48,7 +48,7 @@ void Scene::initMap()
     device ->getFileSystem()-> addFileArchive("data/map-20kdm2.pk3");
     // On  charge  un bsp (un  niveau) en  particulier :
     meshMap = smgr ->getMesh("20kdm2.bsp");
-    nodeMap = smgr ->addOctreeSceneNode(meshMap ->getMesh (0), nullptr , -1, 1024);
+    nodeMap = smgr ->addOctreeSceneNode(meshMap ->getMesh (0), nullptr, 0, 1024);
     //  Translation  pour  que  nos  personnages  soient  dans le décor
     nodeMap ->setPosition(ic:: vector3df ( -1300 , -104 , -1249));
 }
@@ -92,10 +92,10 @@ void Scene::initEnemy()
     meshEnemy = smgr->getMesh("data/tris.md2");
 
     // Attachement de notre personnage dans la scène
-    nodeEnemy = smgr->addAnimatedMeshSceneNode(meshEnemy);
+    nodeEnemy = smgr->addAnimatedMeshSceneNode(meshEnemy, 0, 0);
     nodeEnemy->setMaterialFlag(iv::EMF_LIGHTING, false);
     nodeEnemy->setMaterialTexture(0, textures[1]);
-    nodeEnemy->setPosition(core:: vector3df ( 100 , 0 , 100));
+    nodeEnemy->setPosition(core:: vector3df ( 100 , 130 , 100));
 
     // Création du triangle selector
     scene::ITriangleSelector* selector;
@@ -114,6 +114,11 @@ void Scene::initEnemy()
                                                  ic::vector3df(0, -10, 0));  // décalage du centre
     nodeEnemy->addAnimator(anim);
     selector->drop();
+
+    selector = smgr->createTriangleSelector(nodeEnemy);
+    nodeEnemy->setTriangleSelector(selector);
+    selector->drop();
+
     anim->drop();
 
     enemy = Enemy(nodeEnemy);
@@ -164,6 +169,7 @@ void Scene::initArrowDebug()
 
 void Scene::run()
 {
+    collMan = smgr->getSceneCollisionManager();
     u32 then = device->getTimer()->getTime();
 
     while(device->run())
@@ -172,7 +178,7 @@ void Scene::run()
         const u32 now = device->getTimer()->getTime();
         const f32 frameDeltaTime = (f32)(now - then) / 1000.f; // Time in seconds
         then = now;
-        receiver.event_handler(frameDeltaTime, device->getVideoDriver()->getScreenSize().Width, device->getVideoDriver()->getScreenSize().Height);
+        receiver.event_handler(frameDeltaTime, device->getVideoDriver()->getScreenSize().Width, device->getVideoDriver()->getScreenSize().Height, collMan);
 
         driver->beginScene(true, true, iv::SColor(0,50,100,255));
         //        device->getCursorControl()->setPosition(0.5f,0.5f);
