@@ -32,6 +32,13 @@ bool EventReceiver::event_handler(const f32 frameDeltaTime, float width, float h
     screen_height = height;
     mouse_handler(frameDeltaTime);
     keyboard_handler(frameDeltaTime);
+
+    if(arrowParentDebug->isVisible())
+        arrowParentDebug->setPosition(player->getPosition());
+
+    std::wstring player_display = player->to_string();
+    const wchar_t* szName = player_display.c_str();
+    menu->window->getElementFromId(0)->setText(szName);
     return false;
 }
 
@@ -124,8 +131,8 @@ bool EventReceiver::mouse_event(const SEvent &event)
         break;
 
     case EMIE_MOUSE_MOVED:
-        MouseState.Position.X += event.MouseInput.X - screen_width/2.0f;
-        MouseState.Position.Y += event.MouseInput.Y - screen_height/2.0f;
+        MouseState.Position.X += event.MouseInput.X - int(screen_width/2.0f);
+        MouseState.Position.Y += event.MouseInput.Y - int(screen_height/2.0f);
         break;
     default:
         // We won't use the wheel
@@ -207,9 +214,9 @@ bool EventReceiver::gui_handler(const SEvent &event)
     // Gestion des menus de la barre de menu
     case ig::EGET_MENU_ITEM_SELECTED:
     {
-        ig::IGUIContextMenu *menu = (ig::IGUIContextMenu*)event.GUIEvent.Caller;
-        s32 item = menu->getSelectedItem();
-        s32 id = menu->getItemCommandId(item);
+        ig::IGUIContextMenu *menuSelected = (ig::IGUIContextMenu*)event.GUIEvent.Caller;
+        s32 item = menuSelected->getSelectedItem();
+        s32 id = menuSelected->getItemCommandId(item);
 
         switch(id)
         {
@@ -220,23 +227,33 @@ bool EventReceiver::gui_handler(const SEvent &event)
             exit(0);
 
         case MENU_BOUNDING_BOX:
-            menu->setItemChecked(item, !menu->isItemChecked(item));
+            menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
             player->debug(is::EDS_BBOX);
             break;
 
         case MENU_NORMALS:
-            menu->setItemChecked(item, !menu->isItemChecked(item));
+            menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
             player->debug(is::EDS_NORMALS);
             break;
 
         case MENU_TRIANGLES:
-            menu->setItemChecked(item, !menu->isItemChecked(item));
+            menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
             player->debug(is::EDS_MESH_WIRE_OVERLAY);
             break;
 
         case MENU_TRANSPARENCY:
-            menu->setItemChecked(item, !menu->isItemChecked(item));
+            menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
             player->debug(is::EDS_HALF_TRANSPARENCY);
+            break;
+
+        case MENU_ARROW:
+            menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
+            arrowParentDebug->setVisible(!arrowParentDebug->isVisible());
+            break;
+
+        case MENU_DEBUG_BOX:
+            menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
+            menu->window->setVisible(!menu->window->isVisible());
             break;
 
         case MENU_ABOUT:
@@ -252,6 +269,8 @@ bool EventReceiver::gui_handler(const SEvent &event)
         if (id == WINDOW_VALUE)
         {
             ic::stringc s = event.GUIEvent.Caller->getText();
+            //ig::IGUIEditBox *cbox = (ig::IGUIEditBox*)event.GUIEvent.Caller;
+
             std::cout << "editbox changed:" << s.c_str() << std::endl;
         }
     }

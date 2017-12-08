@@ -20,3 +20,8 @@ const ic::vector3df& Characters::getPosition()
 {
     return node->getPosition();
 }
+
+const ic::vector3df& Characters::getRotation()
+{
+    return node->getRotation();
+}

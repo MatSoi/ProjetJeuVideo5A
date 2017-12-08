@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <irrlicht.h>
+#include <iostream>
 
 #include "characters.h"
 
@@ -20,6 +21,8 @@ namespace ig = irr::gui;
 class Player : public Characters
 {  
 public:
+    Player () {}
+
     /// constructeur avec heritage
     Player (is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation = is::EMAT_STAND, float _speed = NORMAL_SPEED)
         : Characters (_node, _animation, _speed) {}
@@ -51,9 +54,18 @@ public:
     /// fonction de debub du node
     void debug (int debug_type);
 
+    std::wstring to_string() const;
+
 private:
     bool isFurtive = false;
     bool isWalking = false;
 };
+
+inline std::ostream& operator<<(std::ostream& o, Player *player)
+{
+    ic::vector3df p = player->getPosition();
+    o<<"Joueur: x["<<p.X<<"], y["<<p.Y<<"], z[" << p.Z << "]" << std::endl;
+    return o;
+}
 
 #endif

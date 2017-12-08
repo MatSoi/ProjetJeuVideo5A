@@ -92,3 +92,11 @@ void Player::debug(int debug_type)
     u32 debug_info = node->isDebugDataVisible();
     node->setDebugDataVisible(debug_info ^ debug_type);
 }
+
+std::wstring Player::to_string() const
+{
+    ic::vector3df p = node->getPosition();
+    std::wstring str;
+    str = L"Joueur: x[" + std::to_wstring(p.X) + L"], y[" + std::to_wstring(p.Y) + L"], z[" + std::to_wstring(p.Z) + L"]";
+    return str;
+}
