@@ -1,1 +1,0 @@
-/usr/bin/c++   -g    CMakeFiles/pgm.dir/src/menu.cpp.o CMakeFiles/pgm.dir/src/scene.cpp.o CMakeFiles/pgm.dir/src/main.cpp.o CMakeFiles/pgm.dir/src/enemy.cpp.o CMakeFiles/pgm.dir/src/player.cpp.o CMakeFiles/pgm.dir/src/characters.cpp.o CMakeFiles/pgm.dir/src/events.cpp.o  -o pgm -rdynamic -lIrrlicht 
