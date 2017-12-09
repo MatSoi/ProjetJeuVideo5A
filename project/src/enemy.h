@@ -25,7 +25,6 @@ public:
 
     /// l enemi est touche par le joueur
     bool getHitted();
-
 };
 
 #endif

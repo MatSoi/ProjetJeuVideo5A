@@ -32,7 +32,6 @@ void Scene::init()
     initPlayer();
     initEnemy();
     initCamera();
-    initArrowDebug();
     initReceiver();
 }
 
@@ -50,7 +49,7 @@ void Scene::initMap()
     device ->getFileSystem()-> addFileArchive("data/map-20kdm2.pk3");
     // On  charge  un bsp (un  niveau) en  particulier :
     meshMap = smgr ->getMesh("20kdm2.bsp");
-    nodeMap = smgr ->addOctreeSceneNode(meshMap ->getMesh (0), nullptr, 0, 1024);
+    nodeMap = smgr ->addOctreeSceneNode(meshMap ->getMesh (0), nullptr, IDFlag_IsPickable, 1024);
     //  Translation  pour  que  nos  personnages  soient  dans le décor
     nodeMap ->setPosition(ic:: vector3df ( -1300 , -104 , -1249));
 }
@@ -61,11 +60,10 @@ void Scene::initPlayer()
     meshPlayer = smgr->getMesh("data/tris.md2");
 
     // Attachement de notre personnage dans la scène
-    nodePlayer = smgr->addAnimatedMeshSceneNode(meshPlayer);
+    nodePlayer = smgr->addAnimatedMeshSceneNode(meshPlayer, nullptr, IDFlag_IsPickable);
     nodePlayer->setMaterialFlag(iv::EMF_LIGHTING, false);
     nodePlayer->setMaterialTexture(0, textures[2]);
-    nodePlayer->setPosition(ic:: vector3df (0, 0, 0));
-    nodePlayer->setRotation(ic:: vector3df (0, 0, 0));
+    nodePlayer->setPosition(ic:: vector3df ( 0 , 0 , 0));
 
     // Création du triangle selector
     scene::ITriangleSelector* selector;
@@ -95,7 +93,7 @@ void Scene::initEnemy()
     meshEnemy = smgr->getMesh("data/tris.md2");
 
     // Attachement de notre personnage dans la scène
-    nodeEnemy = smgr->addAnimatedMeshSceneNode(meshEnemy, 0, 1);
+    nodeEnemy = smgr->addAnimatedMeshSceneNode(meshEnemy, 0, ID_IsNotPickable);
     nodeEnemy->setMaterialFlag(iv::EMF_LIGHTING, false);
     nodeEnemy->setMaterialTexture(0, textures[1]);
     nodeEnemy->setPosition(core:: vector3df ( 100 , 130 , 100));
@@ -138,36 +136,10 @@ void Scene::initReceiver()
     receiver.set_collision_manager(collMan);
     receiver.set_gui(gui);
     receiver.set_player(&player);
+
     receiver.set_camera(camera, cursor, device->getVideoDriver()->getScreenSize().Width, device->getVideoDriver()->getScreenSize().Height);
     receiver.set_textures(textures);
-    receiver.set_debug(arrowParentDebug);
     receiver.set_menu(menu);
-}
-
-void Scene::initArrowDebug()
-{
-    //Arrow parent
-    arrowParentDebug = smgr->addEmptySceneNode();
-    arrowParentDebug->setRotation(ic::vector3df(0,90,0));
-    arrowsDebug.resize(3);
-    arrowsDebug[0] = smgr->addAnimatedMeshSceneNode(smgr->addArrowMesh("arrowX",
-                                                                       iv::SColor(0, 255, 0, 0), iv::SColor(0, 255, 0, 0)), arrowParentDebug);
-    arrowsDebug[0]->setRotation(ic::vector3df(90, 0, 0));
-    arrowsDebug[0]->setScale(ic::vector3df(5, 10, 5));
-    arrowsDebug[0]->setMaterialFlag(video::EMF_LIGHTING, false);
-
-    arrowsDebug[1] = smgr->addAnimatedMeshSceneNode(smgr->addArrowMesh("arrowY",
-                                                                       iv::SColor(0, 0, 255, 0), iv::SColor(0, 0, 255, 0)), arrowParentDebug);
-    arrowsDebug[1]->setRotation(ic::vector3df(0, 90, 0));
-    arrowsDebug[1]->setScale(ic::vector3df(5, 10, 5));
-    arrowsDebug[1]->setMaterialFlag(video::EMF_LIGHTING, false);
-
-    arrowsDebug[2] = smgr->addAnimatedMeshSceneNode(smgr->addArrowMesh("arrowZ",
-                                                                       iv::SColor(0, 0, 0, 255), iv::SColor(0, 0, 0, 255)), arrowParentDebug);
-    arrowsDebug[2]->setRotation(ic::vector3df(0, 0, 90));
-    arrowsDebug[2]->setScale(ic::vector3df(5, 10, 5));
-    arrowsDebug[2]->setMaterialFlag(video::EMF_LIGHTING, false);
-    arrowParentDebug->setVisible(false);
 }
 
 void Scene::playerAttack()
@@ -180,7 +152,7 @@ void Scene::playerAttack()
     {
         std::wstring wstr = L"ID: " + std::to_wstring(ID) + L" Distance: "+ std::to_wstring(dist);
         debugDisplay(wstr, 1);
-        if (ID == 1 && dist <= ATTACK_DIST)
+        if (ID == 0 && dist <= ATTACK_DIST)
             enemy.getHitted();
     }
 }

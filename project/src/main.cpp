@@ -1,6 +1,7 @@
 // main.cpp
 
 #include "scene.h"
+#include "scenedebug.h"
 
 int main()
 {

@@ -33,9 +33,6 @@ bool EventReceiver::event_handler(const f32 frameDeltaTime, float width, float h
     bool attack = mouse_handler();
     keyboard_handler(frameDeltaTime);
 
-    if(arrowParentDebug->isVisible())
-        arrowParentDebug->setPosition(player->getPosition());
-
     std::wstring player_display = player->to_string();
     const wchar_t* szName = player_display.c_str();
     menu->window->getElementFromId(0)->setText(szName);
@@ -102,7 +99,6 @@ bool EventReceiver::mouse_handler()
     {
         camera_handler();
         cursor->setPosition(0.5f, 0.5f);
-
         return MouseState.isJustLPressed;
     }
     return false;
@@ -204,7 +200,6 @@ void EventReceiver::set_collision_manager(is::ISceneCollisionManager *_collMan)
     collMan = _collMan;
 }
 
-
 /**************************************************************************\
  * EventReceiver::set_gui                                                 *
 \**************************************************************************/
@@ -261,11 +256,6 @@ bool EventReceiver::gui_handler(const SEvent &event)
         case MENU_TRANSPARENCY:
             menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
             player->debug(is::EDS_HALF_TRANSPARENCY);
-            break;
-
-        case MENU_ARROW:
-            menuSelected->setItemChecked(item, !menuSelected->isItemChecked(item));
-            arrowParentDebug->setVisible(!arrowParentDebug->isVisible());
             break;
 
         case MENU_DEBUG_BOX:

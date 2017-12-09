@@ -9,7 +9,6 @@
 #include <iostream>
 
 #include "characters.h"
-#include "menu.h"
 
 using namespace irr;
 
@@ -33,6 +32,12 @@ public:
 
     /// le joueur avance dans le sens de l angle
     void move (const f32 frameDeltaTime, float angle);
+
+    /// le joueur recule
+    void moveBackward (const f32 frameDeltaTime);
+
+    /// le joueur tourne
+    void rotate (const f32 frameDeltaTime, float angle);
 
     /// le joueur saute
     void jump (const f32 frameDeltaTime);

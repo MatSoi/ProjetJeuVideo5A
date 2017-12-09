@@ -40,7 +40,6 @@ public:
 
     /// fonction de prise de degat
     virtual bool getHitted() = 0;
-
 protected:
     is::IAnimatedMeshSceneNode* node;
     is::EMD2_ANIMATION_TYPE animation;

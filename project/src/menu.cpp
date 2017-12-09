@@ -33,7 +33,6 @@ void Menu::create_menu(ig::IGUIEnvironment *gui)
   submenu->addItem(L"Show Normals",   MENU_NORMALS);
   submenu->addItem(L"Show Triangles", MENU_TRIANGLES);
   submenu->addItem(L"Transparency",   MENU_TRANSPARENCY);
-  submenu->addItem(L"Show Axis",   MENU_ARROW);
   submenu->addItem(L"Debug Bidibidibox",   MENU_DEBUG_BOX);
 
   // Le contenu du menu Help :
@@ -53,10 +52,9 @@ void Menu::create_window(ig::IGUIEnvironment *gui)
   window->setVisible(false);
 
   // Une zone d'édition de texte, précédée d'un label
-  gui->addStaticText(L"", ic::rect<s32>(20, 30, 400, 200), false, false, window, 0);
-  gui->addStaticText(L"", ic::rect<s32>(20, 45, 400, 200), false, false, window, 1);
-  gui->addStaticText(L"", ic::rect<s32>(20, 60, 400, 200), false, false, window, 2);
-  gui->addStaticText(L"", ic::rect<s32>(20, 75, 400, 200), false, false, window, 3);
+  gui->addStaticText(L"Value", ic::rect<s32>(20, 30, 400, 200), false, false, window, 0);
+  gui->addStaticText(L"Value", ic::rect<s32>(20, 45, 400, 200), false, false, window, 1);
+  gui->addStaticText(L"Value", ic::rect<s32>(20, 60, 400, 200), false, false, window, 2);
 
 //  gui->addEditBox(L"1.0", ic::rect<s32>(65,46, 160,66), true, window, WINDOW_VALUE);
 

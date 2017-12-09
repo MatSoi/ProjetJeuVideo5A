@@ -39,15 +39,14 @@ public:
 
     void set_player(Player* _player);
 
-    void set_collision_manager(is::ISceneCollisionManager *_collMan);
-
     void set_camera(is::ICameraSceneNode* _camera, ig::ICursorControl *_cursor, float width, float height);
 
     void set_textures(const std::vector<iv::ITexture *> &tex){textures=tex;}
 
-    void set_debug(is::ISceneNode * _arrowParentDebug) {arrowParentDebug=_arrowParentDebug;}
-
     void set_menu(Menu *_menu) {menu=_menu;}
+
+    void set_collision_manager(is::ISceneCollisionManager *_collMan);
+
 private:
     bool keyboard_handler(const f32 frameDeltaTime);
 
@@ -83,6 +82,7 @@ private:
 
     ig::IGUIEnvironment *gui;
     Player* player;
+    is::ISceneCollisionManager *collMan;
     bool button_pressed;
     int  old_x, old_y;
     std::vector<iv::ITexture*> textures;
@@ -94,9 +94,6 @@ private:
     float angle_camera;
     float screen_width, screen_height;
     bool focus_mouse = true;
-
-    is::ISceneNode * arrowParentDebug;
-    is::ISceneCollisionManager *collMan;
 
     Menu* menu;
 };
