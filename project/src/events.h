@@ -9,6 +9,8 @@
 #include "menu.h"
 #include "player.h"
 
+#define HIGHT_TARGET 30
+
 namespace ic = irr::core;
 namespace is = irr::scene;
 namespace iv = irr::video;
@@ -18,8 +20,10 @@ namespace ig = irr::gui;
 struct SMouseState
 {
     ic::position2di Position;
+    bool isJustLPressed;
     bool LeftButtonDown;
-    SMouseState() : LeftButtonDown(false) { }
+    SMouseState() : isJustLPressed(false), LeftButtonDown(false) { }
+    void updateMouse() {isJustLPressed = false;}
 };
 
 class EventReceiver : public IEventReceiver
@@ -29,11 +33,13 @@ public:
 
     bool OnEvent(const SEvent &event);
 
-    bool event_handler(const f32 frameDeltaTime, float width, float height, is::ISceneCollisionManager *collMan);
+    bool event_handler(const f32 frameDeltaTime, float width, float height);
 
     void set_gui(ig::IGUIEnvironment *gui);
 
     void set_player(Player* _player);
+
+    void set_collision_manager(is::ISceneCollisionManager *_collMan);
 
     void set_camera(is::ICameraSceneNode* _camera, ig::ICursorControl *_cursor, float width, float height);
 
@@ -42,11 +48,10 @@ public:
     void set_debug(is::ISceneNode * _arrowParentDebug) {arrowParentDebug=_arrowParentDebug;}
 
     void set_menu(Menu *_menu) {menu=_menu;}
-
 private:
     bool keyboard_handler(const f32 frameDeltaTime);
 
-    bool mouse_handler(const f32 frameDeltaTime);
+    bool mouse_handler();
 
     void camera_handler();
 
@@ -91,6 +96,7 @@ private:
     bool focus_mouse = true;
 
     is::ISceneNode * arrowParentDebug;
+    is::ISceneCollisionManager *collMan;
 
     Menu* menu;
 };

@@ -9,6 +9,8 @@ Scene::Scene()
     driver = device->getVideoDriver();
     smgr = device->getSceneManager();
     gui = device->getGUIEnvironment();
+    collMan = smgr->getSceneCollisionManager();
+    cursor = device->getCursorControl();
 
     // Création de la GUI
     // Choix de la police de caractères
@@ -62,7 +64,8 @@ void Scene::initPlayer()
     nodePlayer = smgr->addAnimatedMeshSceneNode(meshPlayer);
     nodePlayer->setMaterialFlag(iv::EMF_LIGHTING, false);
     nodePlayer->setMaterialTexture(0, textures[2]);
-    nodePlayer->setPosition(ic:: vector3df ( 0 , 0 , 0));
+    nodePlayer->setPosition(ic:: vector3df (0, 0, 0));
+    nodePlayer->setRotation(ic:: vector3df (0, 0, 0));
 
     // Création du triangle selector
     scene::ITriangleSelector* selector;
@@ -92,7 +95,7 @@ void Scene::initEnemy()
     meshEnemy = smgr->getMesh("data/tris.md2");
 
     // Attachement de notre personnage dans la scène
-    nodeEnemy = smgr->addAnimatedMeshSceneNode(meshEnemy, 0, 0);
+    nodeEnemy = smgr->addAnimatedMeshSceneNode(meshEnemy, 0, 1);
     nodeEnemy->setMaterialFlag(iv::EMF_LIGHTING, false);
     nodeEnemy->setMaterialTexture(0, textures[1]);
     nodeEnemy->setPosition(core:: vector3df ( 100 , 130 , 100));
@@ -132,9 +135,9 @@ void Scene::initCamera()
 
 void Scene::initReceiver()
 {
+    receiver.set_collision_manager(collMan);
     receiver.set_gui(gui);
     receiver.set_player(&player);
-    cursor = device->getCursorControl();
     receiver.set_camera(camera, cursor, device->getVideoDriver()->getScreenSize().Width, device->getVideoDriver()->getScreenSize().Height);
     receiver.set_textures(textures);
     receiver.set_debug(arrowParentDebug);
@@ -167,21 +170,46 @@ void Scene::initArrowDebug()
     arrowParentDebug->setVisible(false);
 }
 
+void Scene::playerAttack()
+{
+    std::vector<int> attack = player.attack(collMan, camera);
+    int ID = attack[0];
+    int dist = attack[1];
+
+    if (ID != -1)
+    {
+        std::wstring wstr = L"ID: " + std::to_wstring(ID) + L" Distance: "+ std::to_wstring(dist);
+        debugDisplay(wstr, 1);
+        if (ID == 1 && dist <= ATTACK_DIST)
+            enemy.getHitted();
+    }
+}
+
+void Scene::debugDisplay(std::wstring wstr, int ind)
+{
+    const wchar_t* szName = wstr.c_str();
+    menu->window->getElementFromId(ind)->setText(szName);
+}
+
 void Scene::run()
 {
-    collMan = smgr->getSceneCollisionManager();
-    u32 then = device->getTimer()->getTime();
+    float width, height;
 
+    u32 then = device->getTimer()->getTime();
     while(device->run())
     {
         // Work out a frame delta time.
         const u32 now = device->getTimer()->getTime();
         const f32 frameDeltaTime = (f32)(now - then) / 1000.f; // Time in seconds
         then = now;
-        receiver.event_handler(frameDeltaTime, device->getVideoDriver()->getScreenSize().Width, device->getVideoDriver()->getScreenSize().Height, collMan);
+
+        width = device->getVideoDriver()->getScreenSize().Width;
+        height = device->getVideoDriver()->getScreenSize().Height;
+
+        if(receiver.event_handler(frameDeltaTime, width, height))
+            playerAttack();
 
         driver->beginScene(true, true, iv::SColor(0,50,100,255));
-        //        device->getCursorControl()->setPosition(0.5f,0.5f);
 
         // Dessin de la scène :
         smgr->drawAll();

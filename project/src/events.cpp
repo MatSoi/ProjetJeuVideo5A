@@ -26,11 +26,11 @@ EventReceiver::EventReceiver()
     }
 }
 
-bool EventReceiver::event_handler(const f32 frameDeltaTime, float width, float height, is::ISceneCollisionManager* collMan)
+bool EventReceiver::event_handler(const f32 frameDeltaTime, float width, float height)
 {
     screen_width = width;
     screen_height = height;
-    mouse_handler(frameDeltaTime);
+    bool attack = mouse_handler();
     keyboard_handler(frameDeltaTime);
 
     if(arrowParentDebug->isVisible())
@@ -40,39 +40,10 @@ bool EventReceiver::event_handler(const f32 frameDeltaTime, float width, float h
     const wchar_t* szName = player_display.c_str();
     menu->window->getElementFromId(0)->setText(szName);
 
-    ic::line3d<f32> ray;
-    ray.start = camera->getTarget();
-    ray.end = ray.start + (camera->getTarget() - camera->getPosition()).normalize() * 1000.0f;
 
-    // Tracks the current intersection point with the level or a mesh
-    core::vector3df intersection;
-    // Used to show with triangle has been hit
-    core::triangle3df hitTriangle;
+    MouseState.updateMouse();
 
-    // This call is all you need to perform ray/triangle collision on every scene node
-    is::ISceneNode * selectedSceneNode =
-            collMan->getSceneNodeAndCollisionPointFromRay(
-                ray,
-                intersection,   // This will be the position of the collision
-                hitTriangle,    // This will be the triangle hit in the collision
-                0,              // This ensures that only nodes that we have
-                // set up to be pickable are considered
-                0);             // Check the entire scene (this is actually the implicit default)
-
-    if(selectedSceneNode)
-    {
-        std::wstring str;
-        f64 dist = intersection.getDistanceFrom(camera->getTarget());
-        str = L"Collision: x[" + std::to_wstring(intersection.X) + L"], y[" + std::to_wstring(intersection.Y) + L"], z[" + std::to_wstring(intersection.Z) + L"]";
-        const wchar_t* szName = str.c_str();
-        menu->window->getElementFromId(1)->setText(szName);
-
-        str = L"Distance: "+ std::to_wstring(dist);
-        szName = str.c_str();
-        menu->window->getElementFromId(2)->setText(szName);
-    }
-
-    return false;
+    return attack;
 }
 
 /*------------------------------------------------------------------------*\
@@ -125,12 +96,14 @@ bool EventReceiver::keyboard_handler(const f32 frameDeltaTime)
 /*------------------------------------------------------------------------*\
  * EventReceiver::mouse_handler                                           *
 \*------------------------------------------------------------------------*/
-bool EventReceiver::mouse_handler(const f32 frameDeltaTime)
+bool EventReceiver::mouse_handler()
 {
     if (focus_mouse)
     {
         camera_handler();
         cursor->setPosition(0.5f, 0.5f);
+
+        return MouseState.isJustLPressed;
     }
     return false;
 }
@@ -138,9 +111,12 @@ bool EventReceiver::mouse_handler(const f32 frameDeltaTime)
 void EventReceiver::camera_handler()
 {
     ic::vector3df position;
-    ic::vector3df target = player->getPosition() + ic::vector3df(0, 20, 0);
-    float theta = MouseState.Position.X * M_PI/180.0f - M_PI_2;
-    float phi = MouseState.Position.Y * (-M_PI)/180.0f + M_PI_2;
+
+    float conv = M_PI/180.0f;
+    ic::vector3df target = player->getPosition() + ic::vector3df(0, HIGHT_TARGET, 0);
+
+    float theta = MouseState.Position.X * conv - M_PI_2;
+    float phi = MouseState.Position.Y * -conv + M_PI_2;
 
     position.X = 50.0f * std::sin(phi) * std::sin(theta) + target.X;
     position.Y = 50.0f * std::cos(phi) + target.Y;
@@ -156,6 +132,7 @@ bool EventReceiver::mouse_event(const SEvent &event)
     switch(event.MouseInput.Event)
     {
     case EMIE_LMOUSE_PRESSED_DOWN:
+        MouseState.isJustLPressed = !MouseState.LeftButtonDown;
         MouseState.LeftButtonDown = true;
         break;
 
@@ -221,6 +198,12 @@ void EventReceiver::set_camera(is::ICameraSceneNode* _camera, ig::ICursorControl
     screen_width = width;
     screen_height = height;
 }
+
+void EventReceiver::set_collision_manager(is::ISceneCollisionManager *_collMan)
+{
+    collMan = _collMan;
+}
+
 
 /**************************************************************************\
  * EventReceiver::set_gui                                                 *

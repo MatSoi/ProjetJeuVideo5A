@@ -6,6 +6,8 @@
 #include "events.h"
 #include "menu.h"
 
+#define ATTACK_DIST 50
+
 class Scene
 {
 public:
@@ -14,7 +16,6 @@ public:
     void run();
 
 private:
-
     void initMap();
     void initTextures();
     void initPlayer();
@@ -23,6 +24,8 @@ private:
     void initArrowDebug();
     void initReceiver();
 
+    void playerAttack();
+    void debugDisplay(std::wstring wstr, int ind);
 
     // Le gestionnaire d'événements
     EventReceiver receiver;

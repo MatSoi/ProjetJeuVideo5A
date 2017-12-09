@@ -3,7 +3,7 @@
 
 cmake_minimum_required(VERSION 2.6)
 
-project(pgm)
+project(irrlicht_game_5A)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories("/usr/include/irrlicht")
@@ -20,11 +20,11 @@ ADD_DEFINITIONS( -Wall -Wextra -O2 -g -std=c++11 -Wno-unused-parameter -I/usr/in
 
 
 add_executable(
-  pgm
+  irrlicht_game_5A
   ${source_files}
 )
 
 
-TARGET_LINK_LIBRARIES(pgm -lIrrlicht)
+TARGET_LINK_LIBRARIES(irrlicht_game_5A -lIrrlicht)
 
 

@@ -23,6 +23,9 @@ public:
     Enemy (is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation = is::EMAT_STAND, float _speed = NORMAL_SPEED)
         : Characters (_node, _animation, _speed) {}
 
+    /// l enemi est touche par le joueur
+    bool getHitted();
+
 };
 
 #endif
