@@ -1,10 +1,13 @@
-// characters.h
-
 #ifndef CHARACTERS_H
 #define CHARACTERS_H
 
-#include <vector>
+/*!
+ * \file characters.h
+ * \brief Contient la classe parente de Player et Enemy, definie les fonctions de base pour tous les personnages
+ * \author SOIGNON Matthieu et PASTOR Mickael
+ */
 
+#include <vector>
 #include <irrlicht.h>
 
 #define NORMAL_SPEED 150.0f
@@ -20,30 +23,54 @@ namespace ig = irr::gui;
 class Characters
 {  
 public:
+    /**
+     * @brief Constructeur vide
+     */
     Characters () {}
 
-    /// constructeur
+    /**
+     * @brief Constructeur d initilisation
+     * @param _node : pointeur sur le node du personnage
+     * @param _animation : premiere animation du personnage
+     * @param _speed : vitesse par defaut du personnage
+     */
     Characters(is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation, float _speed)
         : node(_node), animation(_animation), speed(_speed) {node->setMD2Animation(animation);}
 
-    /// destructeur virtual
+    /**
+     * @brief Destructeur
+     */
     virtual ~Characters() {}
 
-    /// mise a jour de l animation si celle ci est differente
+    /**
+     * @brief Mise a jour de l animation
+     * Remplace l animation du personnage par celle en parametre si celle-ci est differente.
+     * @param _animation : type d animation
+     */
     void updateAnimation (is::EMD2_ANIMATION_TYPE _animation);
 
-    /// assesseur de position
-    const ic::vector3df &getPosition();
+    /**
+     * @brief Renvoie la position du personnage
+     * @return vec3df : reference constante de la position du personnage
+     */
+    const ic::vector3df &getPosition() const;
 
-    /// assesseur d orientation
-    const ic::vector3df &getRotation();
+    /**
+     * @brief Renvoie l orientation du personnage
+     * @return vec3df : reference constante de l orientation du personnage
+     */
+    const ic::vector3df &getRotation() const;
 
-    /// fonction de prise de degat
+    /**
+     * @brief Fonction virtuelle de prise de degat
+     * @return aucun dans cette classe
+     */
     virtual bool getHitted() = 0;
+
 protected:
-    is::IAnimatedMeshSceneNode* node;
-    is::EMD2_ANIMATION_TYPE animation;
-    float speed;
+    is::IAnimatedMeshSceneNode* node;   // pointeur sur le node du personnage
+    is::EMD2_ANIMATION_TYPE animation;  // type d animation actuelle affectee au personnae
+    float speed;                        // vitesse de deplacement du personnage
 };
 
 #endif
