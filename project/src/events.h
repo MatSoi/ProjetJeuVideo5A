@@ -20,7 +20,8 @@ namespace iv = irr::video;
 namespace ig = irr::gui;
 
 /**
- * @brief SMouseState struct
+ * @brief Structure SMouseState
+ * Structure d etat de la souris
  */
 struct SMouseState
 {
@@ -30,13 +31,13 @@ struct SMouseState
     /// @brief Fonction d update, remet a false le clique souris
     void updateMouse() {isJustLPressed = false;}
 
-    ic::position2di Position;   // position de la souris dans la fenetre de jeu
-    bool isJustLPressed;        // variable du click gauche souris ponctuel, passe a true pendant une frame s il y a un click
-    bool LeftButtonDown;        // variable du click gauche souris constant, reste a true tant que le click gauche est maintenu
+    ic::position2di Position;   /*!< position de la souris dans la fenetre de jeu */
+    bool isJustLPressed;        /*!< variable du click gauche souris ponctuel, passe a true pendant une frame s il y a un click */
+    bool LeftButtonDown;        /*!< variable du click gauche souris constant, reste a true tant que le click gauche est maintenu */
 };
 
 /**
- * @brief EventReceiver class
+ * @brief Classe EventReceiver
  * Cette classe gere les evenements clavier, souris et menu.
  */
 class EventReceiver : public IEventReceiver

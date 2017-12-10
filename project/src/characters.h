@@ -19,7 +19,10 @@ namespace is = irr::scene;
 namespace iv = irr::video;
 namespace ig = irr::gui;
 
-// classe abstraite contenant les fonctions et variables communes au personnage principal et aux ennemis
+/**
+ * @brief Classe Characters
+ * Contient les fonctions de base des personnages, ennemis ou joueur.
+ */
 class Characters
 {  
 public:
