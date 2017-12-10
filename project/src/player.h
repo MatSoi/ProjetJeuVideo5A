@@ -3,6 +3,12 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+/*!
+ * \file player.h
+ * \brief Classe Player qui herite de la classe Characters et comporte les fonctions principales du joueur
+ * \author SOIGNON Matthieu et PASTOR Mickael
+ */
+
 #include <vector>
 
 #include <irrlicht.h>
@@ -17,56 +23,112 @@ namespace is = irr::scene;
 namespace iv = irr::video;
 namespace ig = irr::gui;
 
+/**
+ * @brief Classe Player, herite de la classe Characters
+ * Represente le joueur, contient les fonctions propres à ses mouvements/positions
+ */
 // classe correspondant au personnage principale
 class Player : public Characters
 {  
 public:
+
+    /**
+     * @brief Constructeur vide
+     */
     Player () {}
 
-    /// constructeur avec heritage
+    /**
+     * @brief Constructeur du joueur
+     * Appelle du constructeur de la classe characters
+     * @param _node : pointeur sur le node du joueur
+     * @param _animation : premiere animation
+     * @param _speed : vitesse de deplacement
+     */
     Player (is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation = is::EMAT_STAND, float _speed = NORMAL_SPEED)
         : Characters (_node, _animation, _speed) {}
 
-    /// destructeur
+    /**
+     * @brief Destructeur
+     */
     virtual ~Player () {}
 
-    /// le joueur avance dans le sens de l angle
+    /**
+     * @brief Fonction de deplacement du node player en fonction de l'angle donnee
+     * @param frameDeltaTime : temps écoulé entre la derniere frame et la frame actuelle
+     * @param angle : angle utilise pour le deplacement
+     */
     void move (const f32 frameDeltaTime, float angle);
 
-    /// le joueur recule
+    /**
+     * @brief Fonction de deplacement du node player vers l'arriere
+     * @param frameDeltaTime : temps écoulé entre la derniere frame et la frame actuelle
+     */
     void moveBackward (const f32 frameDeltaTime);
 
-    /// le joueur tourne
+    /**
+     * @brief Fonction de rotation du node player en fonction de l'angle donnee
+     * @param frameDeltaTime : temps écoulé entre la derniere frame et la frame actuelle
+     * @param angle : angle utilise pour la rotation
+     */
     void rotate (const f32 frameDeltaTime, float angle);
 
-    /// le joueur saute
+    /**
+     * @brief Fonction de saut du node player
+     * @param frameDeltaTime : temps écoulé entre la derniere frame et la frame actuelle
+     */
     void jump (const f32 frameDeltaTime);
 
-    /// passe ou quitte le mode furtif
+    /**
+     * @brief Fonction de switch entre mode "stealth" et "normal" du joueur
+     */
     void setStealth ();
 
-    /// remet l animation d immobilite
+    /**
+     * @brief Fonction qui fixe l'animation du joueur a l'animation "idle"
+     */
     void setIdle ();
 
-    /// choisi l animation de marche
+    /**
+     * @brief Fonction qui fixe l'animation du joueur a l'animation "walk"
+     */
     void setWalkAnimation ();
 
-    /// le player essai d attaquer
+    /**
+     * @brief A COMPLETER
+     * @param collMan :
+     * @param camera :
+     * @return :
+     */
     std::vector<int> attack(scene::ISceneCollisionManager *collMan, const is::ICameraSceneNode* camera);
 
-    /// le joueur est touche par un ennemi
+    /**
+     * @brief Fonction appellee lorsque le joueur est touche par un ennemi
+     */
     bool getHitted();
 
-    /// fonction de debub du node
+    /**
+     * @brief Fonction d'affichage des informations de debug du node player
+     * @param debug_type : designe le type de debug a affiche
+     */
     void debug (int debug_type);
 
+    /**
+     * @brief Fonction de generation d'un texte d'affichage des coordonnes du joueur
+     * @return : texte wstring pour affichage avec irrlicht
+     */
     std::wstring to_string() const;
 
 private:
-    bool isFurtive = false;
-    bool isWalking = false;
+    bool isFurtive = false;/*!< bool designant si le joueur est en mode furtif */
+    bool isWalking = false;/*!< bool designant si le joueur est en train de marcher */
 };
 
+/**
+ * @brief Adaptation de l'operateur de flux pour affichage des informations de debug du player
+ * @param o : flux d'entree
+ * @param player : pointeur sur le player
+ * @return : flux de sortie
+ */
 inline std::ostream& operator<<(std::ostream& o, Player *player)
 {
     ic::vector3df p = player->getPosition();
