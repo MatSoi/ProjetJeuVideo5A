@@ -1,9 +1,17 @@
-// gui_ids.h
-
 #ifndef GUI_IDS_H
 #define GUI_IDS_H
 
-enum
+/*!
+ * \file gui_ids.h
+ * \brief Enumerationdes actions avec le menu
+ * \author SOIGNON Matthieu et PASTOR Mickael
+ */
+
+/**
+ * @brief Window_menu enum
+ * Enumeration des actions avec la fenetre et le menu
+ */
+enum Window_menu
 {
     WINDOW_VALUE,
     WINDOW_BUTTON,

@@ -133,12 +133,9 @@ void Scene::initCamera()
 
 void Scene::initReceiver()
 {
-    receiver.set_collision_manager(collMan);
     receiver.set_gui(gui);
     receiver.set_player(&player);
-
-    receiver.set_camera(camera, cursor, device->getVideoDriver()->getScreenSize().Width, device->getVideoDriver()->getScreenSize().Height);
-    receiver.set_textures(textures);
+    receiver.set_camera(camera, cursor);
     receiver.set_menu(menu);
 }
 

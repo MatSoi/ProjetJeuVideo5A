@@ -1,12 +1,13 @@
-// Enemy.cpp
+/*!
+ * \file enemy.cp
+ * \brief Implementation des fonctions de la classe Enemy
+ * \author SOIGNON Matthieu et PASTOR Mickael
+ */
 
 #include <iostream>
-
 #include <irrlicht.h>
-
 #include "enemy.h"
 
-/// le joueur est touche par un ennemi
 bool Enemy::getHitted()
 {
     updateAnimation(is::EMAT_DEATH_FALLBACK);

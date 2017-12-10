@@ -68,9 +68,9 @@ public:
     virtual bool getHitted() = 0;
 
 protected:
-    is::IAnimatedMeshSceneNode* node;   // pointeur sur le node du personnage
-    is::EMD2_ANIMATION_TYPE animation;  // type d animation actuelle affectee au personnae
-    float speed;                        // vitesse de deplacement du personnage
+    is::IAnimatedMeshSceneNode* node;   /*!< pointeur sur le node du personnage */
+    is::EMD2_ANIMATION_TYPE animation;  /*!< type d animation actuelle affectee au personnage */
+    float speed;                        /*!< vitesse de deplacement du personnage */
 };
 
 #endif

@@ -1,10 +1,13 @@
-// events.cpp
+/*!
+ * \file events.cpp
+ * \brief Implementation des fonctions de la classe EventReceiver
+ * \author SOIGNON Matthieu et PASTOR Mickael
+ */
+
 
 #include <iostream>
-
 #include <irrlicht.h>
 #include <cmath>
-
 #include "events.h"
 #include "gui_ids.h"
 
@@ -16,7 +19,7 @@
  * EventReceiver::EventReceiver                                           *
 \**************************************************************************/
 EventReceiver::EventReceiver()
-    : gui(nullptr), player(nullptr), button_pressed(false), current_texture(0)
+    : gui(nullptr), player(nullptr), focus_mouse(true)
 {
     //Initialize the key arrays
     for (u32 i=0; i<KEY_KEY_CODES_COUNT; ++i)
@@ -46,7 +49,7 @@ bool EventReceiver::event_handler(const f32 frameDeltaTime, float width, float h
 /*------------------------------------------------------------------------*\
  * EventReceiver::keyboard_handler                                        *
 \*------------------------------------------------------------------------*/
-bool EventReceiver::keyboard_handler(const f32 frameDeltaTime)
+void EventReceiver::keyboard_handler(const f32 frameDeltaTime)
 {
     if(IsKeyDown(KEY_ESCAPE))
         exit(0);
@@ -85,9 +88,8 @@ bool EventReceiver::keyboard_handler(const f32 frameDeltaTime)
     if(IsKeyTriggered(KEY_KEY_I))
         focus_mouse = !focus_mouse;
 
-    //Reset released or first pressed keys
+    // Reset released or first pressed keys
     updateKeyState ();
-    return false;
 }
 
 /*------------------------------------------------------------------------*\
@@ -123,7 +125,7 @@ void EventReceiver::camera_handler()
     angle_camera = theta + M_PI_2;
 }
 
-bool EventReceiver::mouse_event(const SEvent &event)
+void EventReceiver::mouse_event(const SEvent &event)
 {
     switch(event.MouseInput.Event)
     {
@@ -146,13 +148,6 @@ bool EventReceiver::mouse_event(const SEvent &event)
     }
 
     MouseState.Position.Y = std::max(PHI_MIN, std::min(PHI_MAX, float(MouseState.Position.Y)));
-
-    return false;
-}
-
-const SMouseState& EventReceiver::GetMouseState(void) const
-{
-    return MouseState;
 }
 
 /**************************************************************************\
@@ -170,9 +165,9 @@ bool EventReceiver::OnEvent(const SEvent &event)
         KeyIsDown[event.KeyInput.Key] = event.KeyInput.PressedDown;
         break;
     case EET_MOUSE_INPUT_EVENT:
-        return mouse_event(event);
+        mouse_event(event);
     case EET_GUI_EVENT:
-        return gui_handler(event);
+        gui_event(event);
     default:;
     }
 
@@ -182,31 +177,6 @@ bool EventReceiver::OnEvent(const SEvent &event)
 /**************************************************************************\
  * EventReceiver::set_node                                                *
 \**************************************************************************/
-void EventReceiver::set_player(Player* _player)
-{
-    player = _player;
-}
-
-void EventReceiver::set_camera(is::ICameraSceneNode* _camera, ig::ICursorControl* _cursor, float width, float height)
-{
-    camera =_camera;
-    cursor = _cursor;
-    screen_width = width;
-    screen_height = height;
-}
-
-void EventReceiver::set_collision_manager(is::ISceneCollisionManager *_collMan)
-{
-    collMan = _collMan;
-}
-
-/**************************************************************************\
- * EventReceiver::set_gui                                                 *
-\**************************************************************************/
-void EventReceiver::set_gui(irr::gui::IGUIEnvironment *g)
-{
-    gui = g;
-}
 
 void EventReceiver::updateKeyState ()
 {
@@ -218,9 +188,9 @@ void EventReceiver::updateKeyState ()
 /*------------------------------------------------------------------------*\
  * EventReceiver::gui_handler                                             *
 \*------------------------------------------------------------------------*/
-bool EventReceiver::gui_handler(const SEvent &event)
+void EventReceiver::gui_event(const SEvent &event)
 {
-    if (!player) return false;
+    if (!player) return;
     switch(event.GUIEvent.EventType)
     {
     // Gestion des menus de la barre de menu
@@ -269,90 +239,6 @@ bool EventReceiver::gui_handler(const SEvent &event)
         }
     }
         break;
-        // gestion des boites d'édition de texte
-    case ig::EGET_EDITBOX_CHANGED:
-    {
-        s32 id = event.GUIEvent.Caller->getID();
-        if (id == WINDOW_VALUE)
-        {
-            ic::stringc s = event.GUIEvent.Caller->getText();
-            //ig::IGUIEditBox *cbox = (ig::IGUIEditBox*)event.GUIEvent.Caller;
-
-            std::cout << "editbox changed:" << s.c_str() << std::endl;
-        }
-    }
-        break;
-        // gestion des boutons
-    case ig::EGET_BUTTON_CLICKED:
-    {
-        s32 id = event.GUIEvent.Caller->getID();
-        if (id == WINDOW_BUTTON)
-            std::cout << "Button clicked\n";
-    }
-        break;
-        // gestion des cases à cocher
-    case ig::EGET_CHECKBOX_CHANGED:
-    {
-        s32 id = event.GUIEvent.Caller->getID();
-        if (id == WINDOW_CHECK_BOX)
-        {
-            std::cout << "Check box clicked: ";
-            bool checked = ((ig::IGUICheckBox*)event.GUIEvent.Caller)->isChecked();
-            if (!checked) std::cout << "un";
-            std::cout << "checked\n";
-        }
-    }
-        break;
-        // gestion des combo-box
-    case ig::EGET_COMBO_BOX_CHANGED:
-    {
-        s32 id = event.GUIEvent.Caller->getID();
-        if (id == WINDOW_COMBO_BOX)
-        {
-            ig::IGUIComboBox *cbox = (ig::IGUIComboBox*)event.GUIEvent.Caller;
-            s32 item = cbox->getSelected();
-            u32 elem_id = cbox->getItemData(item);
-            std::cout << "Combo box changed: item " << item << ", id " << elem_id << std::endl;
-        }
-    }
-        break;
-        // Gestion des listes
-    case ig::EGET_LISTBOX_CHANGED:
-    {
-        s32 id = event.GUIEvent.Caller->getID();
-        if (id == WINDOW_LIST_BOX)
-        {
-            ig::IGUIListBox *lbox = (ig::IGUIListBox*)event.GUIEvent.Caller;
-            s32 item = lbox->getSelected();
-            std::cout << "List box changed: item " << item << std::endl;
-        }
-    }
-        break;
-        // Gestion des barres de défilement
-    case ig::EGET_SCROLL_BAR_CHANGED:
-    {
-        s32 id = event.GUIEvent.Caller->getID();
-        if (id == WINDOW_SCROLLBAR)
-        {
-            ig::IGUIScrollBar *scroll = (ig::IGUIScrollBar*)event.GUIEvent.Caller;
-            s32 value = scroll->getPos();
-            std::cout << "Scrollbar moved: " << value << std::endl;
-        }
-    }
-        break;
-        // Gestion des spinbox
-    case ig::EGET_SPINBOX_CHANGED:
-    {
-        s32 id = event.GUIEvent.Caller->getID();
-        if (id == WINDOW_SPIN_BOX)
-        {
-            ig::IGUISpinBox *spin = (ig::IGUISpinBox*)event.GUIEvent.Caller;
-            f32 value = spin->getValue();
-            std::cout << "Spin Box changed: " << value << std::endl;
-        }
-    }
-        break;
     default:;
     }
-    return false;
 }
