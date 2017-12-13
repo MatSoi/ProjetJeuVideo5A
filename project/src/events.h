@@ -70,7 +70,7 @@ public:
 
     /**
      * @brief Initialise le pour sur le GUI
-     * @param gui : pointeur sur le GUI
+     * @param g : pointeur sur le GUI
      */
     void set_gui(ig::IGUIEnvironment *g) {gui = g;}
 

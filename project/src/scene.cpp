@@ -84,6 +84,10 @@ void Scene::initPlayer()
     selector->drop();
     anim->drop();
 
+    selector = smgr->createTriangleSelector(nodePlayer);
+    nodePlayer->setTriangleSelector(selector);
+    selector->drop();
+
     player = Player(nodePlayer);
 }
 
@@ -93,7 +97,7 @@ void Scene::initEnemy()
     meshEnemy = smgr->getMesh("data/tris.md2");
 
     // Attachement de notre personnage dans la scène
-    nodeEnemy = smgr->addAnimatedMeshSceneNode(meshEnemy, 0, ID_IsNotPickable);
+    nodeEnemy = smgr->addAnimatedMeshSceneNode(meshEnemy, 0, IDEnemy);
     nodeEnemy->setMaterialFlag(iv::EMF_LIGHTING, false);
     nodeEnemy->setMaterialTexture(0, textures[1]);
     nodeEnemy->setPosition(core:: vector3df ( 100 , 130 , 100));
@@ -149,7 +153,7 @@ void Scene::playerAttack()
     {
         std::wstring wstr = L"ID: " + std::to_wstring(ID) + L" Distance: "+ std::to_wstring(dist);
         debugDisplay(wstr, 1);
-        if (ID == 0 && dist <= ATTACK_DIST)
+        if (ID == 2 && dist <= ATTACK_DIST)
             enemy.getHitted();
     }
 }

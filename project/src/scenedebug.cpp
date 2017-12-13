@@ -17,18 +17,6 @@ void SceneDebug::initBillboardDebug()
     }
 }
 
-void SceneDebug::initSelector()
-{
-    is::ITriangleSelector* selector;
-    selector = smgr->createTriangleSelector(nodePlayer);
-    nodePlayer->setTriangleSelector(selector);
-    selector->drop();
-
-    selector = smgr->createTriangleSelector(nodeEnemy);
-    nodeEnemy->setTriangleSelector(selector);
-    selector->drop();
-}
-
 void SceneDebug::init()
 {
     initMap();
@@ -39,7 +27,6 @@ void SceneDebug::init()
     initArrowDebug();
     initReceiver();
     initBillboardDebug();
-    initSelector();
 }
 
 void SceneDebug::enemyRaycastDebug()

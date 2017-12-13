@@ -22,7 +22,9 @@ enum
 
     // I use this flag in ISceneNode IDs to indicate that the
     // scene node can be picked by ray selection.
-    IDFlag_IsPickable = 1 << 0
+    IDFlag_IsPickable = 1,
+
+    IDEnemy = 2
 };
 
 /**

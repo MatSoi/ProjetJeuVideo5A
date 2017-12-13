@@ -106,7 +106,7 @@ std::vector<int> Player::attack(is::ISceneCollisionManager *collMan, const scene
                 ray,
                 intersection,   // This will be the position of the collision
                 hitTriangle,    // This will be the triangle hit in the collision
-                0,              // This ensures that only nodes that we have
+                2,              // This ensures that only nodes that we have
                 // set up to be pickable are considered
                 0);             // Check the entire scene (this is actually the implicit default)
 
