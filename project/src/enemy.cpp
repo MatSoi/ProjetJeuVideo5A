@@ -30,24 +30,29 @@ bool Enemy::playerIsInEnemyView(ic::vector3df playerPosition, irr::scene::IScene
         //On définit deux points correspondants aux extremites de l'angle de vision ennemi
         ic::vector2df pointGauche = ic::vector2df(enemyPos.X, enemyPos.Z);
         ic::vector2df pointDroite = ic::vector2df(enemyPos.X, enemyPos.Z);
+        ic::vector2df pointMilieu = ic::vector2df(enemyPos.X, enemyPos.Z);
 
         pointGauche.X += std::cos((enemyRot.Y - angleViewEnemy) * M_PI / 180.0f);
-        pointGauche.Y -= std::sin((enemyRot.Y + angleViewEnemy) * M_PI / 180.0f);
+        pointGauche.Y -= std::sin((enemyRot.Y - angleViewEnemy) * M_PI / 180.0f);
 
         pointDroite.X += std::cos((enemyRot.Y + angleViewEnemy) * M_PI / 180.0f);
-        pointDroite.Y -= std::sin((enemyRot.Y - angleViewEnemy) * M_PI / 180.0f);
+        pointDroite.Y -= std::sin((enemyRot.Y + angleViewEnemy) * M_PI / 180.0f);
+
+        pointMilieu.X += std::cos((enemyRot.Y) * M_PI / 180.0f);
+        pointMilieu.Y -= std::sin((enemyRot.Y) * M_PI / 180.0f);
 
         ic::vector2df vecGauche = ic::vector2df(pointGauche.X - enemyPos.X, pointGauche.Y - enemyPos.Z);
         ic::vector2df vecDroite = ic::vector2df(pointDroite.X - enemyPos.X, pointDroite.Y - enemyPos.Z);
+        ic::vector2df vecMilieu = ic::vector2df(pointMilieu.X - enemyPos.X, pointMilieu.Y - enemyPos.Z);
         ic::vector2df vecPlayer = ic::vector2df(playerPosition.X - enemyPos.X, playerPosition.Z - enemyPos.Z);
 
-        if(vecGauche.dotProduct(vecPlayer) > 0 && vecDroite.dotProduct(vecPlayer) > 0)//Permet de s'assurer que le joueur est devant l'ennemi et non derriere
+        if(vecMilieu.dotProduct(vecPlayer)> 0)//Permet de s'assurer que le joueur est devant l'ennemi et non derriere
         {
             float determinantGauche = vecGauche.X * vecPlayer.Y - vecGauche.Y * vecPlayer.X;
             float determinantDroit = vecDroite.X * vecPlayer.Y - vecDroite.Y * vecPlayer.X;
 
-            bool signeGauche = determinantGauche>0;
-            bool signeDroit = determinantDroit>0;
+            bool signeGauche = determinantGauche>=0;
+            bool signeDroit = determinantDroit>=0;
 
             if((signeGauche && !signeDroit) || (!signeGauche && signeDroit))//Verification que les signes sont opposés => donc le joueur est dans le cone
             {
@@ -69,12 +74,14 @@ bool Enemy::playerIsInEnemyView(ic::vector3df playerPosition, irr::scene::IScene
                             0);
                 if(selectedSceneNode)
                 {
-                   if(selectedSceneNode->getID() == ID_PLAYER)
-                       return true;
+                    std::cout<<"faire le truc"<<std::endl;
+                    if(selectedSceneNode->getID() == ID_PLAYER)
+                        return true;
                 }
             }
         }
     }
+    std::cout<<"pas detecter"<<std::endl;
     return false;
 }
 

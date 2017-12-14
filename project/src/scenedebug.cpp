@@ -38,7 +38,7 @@ void SceneDebug::enemyRaycastDebug()
         ic::vector3df enemyPos= nodeEnemy->getPosition();
         ic::vector3df enemyRot= nodeEnemy->getRotation();
         enemyPos.X += std::cos((enemyRot.Y + float(i - enemy.getAngleViewEnemy())) * M_PI / 180.0f);  // avance selon l angle en parametre
-        enemyPos.Z -= std::sin((enemyRot.Y - float(i - enemy.getAngleViewEnemy())) * M_PI / 180.0f);
+        enemyPos.Z -= std::sin((enemyRot.Y + float(i - enemy.getAngleViewEnemy())) * M_PI / 180.0f);
 
         ray.end = ray.start + (enemyPos - ray.start).normalize() * 1000.0f;
 
@@ -117,6 +117,7 @@ void SceneDebug::run()
             playerAttack();
 
         enemy.playerIsInEnemyView(player.getPosition(),collMan);
+
 
         driver->beginScene(true, true, iv::SColor(0,50,100,255));
         enemyRaycastDebug();
