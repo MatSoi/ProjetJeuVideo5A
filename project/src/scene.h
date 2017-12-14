@@ -4,6 +4,7 @@
 #include "enemy.h"
 #include "events.h"
 #include "menu.h"
+#include "ID_list.h"
 
 /*!
  * \file scene.h
@@ -12,20 +13,6 @@
  */
 
 #define ATTACK_DIST 50
-
-/*! Enumeration definissant des ID donnant des propriétés de selectionnabilité aux nodes */
-enum
-{
-    // I use this ISceneNode ID to indicate a scene node that is
-    // not pickable by getSceneNodeAndCollisionPointFromRay()
-    ID_IsNotPickable = 0,
-
-    // I use this flag in ISceneNode IDs to indicate that the
-    // scene node can be picked by ray selection.
-    IDFlag_IsPickable = 1,
-
-    IDEnemy = 2
-};
 
 /**
  * @brief Classe Scene

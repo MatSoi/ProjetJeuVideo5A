@@ -49,7 +49,7 @@ void Scene::initMap()
     device ->getFileSystem()-> addFileArchive("data/map-20kdm2.pk3");
     // On  charge  un bsp (un  niveau) en  particulier :
     meshMap = smgr ->getMesh("20kdm2.bsp");
-    nodeMap = smgr ->addOctreeSceneNode(meshMap ->getMesh (0), nullptr, IDFlag_IsPickable, 1024);
+    nodeMap = smgr ->addOctreeSceneNode(meshMap ->getMesh (0), nullptr, ID_MAP, 1024);
     //  Translation  pour  que  nos  personnages  soient  dans le décor
     nodeMap ->setPosition(ic:: vector3df ( -1300 , -104 , -1249));
 }
@@ -60,7 +60,7 @@ void Scene::initPlayer()
     meshPlayer = smgr->getMesh("data/tris.md2");
 
     // Attachement de notre personnage dans la scène
-    nodePlayer = smgr->addAnimatedMeshSceneNode(meshPlayer, nullptr, IDFlag_IsPickable);
+    nodePlayer = smgr->addAnimatedMeshSceneNode(meshPlayer, nullptr, ID_PLAYER);
     nodePlayer->setMaterialFlag(iv::EMF_LIGHTING, false);
     nodePlayer->setMaterialTexture(0, textures[2]);
     nodePlayer->setPosition(ic:: vector3df ( 0 , 0 , 0));
@@ -97,7 +97,7 @@ void Scene::initEnemy()
     meshEnemy = smgr->getMesh("data/tris.md2");
 
     // Attachement de notre personnage dans la scène
-    nodeEnemy = smgr->addAnimatedMeshSceneNode(meshEnemy, 0, IDEnemy);
+    nodeEnemy = smgr->addAnimatedMeshSceneNode(meshEnemy, 0, ID_ENEMY);
     nodeEnemy->setMaterialFlag(iv::EMF_LIGHTING, false);
     nodeEnemy->setMaterialTexture(0, textures[1]);
     nodeEnemy->setPosition(core:: vector3df ( 100 , 130 , 100));
@@ -153,7 +153,7 @@ void Scene::playerAttack()
     {
         std::wstring wstr = L"ID: " + std::to_wstring(ID) + L" Distance: "+ std::to_wstring(dist);
         debugDisplay(wstr, 1);
-        if (ID == 2 && dist <= ATTACK_DIST)
+        if (ID == ID_ENEMY && dist <= ATTACK_DIST)
             enemy.getHitted();
     }
 }

@@ -30,7 +30,7 @@ public:
 
 
     /**
-     * @brief Constructeur d initialisation
+     * @brief Constructeur d initialisation.
      * Constructeur appelant simplement celui issu de l heritage avec la classe Characters
      * @param _node : pointeur sur le node de l ennemi
      * @param _animation : premiere animation
@@ -40,11 +40,18 @@ public:
         : Characters (_node, _animation, _speed) {}
 
     /**
-     * @brief Fonction appelee si l ennemi est touche par une attaque du joueur
+     * @brief Fonction appelee si l ennemi est touche par une attaque du joueur.
      * Cette fonction n est pas terminee
      * @return true: toujours pour le moment
      */
     bool getHitted();
+
+    /**
+     * @brief Surcharge : est appele a la fin de la boucle de l animation de mort de l enemi.
+     * Pour le moment : fais disparaitre l ennemi et le deplace en (0, -1000, 0).
+     * @param node : pointeur sur le node de l enemi
+     */
+    void OnAnimationEnd(is::IAnimatedMeshSceneNode *node);
 };
 
 #endif

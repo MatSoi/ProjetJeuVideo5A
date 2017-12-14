@@ -106,8 +106,8 @@ std::vector<int> Player::attack(is::ISceneCollisionManager *collMan, const scene
                 ray,
                 intersection,   // This will be the position of the collision
                 hitTriangle,    // This will be the triangle hit in the collision
-                2,              // This ensures that only nodes that we have
-                // set up to be pickable are considered
+                ~ID_PLAYER,     // This ensures that only nodes that we have
+                                // set up to be pickable are considered
                 0);             // Check the entire scene (this is actually the implicit default)
 
     if(selectedSceneNode)
@@ -116,7 +116,19 @@ std::vector<int> Player::attack(is::ISceneCollisionManager *collMan, const scene
         retour[0] = selectedSceneNode->getID();
         retour[1] = dist;
     }
+
+    node->setMD2Animation(is::EMAT_CROUCH_ATTACK);
+
+    node->setAnimationEndCallback(this);
+    node->setLoopMode(false);
+
     return retour;
+}
+
+void Player::OnAnimationEnd(is::IAnimatedMeshSceneNode* node)
+{
+    node->setMD2Animation(animation);
+    node->setLoopMode(true);
 }
 
 bool Player::getHitted()

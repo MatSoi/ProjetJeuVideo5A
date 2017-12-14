@@ -13,7 +13,7 @@ void SceneDebug::initBillboardDebug()
         bill[i]->setMaterialFlag(video::EMF_LIGHTING, false);
         bill[i]->setMaterialFlag(video::EMF_ZBUFFER, false);
         bill[i]->setSize(core::dimension2d<f32>(20.0f, 20.0f));
-        bill[i]->setID(ID_IsNotPickable); // This ensures that we don't accidentally ray-pick it
+        bill[i]->setID(ID_ENEMY); // This ensures that we don't accidentally ray-pick it
     }
 }
 
@@ -48,11 +48,11 @@ void SceneDebug::enemyRaycastDebug()
         core::triangle3df hitTriangle;
 
         scene::ISceneNode * selectedSceneNode =
-                collManDebug->getSceneNodeAndCollisionPointFromRay(
+                collMan->getSceneNodeAndCollisionPointFromRay(
                     ray,
                     intersection, // This will be the position of the collision
                     hitTriangle, // This will be the triangle hit in the collision
-                    IDFlag_IsPickable, // This ensures that only nodes that we have
+                    ID_PLAYER | ID_MAP, // This ensures that only nodes that we have
                     // set up to be pickable are considered
                     0); // Check the entire scene (this is actually the implicit default)
 
@@ -98,7 +98,6 @@ void SceneDebug::run()
 {
     float width, height;
 
-    collManDebug = smgr->getSceneCollisionManager();
     u32 then = device->getTimer()->getTime();
 
     while(device->run())
