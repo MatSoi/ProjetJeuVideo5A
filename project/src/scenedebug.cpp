@@ -3,17 +3,17 @@
 void SceneDebug::initBillboardDebug()
 {
     // Add as much billboard for the angle.
-    for (int i=0; i<2*angleConeEnemy;i++)
+    for (int i=0; i<2*enemy.getAngleViewEnemy();i++)
         bill.push_back(smgr->addBillboardSceneNode());
 
-    for (int i=0; i<2*angleConeEnemy;i++)
+    for (int i=0; i<2*enemy.getAngleViewEnemy();i++)
     {
         bill[i]->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR );
         bill[i]->setMaterialTexture(0, driver->getTexture("data/particle.bmp"));
         bill[i]->setMaterialFlag(video::EMF_LIGHTING, false);
         bill[i]->setMaterialFlag(video::EMF_ZBUFFER, false);
         bill[i]->setSize(core::dimension2d<f32>(20.0f, 20.0f));
-        bill[i]->setID(ID_ENEMY); // This ensures that we don't accidentally ray-pick it
+        bill[i]->setID(ID_IsNotPickable); // This ensures that we don't accidentally ray-pick it
     }
 }
 
@@ -31,14 +31,14 @@ void SceneDebug::init()
 
 void SceneDebug::enemyRaycastDebug()
 {
-    for (int i=0; i<2 * angleConeEnemy;i++)
+    for (int i=0; i<2 * enemy.getAngleViewEnemy();i++)
     {
         core::line3d<f32> ray;
         ray.start = nodeEnemy->getPosition();
         ic::vector3df enemyPos= nodeEnemy->getPosition();
         ic::vector3df enemyRot= nodeEnemy->getRotation();
-        enemyPos.X += std::cos((enemyRot.Y + float(i - angleConeEnemy)) * M_PI / 180.0f);  // avance selon l angle en parametre
-        enemyPos.Z -= std::sin((enemyRot.Y - float(i - angleConeEnemy)) * M_PI / 180.0f);
+        enemyPos.X += std::cos((enemyRot.Y + float(i - enemy.getAngleViewEnemy())) * M_PI / 180.0f);  // avance selon l angle en parametre
+        enemyPos.Z -= std::sin((enemyRot.Y - float(i - enemy.getAngleViewEnemy())) * M_PI / 180.0f);
 
         ray.end = ray.start + (enemyPos - ray.start).normalize() * 1000.0f;
 
@@ -48,11 +48,11 @@ void SceneDebug::enemyRaycastDebug()
         core::triangle3df hitTriangle;
 
         scene::ISceneNode * selectedSceneNode =
-                collMan->getSceneNodeAndCollisionPointFromRay(
+                collManDebug->getSceneNodeAndCollisionPointFromRay(
                     ray,
                     intersection, // This will be the position of the collision
                     hitTriangle, // This will be the triangle hit in the collision
-                    ID_PLAYER | ID_MAP, // This ensures that only nodes that we have
+                    IDFlag_IsPickable, // This ensures that only nodes that we have
                     // set up to be pickable are considered
                     0); // Check the entire scene (this is actually the implicit default)
 
@@ -98,10 +98,14 @@ void SceneDebug::run()
 {
     float width, height;
 
+    collManDebug = smgr->getSceneCollisionManager();
     u32 then = device->getTimer()->getTime();
 
     while(device->run())
     {
+        //ROTATION
+        nodeEnemy -> setRotation(ic::vector3df(0,35,0));
+
         // Work out a frame delta time.
         const u32 now = device->getTimer()->getTime();
         const f32 frameDeltaTime = (f32)(now - then) / 1000.f; // Time in seconds
@@ -112,6 +116,8 @@ void SceneDebug::run()
 
         if(receiver.event_handler(frameDeltaTime, width, height))
             playerAttack();
+
+        enemy.playerIsInEnemyView(player.getPosition(),collManDebug);
 
         driver->beginScene(true, true, iv::SColor(0,50,100,255));
         enemyRaycastDebug();

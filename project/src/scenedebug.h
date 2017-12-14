@@ -22,7 +22,7 @@ public:
     /**
      * @brief Constructeur de SceneDebug qui appelle le constructeur de Scene
      */
-    SceneDebug() : Scene(), angleConeEnemy(20) {}
+    SceneDebug() : Scene() {}
 
     /**
      * @brief Surchage de la fonction d'initialisation de scene pour initialiser aussi les composants de debug
@@ -51,11 +51,10 @@ private:
      */
     void enemyRaycastDebug();
 
-    is::ISceneNode * arrowParentDebug;              /*!< Pointeur sur le repere d'affichage des axes x,y et z */
-    std::vector<is::ISceneNode *> arrowsDebug;      /*!< Tableau des pointeurs sur les axes x,y et z */
-
+    is::ISceneNode * arrowParentDebug;          /*!< Pointeur sur le repere d'affichage des axes x,y et z */
+    std::vector<is::ISceneNode *> arrowsDebug;  /*!< Tableau des pointeurs sur les axes x,y et z */
+    is::ISceneCollisionManager* collManDebug;   /*!< Pointeur sur le manager de collision */
     std::vector<scene::IBillboardSceneNode *> bill; /*!< Tableau de pointeurs sur les billboards d'affichage de la vision ennemi */
-    int angleConeEnemy;                             /*!< Angle de vision de l'ennemi par rapport au centre de sa vision */
 };
 
 #endif // SCENEDEBUG_H

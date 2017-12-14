@@ -10,11 +10,11 @@
  */
 
 #include <vector>
+
 #include <irrlicht.h>
 #include <iostream>
 
 #include "characters.h"
-#include "ID_list.h"
 
 using namespace irr;
 
@@ -31,6 +31,7 @@ namespace ig = irr::gui;
 class Player : public Characters
 {  
 public:
+
     /**
      * @brief Constructeur vide
      */
@@ -44,7 +45,7 @@ public:
      * @param _speed : vitesse de deplacement
      */
     Player (is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation = is::EMAT_STAND, float _speed = NORMAL_SPEED)
-        : Characters (_node, _animation, _speed), isFurtive(false), isWalking(false) {}
+        : Characters (_node, _animation, _speed) {}
 
     /**
      * @brief Destructeur
@@ -93,13 +94,10 @@ public:
     void setWalkAnimation ();
 
     /**
-     * @brief Fonction d attaque du joueur.
-     * Effectue un lancer de rayon de la tête du joueur dans la direction de la camera pour essayer de toucher
-     * le/les ennemis.
-     * @param collMan : Manager de collision de la scene
-     * @param camera : camera de la scene
-     * @return retour : vector contenant l ID de l ennemi touche et la distance
-     * (si on ne touche rien, ce vector contient juste {-1, -1}
+     * @brief A COMPLETER
+     * @param collMan :
+     * @param camera :
+     * @return :
      */
     std::vector<int> attack(scene::ISceneCollisionManager *collMan, const is::ICameraSceneNode* camera);
 
@@ -120,16 +118,9 @@ public:
      */
     std::wstring to_string() const;
 
-    /**
-     * @brief Surcharge : est appele a la fin de la loupe de l animation d attaque du joueur
-     * Pour le moment : retour a la normale en reappliquant l animation courante.
-     * @param node : pointeur sur le node du joueur
-     */
-    void OnAnimationEnd(is::IAnimatedMeshSceneNode* node);
-
 private:
-    bool isFurtive; /*!< bool designant si le joueur est en mode furtif */
-    bool isWalking; /*!< bool designant si le joueur est en train de marcher */
+    bool isFurtive = false;/*!< bool designant si le joueur est en mode furtif */
+    bool isWalking = false;/*!< bool designant si le joueur est en train de marcher */
 };
 
 /**

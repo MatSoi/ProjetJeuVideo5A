@@ -23,7 +23,7 @@ namespace ig = irr::gui;
  * @brief Classe Characters
  * Contient les fonctions de base des personnages, ennemis ou joueur.
  */
-class Characters : public is::IAnimationEndCallBack
+class Characters
 {  
 public:
     /**
