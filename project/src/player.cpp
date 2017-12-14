@@ -1,4 +1,8 @@
-// player.cpp
+/*!
+ * \file player.cpp
+ * \brief Implementation des fonctions de la classe player.
+ * \author SOIGNON Matthieu et PASTOR Mickael
+ */
 
 #include <iostream>
 
@@ -91,35 +95,39 @@ std::vector<int> Player::attack(is::ISceneCollisionManager *collMan, const scene
 {
     std::vector<int> retour = {-1, -1};
 
-    ic::line3d<f32> ray;
-    ray.start = camera->getTarget();
-    ray.end = ray.start + (camera->getTarget() - camera->getPosition()).normalize() * 1000.0f;
-
-    // Tracks the current intersection point with the level or a mesh
-    core::vector3df intersection;
-    // Used to show with triangle has been hit
-    core::triangle3df hitTriangle;
-
-    // This call is all you need to perform ray/triangle collision on every scene node
-    is::ISceneNode * selectedSceneNode =
-            collMan->getSceneNodeAndCollisionPointFromRay(
-                ray,
-                intersection,   // This will be the position of the collision
-                hitTriangle,    // This will be the triangle hit in the collision
-                ~ID_PLAYER,              // This ensures that only nodes that we have
-                // set up to be pickable are considered
-                0);             // Check the entire scene (this is actually the implicit default)
-
-    if(selectedSceneNode)
+    if (!isAttacking)
     {
-        f64 dist = intersection.getDistanceFrom(camera->getTarget());
-        retour[0] = selectedSceneNode->getID();
-        retour[1] = dist;
-    }
+        ic::line3d<f32> ray;
+        ray.start = camera->getTarget();
+        ray.end = ray.start + (camera->getTarget() - camera->getPosition()).normalize() * 1000.0f;
 
-    node->setMD2Animation(is::EMAT_CROUCH_ATTACK);
-    node->setAnimationEndCallback(this);
-    node->setLoopMode(false);
+        // Tracks the current intersection point with the level or a mesh
+        core::vector3df intersection;
+        // Used to show with triangle has been hit
+        core::triangle3df hitTriangle;
+
+        // This call is all you need to perform ray/triangle collision on every scene node
+        is::ISceneNode * selectedSceneNode =
+                collMan->getSceneNodeAndCollisionPointFromRay(
+                    ray,
+                    intersection,   // This will be the position of the collision
+                    hitTriangle,    // This will be the triangle hit in the collision
+                    ~ID_PLAYER,     // This ensures that only nodes that we have
+                    // set up to be pickable are considered
+                    0);             // Check the entire scene (this is actually the implicit default)
+
+        if(selectedSceneNode)
+        {
+            f64 dist = intersection.getDistanceFrom(camera->getTarget());
+            retour[0] = selectedSceneNode->getID();
+            retour[1] = dist;
+        }
+
+        node->setMD2Animation(is::EMAT_CROUCH_ATTACK);
+        node->setAnimationEndCallback(this);
+        node->setLoopMode(false);
+        isAttacking = true;
+    }
 
     return retour;
 }
@@ -128,6 +136,7 @@ void Player::OnAnimationEnd(is::IAnimatedMeshSceneNode* node)
 {
     node->setMD2Animation(animation);
     node->setLoopMode(true);
+    isAttacking = false;
 }
 
 bool Player::getHitted()

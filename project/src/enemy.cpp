@@ -65,17 +65,17 @@ bool Enemy::playerIsInEnemyView(ic::vector3df playerPosition, irr::scene::IScene
                             ray,
                             intersection,
                             hitTriangle,
-                            ID_PLAYER,
+                            ID_PLAYER | ID_MAP,
                             0);
                 if(selectedSceneNode)
                 {
-                    std::cout << "je te hit" << std::endl;
+                   if(selectedSceneNode->getID() == ID_PLAYER)
+                       return true;
                 }
-                else
-                    std::cout << "je te hit po" << std::endl;
             }
         }
     }
+    return false;
 }
 
 const int& Enemy::getAngleViewEnemy() const

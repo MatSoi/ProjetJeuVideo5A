@@ -14,7 +14,8 @@ void Characters::updateAnimation(is::EMD2_ANIMATION_TYPE _animation)
     if (animation != _animation)
     {
         animation = _animation;
-        node->setMD2Animation(animation);
+        if(!isAttacking)
+            node->setMD2Animation(animation);
     }
 }
 

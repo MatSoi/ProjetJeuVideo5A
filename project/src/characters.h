@@ -38,7 +38,7 @@ public:
      * @param _speed : vitesse par defaut du personnage
      */
     Characters(is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation, float _speed)
-        : node(_node), animation(_animation), speed(_speed) {node->setMD2Animation(animation);}
+        : node(_node), animation(_animation), speed(_speed), isAttacking(false) {node->setMD2Animation(animation);}
 
     /**
      * @brief Destructeur
@@ -74,6 +74,7 @@ protected:
     is::IAnimatedMeshSceneNode* node;   /*!< pointeur sur le node du personnage */
     is::EMD2_ANIMATION_TYPE animation;  /*!< type d animation actuelle affectee au personnage */
     float speed;                        /*!< vitesse de deplacement du personnage */
+    bool isAttacking;                   /*!< bool designant si le personnage est en train d attaquer */
 };
 
 #endif
