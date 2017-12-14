@@ -4,6 +4,7 @@
 #include "enemy.h"
 #include "events.h"
 #include "menu.h"
+#include "ID_list.h"
 
 /*!
  * \file scene.h
@@ -87,7 +88,7 @@ protected:
     void playerAttack();
 
     /**
-     * @brief Fonction dangleViewEnemy'affichage d'element de debug dans la window de debug
+     * @brief Fonction d'affichage d'element de debug dans la window de debug
      * @param wstr : texte a afficher
      * @param ind : indice de l'element de la window de debug a modifier
      */

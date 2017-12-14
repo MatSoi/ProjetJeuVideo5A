@@ -10,6 +10,7 @@
 #include <vector>
 #include <irrlicht.h>
 #include "characters.h"
+#include "ID_list.h"
 #include <cmath>
 #include <iostream>
 
@@ -32,7 +33,7 @@ public:
 
 
     /**
-     * @brief Constructeur d initialisation
+     * @brief Constructeur d initialisation.
      * Constructeur appelant simplement celui issu de l heritage avec la classe Characters
      * @param _node : pointeur sur le node de l ennemi
      * @param _animation : premiere animation
@@ -65,6 +66,13 @@ public:
      * @return true: toujours pour le moment
      */
     bool getHitted();
+
+    /**
+    * @brief Surcharge : est appele a la fin de la boucle de l animation de mort de l enemi.
+  * Pour le moment : fais disparaitre l ennemi et le deplace en (0, -1000, 0).
+    * @param node : pointeur sur le node de l enemi
+    */
+    void OnAnimationEnd(is::IAnimatedMeshSceneNode *node);
 
 private:
 
