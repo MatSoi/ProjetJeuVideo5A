@@ -40,7 +40,7 @@ public:
      * @param _speed : vitesse de deplacement
      */
     Enemy (is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation = is::EMAT_STAND, float _speed = NORMAL_SPEED)
-        : Characters (_node, _animation, _speed), angleViewEnemy(20), rayonDetection(300){}
+        : Characters (_node, _animation, _speed), angleViewEnemy(20), rayonDetection(300), isAlerted(false) {}
 
     /**
      * @brief Fonction pour savoir si le joueur est dans le champ de vision de l'ennemi
@@ -76,8 +76,17 @@ public:
 
 private:
 
+    /**
+     * @brief Fonction appelee si l ennemi n a plus de vie
+     * @return true: toujours pour le moment
+     */
+    void die();
+
+    void pain();
+
     int angleViewEnemy; /*!< Angle de vision de l'ennemi par rapport au centre de sa vision */
     int rayonDetection;
+    bool isAlerted;
 };
 
 #endif

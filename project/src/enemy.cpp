@@ -8,15 +8,47 @@
 
 bool Enemy::getHitted()
 {
-    node->setLoopMode(false);
-    node->setAnimationEndCallback(this);
-    updateAnimation(is::EMAT_CROUCH_DEATH);
+    if(isAlerted)
+    {
+        life -= 1;
+    }
+    else
+        life = 0;
+
+    if (life)
+        pain();
+    else
+        die();
+
     return true;
 }
 
-void Enemy::OnAnimationEnd(is::IAnimatedMeshSceneNode *node) {
-    node->setVisible(false);
-    node->setPosition(ic::vector3df(0.0f, -1000.0f, 0.0f));
+void Enemy::die()
+{
+    node->setLoopMode(false);
+    node->setAnimationEndCallback(this);
+    updateAnimation(is::EMAT_CROUCH_DEATH);
+}
+
+void Enemy::pain()
+{
+    node->setLoopMode(false);
+    node->setAnimationEndCallback(this);
+    node->setMD2Animation(is::EMAT_PAIN_A);
+}
+
+void Enemy::OnAnimationEnd(is::IAnimatedMeshSceneNode *node)
+{
+    if(life)
+    {
+        node->setLoopMode(true);
+        node->setMD2Animation(animation);
+    }
+    else
+    {
+        node->setVisible(false);
+        node->setPosition(ic::vector3df(0.0f, -1000.0f, 0.0f));
+    }
 }
 
 bool Enemy::playerIsInEnemyView(ic::vector3df playerPosition, irr::scene::ISceneCollisionManager *collMan)
@@ -69,8 +101,11 @@ bool Enemy::playerIsInEnemyView(ic::vector3df playerPosition, irr::scene::IScene
                             0);
                 if(selectedSceneNode)
                 {
-                   if(selectedSceneNode->getID() == ID_PLAYER)
-                       return true;
+                    if(selectedSceneNode->getID() == ID_PLAYER)
+                    {
+                        isAlerted = true;
+                        return true;
+                    }
                 }
             }
         }

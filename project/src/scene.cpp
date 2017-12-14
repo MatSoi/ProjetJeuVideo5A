@@ -4,7 +4,7 @@ Scene::Scene()
 {
     // Création de la fenêtre et du système de rendu.
     device = createDevice(iv::EDT_OPENGL,
-                          ic::dimension2d<u32>(640, 480),
+                          ic::dimension2d<u32>(960, 600),
                           16, false, false, false, &receiver);
     driver = device->getVideoDriver();
     smgr = device->getSceneManager();
@@ -120,7 +120,7 @@ void Scene::initEnemy()
     nodeEnemy->addAnimator(anim);
     selector->drop();
 
-    selector = smgr->createTriangleSelector(nodeEnemy);
+    selector = smgr->createTriangleSelectorFromBoundingBox(nodeEnemy);
     nodeEnemy->setTriangleSelector(selector);
     selector->drop();
 
