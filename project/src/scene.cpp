@@ -84,7 +84,7 @@ void Scene::initPlayer()
     selector->drop();
     anim->drop();
 
-    selector = smgr->createTriangleSelector(nodePlayer);
+    selector = smgr->createTriangleSelectorFromBoundingBox(nodePlayer);
     nodePlayer->setTriangleSelector(selector);
     selector->drop();
 
