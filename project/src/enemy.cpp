@@ -115,7 +115,6 @@ bool Enemy::playerIsInEnemyView(ic::vector3df playerPosition, irr::scene::IScene
             }
         }
     }
-    std::cout<<"pas detecter"<<std::endl;
     return false;
 }
 
