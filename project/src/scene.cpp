@@ -190,7 +190,7 @@ void Scene::resize_screen(float width, float height)
 void Scene::run()
 {
     float width, height;
-    int painFrame = 0;
+    float painFrame = 0;
 
     u32 then = device->getTimer()->getTime();
     while(device->run())
@@ -217,9 +217,9 @@ void Scene::run()
         driver->beginScene(true, true, iv::SColor(0,50,100,255));
 
         if(painImage->isVisible())
-            painFrame += 1;
+            painFrame += frameDeltaTime;
 
-        if(painFrame > 300)
+        if(painFrame > 0.2f)
         {
             painFrame = 0;
             painImage->setVisible(false);
