@@ -1,3 +1,9 @@
+/*!
+ * \file scenedebug.cpp
+ * \brief Implementation des fonctions de la classe SceneDebug.
+ * \author SOIGNON Matthieu et PASTOR Mickael
+ */
+
 #include "scenedebug.h"
 
 void SceneDebug::initBillboardDebug()
@@ -96,38 +102,51 @@ void SceneDebug::initArrowDebug()
 
 void SceneDebug::run()
 {
-    float width, height;
+    float painFrame = 0;
+
+    //ROTATION
+    nodeEnemy->setRotation(ic::vector3df(0,35,0));
 
     u32 then = device->getTimer()->getTime();
-
     while(device->run())
     {
-        //ROTATION
-        nodeEnemy->setRotation(ic::vector3df(0,35,0));
-
         // Work out a frame delta time.
         const u32 now = device->getTimer()->getTime();
         const f32 frameDeltaTime = (f32)(now - then) / 1000.f; // Time in seconds
         then = now;
 
-        width = device->getVideoDriver()->getScreenSize().Width;
-        height = device->getVideoDriver()->getScreenSize().Height;
+        screen_width = device->getVideoDriver()->getScreenSize().Width;
+        screen_height = device->getVideoDriver()->getScreenSize().Height;
 
-        if(receiver.event_handler(frameDeltaTime, width, height))
+        scManager->resize_screen(screen_width, screen_height);
+
+        if(receiver.event_handler(frameDeltaTime, screen_width, screen_height))
             playerAttack();
 
-        if(enemy.behavior(player.getPosition(), collMan)) {
-            player.getHitted();
-        }
+        if(!player.isDead())
+            if(enemy.behavior(player.getPosition(), collMan))
+            {
+                player.getHitted();
+                scManager->displayPain(true);
+            }
 
         driver->beginScene(true, true, iv::SColor(0,50,100,255));
         enemyRaycastDebug();
         arrowParentDebug->setPosition(player.getPosition());
 
+        if(scManager->isVisiblePain())
+            painFrame += frameDeltaTime;
+
+        if(painFrame > 0.2f)
+        {
+            painFrame = 0;
+            scManager->displayPain(false);
+        }
+
         // Dessin de la scène :
         smgr->drawAll();
         // Dessin de l'interface utilisateur :
-        gui->drawAll();
+        scManager->getGui()->drawAll();
 
         driver->endScene();
     }

@@ -71,16 +71,22 @@ public:
     virtual void getHitted() = 0;
 
 protected:
+    /**
+     * @brief Fonction purement virtuelle qui gerera l animation de degats.
+     */
     virtual void pain() = 0;
 
-    void die();
+    /**
+     * @brief Fonction purement virtuelle qui gerera l animation de mort.
+     */
+    virtual void die() = 0;
 
     is::IAnimatedMeshSceneNode* node;   /*!< pointeur sur le node du personnage */
     is::EMD2_ANIMATION_TYPE animation;  /*!< type d animation actuelle affectee au personnage */
     float speed;                        /*!< vitesse de deplacement du personnage */
     bool isAttacking;                   /*!< bool designant si le personnage est en train d attaquer */
-    int life;
-    bool isSuffering;
+    int life;                           /*!< compte de points de vie */
+    bool isSuffering;                   /*!< bool designant si le personnage est en train de subir une attaque */
 };
 
 #endif

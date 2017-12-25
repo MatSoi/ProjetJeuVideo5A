@@ -1,10 +1,12 @@
 #ifndef SCENE_H
 #define SCENE_H
+
 #include "player.h"
 #include "enemy.h"
 #include "events.h"
 #include "menu.h"
 #include "ID_list.h"
+#include "screenManager.h"
 
 /*!
  * \file scene.h
@@ -80,8 +82,6 @@ protected:
      */
     void debugDisplay(std::wstring wstr, int ind);
 
-    void resize_screen(float width, float height);
-
     // Le gestionnaire d'événements
     EventReceiver receiver;                 /*!< event receiver */
     std::vector<iv::ITexture*> textures;    /*!< tableau des textures des personnages */
@@ -90,9 +90,8 @@ protected:
     IrrlichtDevice *device;                 /*!< pointeur sur le device */
     iv::IVideoDriver    *driver;            /*!< pointeur sur le driver */
     is::ISceneManager   *smgr;              /*!< pointeur sur le manager de scene */
-    ig::IGUIEnvironment *gui;               /*!< pointeur sur l'interface graphique */
     is::ISceneCollisionManager* collMan;    /*!< pointeur sur le gestionnaire de collision */
-    Menu* menu;                             /*!< pointeur sur le menu */
+    ScreenManager *scManager;               /*!< pointeur sur le manager de l ecran */
 
     is:: IAnimatedMesh *meshMap;            /*!< pointeur sur le mesh de la map */
     is:: IMeshSceneNode *nodeMap;           /*!< pointeur sur le node de la map */
@@ -105,20 +104,10 @@ protected:
 
     is::ICameraSceneNode *camera;           /*!< pointeur sur la camera */
 
-    // Choix de la police de caractères
-    ig::IGUISkin* skin;                     /*!< pointeur sur le style de la police d'ecriture */
-    ig::IGUIFont* font;                     /*!< pointeur sur la taille de la police d'ecriture */
-
-    ig::ICursorControl* cursor;             /*!< pointeur sur le curseur de la souris */
-
     Player player;                          /*!< classe joueur */
     Enemy enemy;                            /*!< classe enemy */
 
-    ig::IGUIImage* painImage;
-    iv::ITexture *painTexture;
-
-    float screen_width, screen_height;      /*!< Dimensions de la fenetre de jeu */
-
+    float screen_width, screen_height;      /*!< dimensions de la fenetre de jeu */
 };
 
 #endif // SCENE_H

@@ -28,10 +28,3 @@ const ic::vector3df& Characters::getRotation() const
 {
     return node->getRotation();
 }
-
-void Characters::die()
-{
-    node->setLoopMode(false);
-    node->setAnimationEndCallback(this);
-    node->setMD2Animation(is::EMAT_CROUCH_DEATH);
-}

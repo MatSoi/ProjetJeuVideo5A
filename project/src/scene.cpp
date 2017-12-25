@@ -1,3 +1,9 @@
+/*!
+ * \file scene.cpp
+ * \brief Implementation des fonctions de la classe Scene.
+ * \author SOIGNON Matthieu et PASTOR Mickael
+ */
+
 #include "scene.h"
 
 Scene::Scene() : screen_width(960), screen_height(600)
@@ -8,28 +14,9 @@ Scene::Scene() : screen_width(960), screen_height(600)
                           16, false, false, false, &receiver);
     driver = device->getVideoDriver();
     smgr = device->getSceneManager();
-    gui = device->getGUIEnvironment();
     collMan = smgr->getSceneCollisionManager();
-    cursor = device->getCursorControl();
 
-    painTexture = driver->getTexture("data/basicImage.pcx");
-    painImage = gui->addImage(ic::rect<s32>(0, 0, screen_width, screen_height));
-    painImage->setScaleImage(true);
-    painImage->setImage(painTexture);
-    painImage->setColor(iv::SColor(50, 255, 0, 0));
-    painImage->setVisible(false);
-
-    // Création de la GUI
-    // Choix de la police de caractères
-    skin = gui->getSkin();
-    font = gui->getFont("data/fontlucida.png");
-    skin->setFont(font);
-
-    // La barre de menu
-    menu = new Menu();
-    menu->create_menu(gui);
-    // Une fenêtre pour différents réglages
-    menu->create_window(gui);
+    scManager = new ScreenManager(device->getGUIEnvironment(), device->getCursorControl(), driver->getTexture("data/basicImage.pcx"), screen_width, screen_height);
 }
 
 void Scene::init()
@@ -144,10 +131,10 @@ void Scene::initCamera()
 
 void Scene::initReceiver()
 {
-    receiver.set_gui(gui);
+    receiver.set_gui(scManager->getGui());
     receiver.set_player(&player);
-    receiver.set_camera(camera, cursor);
-    receiver.set_menu(menu);
+    receiver.set_camera(camera, scManager->getCursor());
+    receiver.set_menu(scManager->getMenu());
 }
 
 void Scene::playerAttack()
@@ -168,28 +155,11 @@ void Scene::playerAttack()
 void Scene::debugDisplay(std::wstring wstr, int ind)
 {
     const wchar_t* szName = wstr.c_str();
-    menu->window->getElementFromId(ind)->setText(szName);
-}
-
-void Scene::resize_screen(float width, float height)
-{
-    if(screen_width != width || screen_height != height)
-    {
-        screen_width = width;
-        screen_height = height;
-
-        painImage->drop();
-        painImage = gui->addImage(ic::rect<s32>(0, 0, screen_width, screen_height));
-        painImage->setScaleImage(true);
-        painImage->setImage(painTexture);
-        painImage->setColor(iv::SColor(50, 255, 0, 0));
-        painImage->setVisible(false);
-    }
+    scManager->getMenu()->window->getElementFromId(ind)->setText(szName);
 }
 
 void Scene::run()
 {
-    float width, height;
     float painFrame = 0;
 
     u32 then = device->getTimer()->getTime();
@@ -200,35 +170,36 @@ void Scene::run()
         const f32 frameDeltaTime = (f32)(now - then) / 1000.f; // Time in seconds
         then = now;
 
-        width = device->getVideoDriver()->getScreenSize().Width;
-        height = device->getVideoDriver()->getScreenSize().Height;
-        resize_screen(width, height);
+        screen_width = device->getVideoDriver()->getScreenSize().Width;
+        screen_height = device->getVideoDriver()->getScreenSize().Height;
 
-        if(receiver.event_handler(frameDeltaTime, width, height))
+        scManager->resize_screen(screen_width, screen_height);
+
+        if(receiver.event_handler(frameDeltaTime, screen_width, screen_height))
             playerAttack();
 
         if(!player.isDead())
             if(enemy.behavior(player.getPosition(), collMan))
             {
                 player.getHitted();
-                painImage->setVisible(true);
+                scManager->displayPain(true);
             }
 
         driver->beginScene(true, true, iv::SColor(0,50,100,255));
 
-        if(painImage->isVisible())
+        if(scManager->isVisiblePain())
             painFrame += frameDeltaTime;
 
         if(painFrame > 0.2f)
         {
             painFrame = 0;
-            painImage->setVisible(false);
+            scManager->displayPain(false);
         }
 
         // Dessin de la scène :
         smgr->drawAll();
         // Dessin de l'interface utilisateur :
-        gui->drawAll();
+        scManager->getGui()->drawAll();
 
         driver->endScene();
     }

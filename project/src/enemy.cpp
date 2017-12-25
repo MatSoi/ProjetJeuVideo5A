@@ -29,6 +29,13 @@ void Enemy::pain()
     node->setMD2Animation(is::EMAT_PAIN_A);
 }
 
+void Enemy::die()
+{
+    node->setLoopMode(false);
+    node->setAnimationEndCallback(this);
+    node->setMD2Animation(is::EMAT_CROUCH_DEATH);
+}
+
 bool Enemy::canAttack()
 {
     if(isAttacking)

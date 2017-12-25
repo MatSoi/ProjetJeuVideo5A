@@ -5,7 +5,6 @@
  */
 
 #include <iostream>
-
 #include "player.h"
 
 void Player::move(const f32 frameDeltaTime, float angle)
@@ -119,7 +118,11 @@ std::vector<int> Player::attack(is::ISceneCollisionManager *collMan, const scene
             retour[1] = dist;
         }
 
-        node->setMD2Animation(is::EMAT_CROUCH_ATTACK);
+        if(isFurtive)
+            node->setMD2Animation(is::EMAT_CROUCH_ATTACK);
+        else
+            node->setMD2Animation(is::EMAT_ATTACK);
+
         node->setAnimationEndCallback(this);
         node->setLoopMode(false);
         isAttacking = true;
@@ -164,7 +167,22 @@ void Player::pain()
     isSuffering = true;
     node->setLoopMode(false);
     node->setAnimationEndCallback(this);
-    node->setMD2Animation(is::EMAT_PAIN_A);
+
+    if(isFurtive)
+        node->setMD2Animation(is::EMAT_CROUCH_PAIN);
+    else
+        node->setMD2Animation(is::EMAT_PAIN_A);
+}
+
+void Player::die()
+{
+    node->setLoopMode(false);
+    node->setAnimationEndCallback(this);
+
+    if(isFurtive)
+        node->setMD2Animation(is::EMAT_CROUCH_DEATH);
+    else
+        node->setMD2Animation(is::EMAT_CROUCH_DEATH);
 }
 
 void Player::debug(int debug_type)

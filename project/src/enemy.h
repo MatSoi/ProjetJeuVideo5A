@@ -64,7 +64,8 @@ public:
 
     /**
     * @brief Surcharge : est appele a la fin de la boucle de l animation de mort de l enemi.
-  * Pour le moment : fais disparaitre l ennemi et le deplace en (0, -1000, 0).
+    * Pour le moment : fais disparaitre l ennemi et le deplace en (0, -1000, 0).
+    * Remet a false tous les etats de l ennemi.
     * @param node : pointeur sur le node de l enemi
     */
     void OnAnimationEnd(is::IAnimatedMeshSceneNode *node);
@@ -75,19 +76,40 @@ public:
      */
     bool behavior(const ic::vector3df& playerPosition, irr::scene::ISceneCollisionManager *collMan);
 
+    /**
+     * @brief Fonction de prise de degats.
+     * L ennemi meurt instantanement s il n est pas en etat d alerte, sinon il peurt un point de vie.
+     * Cette fonction appelle ensuite pain() ou die() en fonction des points de vie restant.
+     */
     void getHitted();
 
 private:
+    /**
+     * @brief Determine si l ennemi peut attaquer ou non.
+     * Il peut attaquer s il n est pas deja en train, s il ne subit pas une attaque (sauf s il lui reste un point de vie unique).
+     * @return true si on peut attaquer, false sinon.
+     */
     bool canAttack();
 
+    /**
+     * @brief Fonction qui passe l ennemi en etat de prise de degat, et qui lance l animation correspondante.
+     */
     void pain();
 
+    /**
+     * @brief Fonction qui lance l animation de mort.
+     */
+    void die();
+
+    /**
+     * @brief Fonction qui passe l ennemi en etat de prise d attaque, et qui lance l animation correspondante.
+     */
     void attack();
 
     int angleViewEnemy; /*!< Angle de vision de l'ennemi par rapport au centre de sa vision */
-    int rayonDetection;
-    bool isAlerted;
-    int distWithPlayer;
+    int rayonDetection; /*!< Rayon de detection de l ennemi */
+    bool isAlerted;     /*!< Booleen renseignant l etat d alerte */
+    int distWithPlayer; /*!< distance avec le joueur */
 };
 
 #endif

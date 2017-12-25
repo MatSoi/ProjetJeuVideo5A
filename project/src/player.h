@@ -112,10 +112,22 @@ public:
      */
     void OnAnimationEnd(is::IAnimatedMeshSceneNode* node);
 
+    /**
+     * @brief Renseigne de l etat vivant ou mort du joueur.
+     * @return true si le joueur est mort, false sinon.
+     */
     bool isDead();
 
 private:
+    /**
+     * @brief Fonction qui passe l ennemi en etat de prise de degat, et qui lance l animation correspondante.
+     */
     void pain();
+
+    /**
+     * @brief Fonction qui lance l animation de mort du joueur.
+     */
+    void die();
 
     bool isFurtive;     /*!< bool designant si le joueur est en mode furtif */
     bool isWalking;     /*!< bool designant si le joueur est en train de marcher */
