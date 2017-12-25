@@ -10,6 +10,9 @@
 
 void Player::move(const f32 frameDeltaTime, float angle)
 {
+    if(!life)
+        return;
+
     ic::vector3df position = node->getPosition();   // recuperation de la position du joueur
     ic::vector3df rotation = node->getRotation();   // recuperation de l orientation du joueur
     rotation.Y = angle * 180.0f/M_PI;               // recalcule de l angle de regard du joueur suivant l angle en parametre
@@ -21,27 +24,11 @@ void Player::move(const f32 frameDeltaTime, float angle)
     node->setRotation(rotation);    // mise a jour de l orientation du joueur
 }
 
-void Player::moveBackward(const f32 frameDeltaTime)
-{
-    ic::vector3df position = node->getPosition();
-    ic::vector3df rotation = node->getRotation();
-
-    position.X -= (speed - 25.0f) * cos(rotation.Y * M_PI / 180.0f) * frameDeltaTime;
-    position.Z -= -(speed - 25.0f) * sin(rotation.Y * M_PI / 180.0f) * frameDeltaTime;
-
-    node->setPosition(position);
-}
-
-void Player::rotate(const f32 frameDeltaTime, float angle)
-{
-    ic::vector3df rotation = node->getRotation();
-
-    rotation.Y += angle * frameDeltaTime;
-    node->setRotation(rotation);
-}
-
 void Player::jump(const f32 frameDeltaTime)
 {
+    if(!life)
+        return;
+
     ic::vector3df position = node->getPosition();
 
     position.Y += 500 * frameDeltaTime;
@@ -51,6 +38,9 @@ void Player::jump(const f32 frameDeltaTime)
 
 void Player::setStealth()
 {
+    if(!life)
+        return;
+
     isFurtive = !isFurtive;
 
     if (isFurtive)
@@ -73,6 +63,9 @@ void Player::setStealth()
 
 void Player::setIdle()
 {
+    if(!life)
+        return;
+
     isWalking = false;
 
     if (isFurtive)
@@ -83,6 +76,9 @@ void Player::setIdle()
 
 void Player::setWalkAnimation()
 {
+    if(!life)
+        return;
+
     isWalking = true;
 
     if (isFurtive)
@@ -95,7 +91,7 @@ std::vector<int> Player::attack(is::ISceneCollisionManager *collMan, const scene
 {
     std::vector<int> retour = {-1, -1};
 
-    if (!isAttacking)
+    if (!isAttacking && !isSuffering && life)
     {
         ic::line3d<f32> ray;
         ray.start = camera->getTarget();
@@ -134,15 +130,41 @@ std::vector<int> Player::attack(is::ISceneCollisionManager *collMan, const scene
 
 void Player::OnAnimationEnd(is::IAnimatedMeshSceneNode* node)
 {
+    if (!life)
+        return;
+
     node->setMD2Animation(animation);
     node->setLoopMode(true);
+
     isAttacking = false;
+    isSuffering = false;
 }
 
-bool Player::getHitted()
+bool Player::isDead()
 {
-    updateAnimation(is::EMAT_DEATH_FALLBACK);
-    return true;
+    return life == 0;
+}
+
+void Player::getHitted()
+{
+    if(!life)
+        return;
+
+    if(life)
+        life -= 1;
+
+    if (life)
+        pain();
+    else
+        die();
+}
+
+void Player::pain()
+{
+    isSuffering = true;
+    node->setLoopMode(false);
+    node->setAnimationEndCallback(this);
+    node->setMD2Animation(is::EMAT_PAIN_A);
 }
 
 void Player::debug(int debug_type)

@@ -14,7 +14,7 @@ void Characters::updateAnimation(is::EMD2_ANIMATION_TYPE _animation)
     if (animation != _animation)
     {
         animation = _animation;
-        if(!isAttacking)
+        if(!isAttacking && !isSuffering)
             node->setMD2Animation(animation);
     }
 }
@@ -27,4 +27,11 @@ const ic::vector3df& Characters::getPosition() const
 const ic::vector3df& Characters::getRotation() const
 {
     return node->getRotation();
+}
+
+void Characters::die()
+{
+    node->setLoopMode(false);
+    node->setAnimationEndCallback(this);
+    node->setMD2Animation(is::EMAT_CROUCH_DEATH);
 }

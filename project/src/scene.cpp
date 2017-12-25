@@ -1,16 +1,23 @@
 #include "scene.h"
 
-Scene::Scene()
+Scene::Scene() : screen_width(960), screen_height(600)
 {
     // Création de la fenêtre et du système de rendu.
     device = createDevice(iv::EDT_OPENGL,
-                          ic::dimension2d<u32>(960, 600),
+                          ic::dimension2d<u32>(screen_width, screen_height),
                           16, false, false, false, &receiver);
     driver = device->getVideoDriver();
     smgr = device->getSceneManager();
     gui = device->getGUIEnvironment();
     collMan = smgr->getSceneCollisionManager();
     cursor = device->getCursorControl();
+
+    painTexture = driver->getTexture("data/basicImage.pcx");
+    painImage = gui->addImage(ic::rect<s32>(0, 0, screen_width, screen_height));
+    painImage->setScaleImage(true);
+    painImage->setImage(painTexture);
+    painImage->setColor(iv::SColor(50, 255, 0, 0));
+    painImage->setVisible(false);
 
     // Création de la GUI
     // Choix de la police de caractères
@@ -164,9 +171,26 @@ void Scene::debugDisplay(std::wstring wstr, int ind)
     menu->window->getElementFromId(ind)->setText(szName);
 }
 
+void Scene::resize_screen(float width, float height)
+{
+    if(screen_width != width || screen_height != height)
+    {
+        screen_width = width;
+        screen_height = height;
+
+        painImage->drop();
+        painImage = gui->addImage(ic::rect<s32>(0, 0, screen_width, screen_height));
+        painImage->setScaleImage(true);
+        painImage->setImage(painTexture);
+        painImage->setColor(iv::SColor(50, 255, 0, 0));
+        painImage->setVisible(false);
+    }
+}
+
 void Scene::run()
 {
     float width, height;
+    int painFrame = 0;
 
     u32 then = device->getTimer()->getTime();
     while(device->run())
@@ -178,11 +202,28 @@ void Scene::run()
 
         width = device->getVideoDriver()->getScreenSize().Width;
         height = device->getVideoDriver()->getScreenSize().Height;
+        resize_screen(width, height);
 
         if(receiver.event_handler(frameDeltaTime, width, height))
             playerAttack();
 
+        if(!player.isDead())
+            if(enemy.behavior(player.getPosition(), collMan))
+            {
+                player.getHitted();
+                painImage->setVisible(true);
+            }
+
         driver->beginScene(true, true, iv::SColor(0,50,100,255));
+
+        if(painImage->isVisible())
+            painFrame += 1;
+
+        if(painFrame > 300)
+        {
+            painFrame = 0;
+            painImage->setVisible(false);
+        }
 
         // Dessin de la scène :
         smgr->drawAll();

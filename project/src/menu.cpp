@@ -36,7 +36,7 @@ void Menu::create_menu(ig::IGUIEnvironment *gui)
   submenu->addItem(L"Show Normals",   MENU_NORMALS);
   submenu->addItem(L"Show Triangles", MENU_TRIANGLES);
   submenu->addItem(L"Transparency",   MENU_TRANSPARENCY);
-  submenu->addItem(L"Debug Bidibidibox",   MENU_DEBUG_BOX);
+  submenu->addItem(L"Debug Box",   MENU_DEBUG_BOX);
 
   // Le contenu du menu Help :
   submenu = menu->getSubMenu(2);
@@ -49,7 +49,7 @@ void Menu::create_menu(ig::IGUIEnvironment *gui)
 void Menu::create_window(ig::IGUIEnvironment *gui)
 {
   // La fenêtre
-  window = gui->addWindow(ic::rect<s32>(0,20, 400,200), false, L"Bidibidibox de Debug");
+  window = gui->addWindow(ic::rect<s32>(0,20, 400,200), false, L"Box de debug");
   window->getCloseButton()->setVisible(false);
   window->setDrawBackground(true);
   window->setVisible(false);

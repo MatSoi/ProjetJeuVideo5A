@@ -103,7 +103,7 @@ void SceneDebug::run()
     while(device->run())
     {
         //ROTATION
-        nodeEnemy -> setRotation(ic::vector3df(0,35,0));
+        nodeEnemy->setRotation(ic::vector3df(0,35,0));
 
         // Work out a frame delta time.
         const u32 now = device->getTimer()->getTime();
@@ -116,8 +116,9 @@ void SceneDebug::run()
         if(receiver.event_handler(frameDeltaTime, width, height))
             playerAttack();
 
-        enemy.playerIsInEnemyView(player.getPosition(),collMan);
-
+        if(enemy.behavior(player.getPosition(), collMan)) {
+            player.getHitted();
+        }
 
         driver->beginScene(true, true, iv::SColor(0,50,100,255));
         enemyRaycastDebug();

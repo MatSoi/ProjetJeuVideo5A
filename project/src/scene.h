@@ -14,20 +14,6 @@
 
 #define ATTACK_DIST 50
 
-/*! Enumeration definissant des ID donnant des propriétés de selectionnabilité aux nodes */
-enum
-{
-    // I use this ISceneNode ID to indicate a scene node that is
-    // not pickable by getSceneNodeAndCollisionPointFromRay()
-    ID_IsNotPickable = 0,
-
-    // I use this flag in ISceneNode IDs to indicate that the
-    // scene node can be picked by ray selection.
-    IDFlag_IsPickable = 1,
-
-    IDEnemy = 2
-};
-
 /**
  * @brief Classe Scene
  * Represente la scene avec ses attributs et les fonctions d'initialisations ainsi que la boucle principale
@@ -94,38 +80,44 @@ protected:
      */
     void debugDisplay(std::wstring wstr, int ind);
 
+    void resize_screen(float width, float height);
 
     // Le gestionnaire d'événements
-    EventReceiver receiver;/*!< event receiver */
-    std::vector<iv::ITexture*> textures;/*!< tableau des textures des personnages */
+    EventReceiver receiver;                 /*!< event receiver */
+    std::vector<iv::ITexture*> textures;    /*!< tableau des textures des personnages */
 
     // Création de la fenêtre et du système de rendu.
-    IrrlichtDevice *device;/*!< pointeur sur le device */
-    iv::IVideoDriver    *driver;/*!< pointeur sur le driver */
-    is::ISceneManager   *smgr;/*!< pointeur sur le manager de scene */
-    ig::IGUIEnvironment *gui;/*!< pointeur sur l'interface graphique */
-    is::ISceneCollisionManager* collMan;/*!< pointeur sur le gestionnaire de collision */
-    Menu* menu;/*!< pointeur sur le menu */
+    IrrlichtDevice *device;                 /*!< pointeur sur le device */
+    iv::IVideoDriver    *driver;            /*!< pointeur sur le driver */
+    is::ISceneManager   *smgr;              /*!< pointeur sur le manager de scene */
+    ig::IGUIEnvironment *gui;               /*!< pointeur sur l'interface graphique */
+    is::ISceneCollisionManager* collMan;    /*!< pointeur sur le gestionnaire de collision */
+    Menu* menu;                             /*!< pointeur sur le menu */
 
-    is:: IAnimatedMesh *meshMap;/*!< pointeur sur le mesh de la map */
-    is:: IMeshSceneNode *nodeMap;/*!< pointeur sur le node de la map */
+    is:: IAnimatedMesh *meshMap;            /*!< pointeur sur le mesh de la map */
+    is:: IMeshSceneNode *nodeMap;           /*!< pointeur sur le node de la map */
 
-    is::IAnimatedMesh *meshPlayer;/*!< pointeur sur le mesh du joueur */
-    is::IAnimatedMeshSceneNode *nodePlayer;/*!< pointeur sur le node du joueur */
+    is::IAnimatedMesh *meshPlayer;          /*!< pointeur sur le mesh du joueur */
+    is::IAnimatedMeshSceneNode *nodePlayer; /*!< pointeur sur le node du joueur */
 
-    is::IAnimatedMesh *meshEnemy;/*!< pointeur sur le mesh de l'ennemi */
-    is::IAnimatedMeshSceneNode *nodeEnemy;/*!< pointeur sur le node de l'ennemi */
+    is::IAnimatedMesh *meshEnemy;           /*!< pointeur sur le mesh de l'ennemi */
+    is::IAnimatedMeshSceneNode *nodeEnemy;  /*!< pointeur sur le node de l'ennemi */
 
-    is::ICameraSceneNode *camera;/*!< pointeur sur la camera */
+    is::ICameraSceneNode *camera;           /*!< pointeur sur la camera */
 
     // Choix de la police de caractères
-    ig::IGUISkin* skin;/*!< pointeur sur le style de la police d'ecriture */
-    ig::IGUIFont* font;/*!< pointeur sur la taille de la police d'ecriture */
+    ig::IGUISkin* skin;                     /*!< pointeur sur le style de la police d'ecriture */
+    ig::IGUIFont* font;                     /*!< pointeur sur la taille de la police d'ecriture */
 
-    ig::ICursorControl* cursor;/*!< pointeur sur le curseur de la souris */
+    ig::ICursorControl* cursor;             /*!< pointeur sur le curseur de la souris */
 
-    Player player;/*!< classe joueur */
-    Enemy enemy;/*!< classe enemy */
+    Player player;                          /*!< classe joueur */
+    Enemy enemy;                            /*!< classe enemy */
+
+    ig::IGUIImage* painImage;
+    iv::ITexture *painTexture;
+
+    float screen_width, screen_height;      /*!< Dimensions de la fenetre de jeu */
 
 };
 

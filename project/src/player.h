@@ -57,19 +57,6 @@ public:
     void move (const f32 frameDeltaTime, float angle);
 
     /**
-     * @brief Fonction de deplacement du node player vers l'arriere
-     * @param frameDeltaTime : temps écoulé entre la derniere frame et la frame actuelle
-     */
-    void moveBackward (const f32 frameDeltaTime);
-
-    /**
-     * @brief Fonction de rotation du node player en fonction de l'angle donnee
-     * @param frameDeltaTime : temps écoulé entre la derniere frame et la frame actuelle
-     * @param angle : angle utilise pour la rotation
-     */
-    void rotate (const f32 frameDeltaTime, float angle);
-
-    /**
      * @brief Fonction de saut du node player
      * @param frameDeltaTime : temps écoulé entre la derniere frame et la frame actuelle
      */
@@ -104,7 +91,7 @@ public:
     /**
      * @brief Fonction appellee lorsque le joueur est touche par un ennemi
      */
-    bool getHitted();
+    void getHitted();
 
     /**
      * @brief Fonction d'affichage des informations de debug du node player
@@ -125,7 +112,11 @@ public:
      */
     void OnAnimationEnd(is::IAnimatedMeshSceneNode* node);
 
+    bool isDead();
+
 private:
+    void pain();
+
     bool isFurtive;     /*!< bool designant si le joueur est en mode furtif */
     bool isWalking;     /*!< bool designant si le joueur est en train de marcher */
 };

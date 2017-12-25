@@ -38,7 +38,7 @@ public:
      * @param _speed : vitesse par defaut du personnage
      */
     Characters(is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation, float _speed)
-        : node(_node), animation(_animation), speed(_speed), isAttacking(false), life(4) {node->setMD2Animation(animation);}
+        : node(_node), animation(_animation), speed(_speed), isAttacking(false), life(5), isSuffering(false) {node->setMD2Animation(animation);}
 
     /**
      * @brief Destructeur
@@ -68,14 +68,19 @@ public:
      * @brief Fonction virtuelle de prise de degat
      * @return aucun dans cette classe
      */
-    virtual bool getHitted() = 0;
+    virtual void getHitted() = 0;
 
 protected:
+    virtual void pain() = 0;
+
+    void die();
+
     is::IAnimatedMeshSceneNode* node;   /*!< pointeur sur le node du personnage */
     is::EMD2_ANIMATION_TYPE animation;  /*!< type d animation actuelle affectee au personnage */
     float speed;                        /*!< vitesse de deplacement du personnage */
     bool isAttacking;                   /*!< bool designant si le personnage est en train d attaquer */
     int life;
+    bool isSuffering;
 };
 
 #endif

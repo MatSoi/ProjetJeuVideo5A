@@ -6,7 +6,7 @@
 
 #include "enemy.h"
 
-bool Enemy::getHitted()
+void Enemy::getHitted()
 {
     if(isAlerted)
     {
@@ -19,22 +19,36 @@ bool Enemy::getHitted()
         pain();
     else
         die();
-
-    return true;
-}
-
-void Enemy::die()
-{
-    node->setLoopMode(false);
-    node->setAnimationEndCallback(this);
-    updateAnimation(is::EMAT_CROUCH_DEATH);
 }
 
 void Enemy::pain()
 {
+    isSuffering = true;
     node->setLoopMode(false);
     node->setAnimationEndCallback(this);
     node->setMD2Animation(is::EMAT_PAIN_A);
+}
+
+bool Enemy::canAttack()
+{
+    if(isAttacking)
+        return false;
+
+    if (((life == 1) || (distWithPlayer <= ATTACK_DIST_ENEMY && !isSuffering)) && isAlerted)
+    {
+        attack();
+        return true;
+    }
+
+    return false;
+}
+
+void Enemy::attack()
+{
+    isAttacking = true;
+    node->setLoopMode(false);
+    node->setAnimationEndCallback(this);
+    node->setMD2Animation(is::EMAT_ATTACK);
 }
 
 void Enemy::OnAnimationEnd(is::IAnimatedMeshSceneNode *node)
@@ -47,14 +61,27 @@ void Enemy::OnAnimationEnd(is::IAnimatedMeshSceneNode *node)
     else
     {
         node->setVisible(false);
-        node->setPosition(ic::vector3df(0.0f, -1000.0f, 0.0f));
+        node->setPosition(ic::vector3df(0.0f, -1000.0f, 0.0f)); // fais disparaitre l ennemi
     }
+
+    isSuffering = false;
+    isAttacking = false;
 }
 
-bool Enemy::playerIsInEnemyView(ic::vector3df playerPosition, irr::scene::ISceneCollisionManager *collMan)
+bool Enemy::behavior(const ic::vector3df& playerPosition, irr::scene::ISceneCollisionManager *collMan)
 {
-    float dist = sqrt(pow(node->getPosition().X - playerPosition.X,2) + pow(node->getPosition().Z - playerPosition.Z,2));
-    if(dist < rayonDetection)//Si le joueur se trouve dans le cercle  => check dans le cone de vision de l'enemi
+    if (!life)
+        return false;
+
+    playerIsInEnemyView(playerPosition, collMan);
+
+    return canAttack();
+}
+
+bool Enemy::playerIsInEnemyView(const ic::vector3df& playerPosition, irr::scene::ISceneCollisionManager *collMan)
+{
+    distWithPlayer = sqrt(pow(node->getPosition().X - playerPosition.X,2) + pow(node->getPosition().Z - playerPosition.Z,2));
+    if(distWithPlayer < rayonDetection)//Si le joueur se trouve dans le cercle  => check dans le cone de vision de l'enemi
     {
         ic::vector3df enemyPos= node->getPosition();
         ic::vector3df enemyRot= node->getRotation();
@@ -78,13 +105,13 @@ bool Enemy::playerIsInEnemyView(ic::vector3df playerPosition, irr::scene::IScene
         ic::vector2df vecMilieu = ic::vector2df(pointMilieu.X - enemyPos.X, pointMilieu.Y - enemyPos.Z);
         ic::vector2df vecPlayer = ic::vector2df(playerPosition.X - enemyPos.X, playerPosition.Z - enemyPos.Z);
 
-        if(vecMilieu.dotProduct(vecPlayer)> 0)//Permet de s'assurer que le joueur est devant l'ennemi et non derriere
+        if(vecMilieu.dotProduct(vecPlayer) > 0)//Permet de s'assurer que le joueur est devant l'ennemi et non derriere
         {
             float determinantGauche = vecGauche.X * vecPlayer.Y - vecGauche.Y * vecPlayer.X;
             float determinantDroit = vecDroite.X * vecPlayer.Y - vecDroite.Y * vecPlayer.X;
 
-            bool signeGauche = determinantGauche>=0;
-            bool signeDroit = determinantDroit>=0;
+            bool signeGauche = determinantGauche >= 0;
+            bool signeDroit = determinantDroit >= 0;
 
             if((signeGauche && !signeDroit) || (!signeGauche && signeDroit))//Verification que les signes sont opposés => donc le joueur est dans le cone
             {
@@ -105,16 +132,15 @@ bool Enemy::playerIsInEnemyView(ic::vector3df playerPosition, irr::scene::IScene
                             ID_PLAYER | ID_MAP,
                             0);
                 if(selectedSceneNode)
-                {
                     if(selectedSceneNode->getID() == ID_PLAYER)
                     {
                         isAlerted = true;
                         return true;
                     }
-                }
             }
         }
     }
+    isAlerted = false;
     return false;
 }
 

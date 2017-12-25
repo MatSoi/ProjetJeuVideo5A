@@ -19,6 +19,8 @@ namespace is = irr::scene;
 namespace iv = irr::video;
 namespace ig = irr::gui;
 
+#define ATTACK_DIST_ENEMY 45
+
 /**
  * @brief Classe Enemy, herite de la classe Characters
  * Represente les ennemis du joueur, contient les fonctions propres au comportement des ennemis
@@ -40,7 +42,7 @@ public:
      * @param _speed : vitesse de deplacement
      */
     Enemy (is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation = is::EMAT_STAND, float _speed = NORMAL_SPEED)
-        : Characters (_node, _animation, _speed), angleViewEnemy(20), rayonDetection(300), isAlerted(false) {}
+        : Characters (_node, _animation, _speed), angleViewEnemy(30), rayonDetection(300), isAlerted(false) {}
 
     /**
      * @brief Fonction pour savoir si le joueur est dans le champ de vision de l'ennemi
@@ -49,10 +51,10 @@ public:
      *      -> verification qu'il se trouve devant l'ennemie avec un produit scalaire
      *      -> verification qu'il se trouve dans le cone avec un produit vectoriel
      * -> lancer de rayon entre joueur et ennemy pour verifier qu'il y a intersection
-     * @param position du joueur
-     * @return true si dans le champ de vision de l'enemie, false sinon
+     * @param playerPosition : position du joueur
+     * @param collMan : pointeur sur le gestionnaire de collision
      */
-    bool playerIsInEnemyView(ic::vector3df playerPosition,is::ISceneCollisionManager* collMan);
+    bool playerIsInEnemyView(const ic::vector3df& playerPosition, irr::scene::ISceneCollisionManager *collMan);
 
     /**
      * @brief Access a l'angle de vue de l'ennemi (1/2 du vrai angle de vision)
@@ -61,32 +63,31 @@ public:
     const int &getAngleViewEnemy() const;
 
     /**
-     * @brief Fonction appelee si l ennemi est touche par une attaque du joueur
-     * Cette fonction n est pas terminee
-     * @return true: toujours pour le moment
-     */
-    bool getHitted();
-
-    /**
     * @brief Surcharge : est appele a la fin de la boucle de l animation de mort de l enemi.
   * Pour le moment : fais disparaitre l ennemi et le deplace en (0, -1000, 0).
     * @param node : pointeur sur le node de l enemi
     */
     void OnAnimationEnd(is::IAnimatedMeshSceneNode *node);
 
-private:
-
     /**
-     * @brief Fonction appelee si l ennemi n a plus de vie
-     * @return true: toujours pour le moment
+     * @brief Fonction de comportement general de l ennemi.
+     * Appelle les differentes methodes, comme la detection, l attaque, etc...
      */
-    void die();
+    bool behavior(const ic::vector3df& playerPosition, irr::scene::ISceneCollisionManager *collMan);
+
+    void getHitted();
+
+private:
+    bool canAttack();
 
     void pain();
+
+    void attack();
 
     int angleViewEnemy; /*!< Angle de vision de l'ennemi par rapport au centre de sa vision */
     int rayonDetection;
     bool isAlerted;
+    int distWithPlayer;
 };
 
 #endif
