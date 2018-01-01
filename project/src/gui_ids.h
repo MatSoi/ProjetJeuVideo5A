@@ -31,7 +31,10 @@ enum Window_menu
     MENU_TRIANGLES,
     MENU_TRANSPARENCY,
     MENU_ABOUT,
-    MENU_DEBUG_BOX
+    MENU_DEBUG_BOX,
+
+    NEW_GAME_BUTTON,
+    QUIT_GAME_BUTTON
 };
 
 #endif

@@ -6,6 +6,7 @@
 #include "events.h"
 #include "menu.h"
 #include "ID_list.h"
+#include "game_states.h"
 #include "screenManager.h"
 
 /*!
@@ -29,16 +30,25 @@ public:
     Scene();
 
     /**
-     * @brief Fonction d'initialisation globale qui appelle les differentes fonctions d'initialisations elementaires
-     */
-    void init();
-
-    /**
      * @brief Boucle principale du programme
      */
     void run();
 
 protected:
+    void restartGame();
+
+    /**
+     * @brief Fonction d'initialisation globale qui appelle les differentes fonctions d'initialisations elementaires
+     */
+    void init();
+
+    /**
+     * @brief Routine de fonctionement du jeu quand le joueur est en vie.
+     * @param frameDeltaTime : temps d actualisation
+     * @param playerIsAttacking : true si le joueur attaque, false sinon
+     * @param painFrame : frame d affichage de la douleur
+     */
+    void runTheGame(const f32 frameDeltaTime, bool playerIsAttacking, float &painFrame);
 
     /**
      * @brief Fonction d'initialisation de la map
@@ -108,6 +118,8 @@ protected:
     Enemy enemy;                            /*!< classe enemy */
 
     float screen_width, screen_height;      /*!< dimensions de la fenetre de jeu */
+    State_List *game_state;                 /*!< Etat du jeu */
+    bool initialized;                       /*!< indique si le joueur et les enemis sont initialises */
 };
 
 #endif // SCENE_H

@@ -2,7 +2,10 @@
 #define SCREEN_MANAGER_H
 
 #include "menu.h"
+#include "gui_ids.h"
 #include "irrlicht.h"
+#include "game_states.h"
+#include "iostream"
 
 /*!
  * \file screenManager.h
@@ -23,14 +26,14 @@ class ScreenManager
 {
 public:
     /**
-     * @brief Constructeur d initilisation.
-     * @param _gui : pointeur sur l interface utilisateur graphique.
-     * @param _cursor : pointeur sur le curseur.
-     * @param _painTexture : texture utilisee pour l image des degats.
+     * @brief Constructeur d initialisation.
+     * @param device : pointeur sur la device
+     * @param driver : pointeur sur le driver.
      * @param _screen_width : largeur de l ecran.
-     * @param _screen_height : hauteur de l ecran.
+     * @param _screen_height : longueur de l ecran.
+     * @param _game_state : pointeur sur l etat du jeu.
      */
-    ScreenManager(ig::IGUIEnvironment *_gui, ig::ICursorControl* _cursor, iv::ITexture *_painTexture, float _screen_width, float _screen_height);
+    ScreenManager(irr::IrrlichtDevice* device, iv::IVideoDriver *driver, float _screen_width, float _screen_height, State_List *_game_state);
 
     /**
      * @brief Met a jour les parametres de dimensions de l ecran.
@@ -38,7 +41,7 @@ public:
      * @param width : largeur de l ecran.
      * @param height : hauteur de l ecran.
      */
-    void resize_screen(float width, float height);
+    void updateState(float width, float height);
 
     /**
      * @brief Getteur sur le pointeur sur l interface utilisateur graphique.
@@ -71,6 +74,36 @@ public:
     bool isVisiblePain() const;
 
 private:
+    /**
+     * @brief Initialise le bouton de nouveau jeu.
+     * @param driver : pointeur sur le driver pour charger les images.
+     */
+    void init_newGame_button(irr::video::IVideoDriver *driver);
+
+    /**
+     * @brief Initialise le bouton de quitter le jeu.
+     * @param driver : pointeur sur le driver pour charger les images.
+     */
+    void init_quitGame_button(irr::video::IVideoDriver *driver);
+
+    /**
+     * @brief Initialise l image du titre.
+     * @param driver : pointeur sur le driver pour charger les images.
+     */
+    void init_title(irr::video::IVideoDriver *driver);
+
+    /**
+     * @brief Initialise l image du game over.
+     * @param driver : pointeur sur le driver pour charger les images.
+     */
+    void init_gameOver(irr::video::IVideoDriver *driver);
+
+    /**
+     * @brief Initialise l image de la douleur.
+     * @param driver : pointeur sur le driver pour charger les images.
+     */
+    void init_pain(irr::video::IVideoDriver *driver);
+
     ig::IGUIEnvironment *g;                 /*!< pointeur sur l'interface graphique */
     ig::ICursorControl* cursor;             /*!< pointeur sur le curseur de la souris */
     Menu* menu;                             /*!< pointeur sur le menu */
@@ -80,9 +113,15 @@ private:
     ig::IGUIFont* font;                     /*!< pointeur sur la taille de la police d'ecriture */
 
     ig::IGUIImage* painImage;               /*!< image utilisee pour afficher une prise de degats */
-    iv::ITexture *painTexture;              /*!< texture utilisee pour l image des degats */
 
     float screen_width, screen_height;      /*!< Dimensions de la fenetre de jeu */
+
+    ig::IGUIImage* titleImage;              /*!< image utilisee pour afficher le titre */
+    ig::IGUIImage* gameOverImage;           /*!< image utilisee pour afficher le game over */
+    ig::IGUIButton *newGame_button;         /*!< bouton de nouveau jeu */
+    ig::IGUIButton *quitGame_button;        /*!< bouton pour quitter le jeu */
+
+    State_List *game_state;                 /*!< Etat du jeu */
 };
 
 #endif

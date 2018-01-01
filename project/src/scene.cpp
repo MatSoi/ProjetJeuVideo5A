@@ -6,7 +6,7 @@
 
 #include "scene.h"
 
-Scene::Scene() : screen_width(960), screen_height(600)
+Scene::Scene() : screen_width(960), screen_height(600), game_state(new State_List(START_SCREEN)), initialized(false)
 {
     // Création de la fenêtre et du système de rendu.
     device = createDevice(iv::EDT_OPENGL,
@@ -15,8 +15,9 @@ Scene::Scene() : screen_width(960), screen_height(600)
     driver = device->getVideoDriver();
     smgr = device->getSceneManager();
     collMan = smgr->getSceneCollisionManager();
+    receiver = EventReceiver(game_state);
 
-    scManager = new ScreenManager(device->getGUIEnvironment(), device->getCursorControl(), driver->getTexture("data/basicImage.pcx"), screen_width, screen_height);
+    scManager = new ScreenManager(device, driver, screen_width, screen_height, game_state);
 }
 
 void Scene::init()
@@ -160,6 +161,9 @@ void Scene::debugDisplay(std::wstring wstr, int ind)
 
 void Scene::run()
 {
+    init();
+
+    bool playerIsAttacking = false;
     float painFrame = 0;
 
     u32 then = device->getTimer()->getTime();
@@ -173,28 +177,16 @@ void Scene::run()
         screen_width = device->getVideoDriver()->getScreenSize().Width;
         screen_height = device->getVideoDriver()->getScreenSize().Height;
 
-        scManager->resize_screen(screen_width, screen_height);
+        if(*game_state == GAME_OVER && !initialized)
+            restartGame();
 
-        if(receiver.event_handler(frameDeltaTime, screen_width, screen_height))
-            playerAttack();
+        playerIsAttacking = receiver.event_handler(frameDeltaTime, screen_width, screen_height);
 
-        if(!player.isDead())
-            if(enemy.behavior(player.getPosition(), collMan))
-            {
-                player.getHitted();
-                scManager->displayPain(true);
-            }
+        if(*game_state == RUNNING_GAME)
+            runTheGame(frameDeltaTime, playerIsAttacking, painFrame);
 
+        scManager->updateState(screen_width, screen_height);
         driver->beginScene(true, true, iv::SColor(0,50,100,255));
-
-        if(scManager->isVisiblePain())
-            painFrame += frameDeltaTime;
-
-        if(painFrame > 0.2f)
-        {
-            painFrame = 0;
-            scManager->displayPain(false);
-        }
 
         // Dessin de la scène :
         smgr->drawAll();
@@ -204,4 +196,41 @@ void Scene::run()
         driver->endScene();
     }
     device->drop();
+}
+
+void Scene::restartGame()
+{
+    player = Player(nodePlayer);
+    enemy = Enemy(nodeEnemy);
+    initialized = true;
+}
+
+void Scene::runTheGame(const f32 frameDeltaTime, bool playerIsAttacking, float &painFrame)
+{
+    if(playerIsAttacking)
+        playerAttack();
+
+    if(!player.isDead())
+    {
+        if(enemy.behavior(player.getPosition(), collMan))
+        {
+            player.getHitted();
+            scManager->displayPain(true);
+        }
+    }
+    else
+    {
+        *game_state = GAME_OVER; // A CHANGER
+        scManager->displayPain(false);
+        initialized = false;
+    }
+
+    if(scManager->isVisiblePain())
+        painFrame += frameDeltaTime;
+
+    if(painFrame > 0.2f)
+    {
+        painFrame = 0;
+        scManager->displayPain(false);
+    }
 }

@@ -145,6 +145,9 @@ void Player::OnAnimationEnd(is::IAnimatedMeshSceneNode* node)
 
 bool Player::isDead()
 {
+    if(node->getPosition().Y < END_MAP_Y)
+        life = 0;
+
     return life == 0;
 }
 

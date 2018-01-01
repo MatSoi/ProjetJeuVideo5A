@@ -14,6 +14,8 @@
 #include "characters.h"
 #include "ID_list.h"
 
+#define END_MAP_Y -2000.0f
+
 using namespace irr;
 
 namespace ic = irr::core;
@@ -25,7 +27,6 @@ namespace ig = irr::gui;
  * @brief Classe Player, herite de la classe Characters
  * Represente le joueur, contient les fonctions propres à ses mouvements/positions
  */
-// classe correspondant au personnage principale
 class Player : public Characters
 {  
 public:
@@ -42,7 +43,7 @@ public:
      * @param _speed : vitesse de deplacement
      */
     Player (is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation = is::EMAT_STAND, float _speed = NORMAL_SPEED)
-        : Characters (_node, _animation, _speed), isFurtive(false), isWalking(false) {}
+        : Characters (_node, _animation, _speed), isFurtive(false), isWalking(false) {node->setPosition(ic:: vector3df ( 0 , 0 , 0));}
 
     /**
      * @brief Destructeur

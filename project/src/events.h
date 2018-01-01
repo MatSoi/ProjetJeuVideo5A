@@ -11,6 +11,7 @@
 #include <irrlicht.h>
 #include "menu.h"
 #include "player.h"
+#include "game_states.h"
 
 #define HIGHT_TARGET 30 // position haute de la camera
 
@@ -42,11 +43,17 @@ struct SMouseState
  */
 class EventReceiver : public IEventReceiver
 {
-public:
+public: 
     /**
-     * @brief Constructeur
+     * @brief Constructeur vide
      */
-    EventReceiver();
+    EventReceiver() {}
+
+    /**
+     * @brief Constructeur d initialisation
+     * @param _game_state : pointeur sur l etat du jeu
+     */
+    EventReceiver(State_List *_game_state);
 
     /**
      * @brief Fonction d evenements surchargee
@@ -130,6 +137,12 @@ private:
     void camera_handler();
 
     /**
+     * @brief Fait tourner la camera autour de la carte de jeu
+     * @param frameDeltaTime : temps d actualisation
+     */
+    void camera_rotation(const f32 frameDeltaTime);
+
+    /**
      * @brief Mise a jour d une structure d evenements clavier
      * Remet a false toutes les entrees du tableau KeyEvent
      */
@@ -169,6 +182,8 @@ private:
     float angle_camera;                     /*!< Angle horizontal de camera */
     float screen_width, screen_height;      /*!< Dimensions de la fenetre de jeu */
     bool focus_mouse;                       /*!< Booleen a true quand les mouvements souris doivent etre consideres */
+
+    State_List* game_state;                 /*!< Etat du jeu */
 };
 
 #endif
