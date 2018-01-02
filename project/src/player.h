@@ -120,6 +120,11 @@ public:
      */
     bool isDead();
 
+    /**
+     * @brief Remet les variables de la classe en etat par defaut.
+     */
+    void reset();
+
 private:
     /**
      * @brief Fonction qui passe l ennemi en etat de prise de degat, et qui lance l animation correspondante.

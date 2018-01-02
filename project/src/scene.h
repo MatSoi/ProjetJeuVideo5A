@@ -35,6 +35,9 @@ public:
     void run();
 
 protected:
+    /**
+     * @brief Reinitialise le joueur et les ennemis
+     */
     void restartGame();
 
     /**
@@ -65,6 +68,13 @@ protected:
      * @brief Fonction d'initialisation du joueur
      */
     void initPlayer();
+
+    /**
+     * @brief Initialise le collisionneur avec la map pour le node en parametre.
+     * @param node : pointeur sur le node.
+     * @param radius : reference constante sur le rayon du node associe
+     */
+    void setupMapCollider(is::IAnimatedMeshSceneNode *node, const ic::vector3df &radius);
 
     /**
      * @brief Fonction d'initialisation des ennemis
@@ -110,10 +120,11 @@ protected:
 
     is::IAnimatedMesh *meshPlayer;          /*!< pointeur sur le mesh du joueur */
     is::IAnimatedMeshSceneNode *nodePlayer; /*!< pointeur sur le node du joueur */
-    ic::vector3df radiusPlayer;             /*!< rayon du joueur */
+    core::vector3df radiusPlayer;
 
     is::IAnimatedMesh *meshEnemy;           /*!< pointeur sur le mesh de l'ennemi */
     is::IAnimatedMeshSceneNode *nodeEnemy;  /*!< pointeur sur le node de l'ennemi */
+    core::vector3df radiusEnemy;
 
     is::ICameraSceneNode *camera;           /*!< pointeur sur la camera */
 

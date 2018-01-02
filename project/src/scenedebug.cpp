@@ -102,10 +102,11 @@ void SceneDebug::initArrowDebug()
 
 void SceneDebug::run()
 {
-    float painFrame = 0;
+    init();
 
-    //ROTATION
-    nodeEnemy->setRotation(ic::vector3df(0,35,0));
+    bool playerIsAttacking = false;
+    float angleCamera = 0.0f;
+    float painFrame = 0;
 
     u32 then = device->getTimer()->getTime();
     while(device->run())
@@ -118,30 +119,23 @@ void SceneDebug::run()
         screen_width = device->getVideoDriver()->getScreenSize().Width;
         screen_height = device->getVideoDriver()->getScreenSize().Height;
 
-//        scManager->updateState(screen_width, screen_height);
+        receiver.event_handler(frameDeltaTime, screen_width, screen_height, playerIsAttacking, angleCamera);
 
-//        if(receiver.event_handler(frameDeltaTime, screen_width, screen_height))
-//            playerAttack();
+        if(*game_state == RUNNING_GAME)
+            runTheGame(frameDeltaTime, playerIsAttacking, painFrame, angleCamera);
+        else if(*game_state == RESTART_GAME)
+        {
+            restartGame();
+            *game_state = RUNNING_GAME;
+        }
 
-        if(!player.isDead())
-            if(enemy.behavior(player.getPosition(), collMan))
-            {
-                player.getHitted();
-                scManager->displayPain(true);
-            }
+        scManager->updateState(screen_width, screen_height, player.getLife());
 
-        driver->beginScene(true, true, iv::SColor(0,50,100,255));
         enemyRaycastDebug();
         arrowParentDebug->setPosition(player.getPosition());
 
-        if(scManager->isVisiblePain())
-            painFrame += frameDeltaTime;
 
-        if(painFrame > 0.2f)
-        {
-            painFrame = 0;
-            scManager->displayPain(false);
-        }
+        driver->beginScene(true, true, iv::SColor(0,50,100,255));
 
         // Dessin de la scène :
         smgr->drawAll();

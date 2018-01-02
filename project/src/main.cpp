@@ -9,7 +9,7 @@
 
 int main()
 {
-    Scene* scene = new Scene();
+    SceneDebug* scene = new SceneDebug();
     scene->run();
 
     return 0;
