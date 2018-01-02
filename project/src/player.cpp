@@ -86,15 +86,35 @@ void Player::setWalkAnimation()
         updateAnimation(is::EMAT_RUN);
 }
 
-std::vector<int> Player::attack(is::ISceneCollisionManager *collMan, const scene::ICameraSceneNode *camera)
+void Player::setLook(const float &angleCamera)
+{
+    ic::vector3df rotation = node->getRotation();   // recuperation de l orientation du joueur
+    rotation.Y = angleCamera * 180.0f/M_PI;         // recalcule de l angle de regard du joueur suivant l angle en parametre
+    node->setRotation(rotation);                    // mise a jour de l orientation du joueur
+}
+
+void Player::animAttack()
+{
+    if(isFurtive)
+        node->setMD2Animation(is::EMAT_CROUCH_ATTACK);
+    else
+        node->setMD2Animation(is::EMAT_ATTACK);
+
+    node->setAnimationEndCallback(this);
+    node->setLoopMode(false);
+}
+
+std::vector<int> Player::attack(is::ISceneCollisionManager *collMan, const scene::ICameraSceneNode *camera, const float &angleCamera)
 {
     std::vector<int> retour = {-1, -1};
 
     if (!isAttacking && !isSuffering && life)
     {
+        setLook(angleCamera);
+
         ic::line3d<f32> ray;
         ray.start = camera->getTarget();
-        ray.end = ray.start + (camera->getTarget() - camera->getPosition()).normalize() * 1000.0f;
+        ray.end = ray.start + (camera->getTarget() - camera->getPosition()).normalize() * RAY_LENGTH;
 
         // Tracks the current intersection point with the level or a mesh
         core::vector3df intersection;
@@ -105,11 +125,9 @@ std::vector<int> Player::attack(is::ISceneCollisionManager *collMan, const scene
         is::ISceneNode * selectedSceneNode =
                 collMan->getSceneNodeAndCollisionPointFromRay(
                     ray,
-                    intersection,   // This will be the position of the collision
-                    hitTriangle,    // This will be the triangle hit in the collision
-                    ~ID_PLAYER,     // This ensures that only nodes that we have
-                    // set up to be pickable are considered
-                    0);             // Check the entire scene (this is actually the implicit default)
+                    intersection,   // position de la collision
+                    hitTriangle,    // triangle touche par la collision
+                    ~ID_PLAYER);    // on s assure qu on ne touche pas le joueur
 
         if(selectedSceneNode)
         {
@@ -118,13 +136,7 @@ std::vector<int> Player::attack(is::ISceneCollisionManager *collMan, const scene
             retour[1] = dist;
         }
 
-        if(isFurtive)
-            node->setMD2Animation(is::EMAT_CROUCH_ATTACK);
-        else
-            node->setMD2Animation(is::EMAT_ATTACK);
-
-        node->setAnimationEndCallback(this);
-        node->setLoopMode(false);
+        animAttack();
         isAttacking = true;
     }
 
@@ -146,7 +158,10 @@ void Player::OnAnimationEnd(is::IAnimatedMeshSceneNode* node)
 bool Player::isDead()
 {
     if(node->getPosition().Y < END_MAP_Y)
+    {
+        die();
         life = 0;
+    }
 
     return life == 0;
 }

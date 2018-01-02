@@ -28,3 +28,8 @@ const ic::vector3df& Characters::getRotation() const
 {
     return node->getRotation();
 }
+
+int Characters::getLife() const
+{
+    return life;
+}

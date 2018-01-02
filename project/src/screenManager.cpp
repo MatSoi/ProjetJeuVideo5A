@@ -28,6 +28,9 @@ ScreenManager::ScreenManager(irr::IrrlichtDevice *device, irr::video::IVideoDriv
     // Image du game over
     init_gameOver(driver);
 
+    // Image de la barre de vie
+    init_life(driver);
+
     // Choix de la police de caractères
     skin = g->getSkin();
     font = g->getFont("data/fontlucida.png");
@@ -35,31 +38,46 @@ ScreenManager::ScreenManager(irr::IrrlichtDevice *device, irr::video::IVideoDriv
 
     // Creation du bouton de newGame
     init_newGame_button(driver);
+    // Creation du bouton de restartGame
+    init_restartGame_button(driver);
     // Creation du bouton de quitGame
     init_quitGame_button(driver);
 
 }
 
-void ScreenManager::updateState(float width, float height)
+void ScreenManager::updateState(float width, float height, int life)
 {
     if(*game_state == START_SCREEN)
     {
-        titleImage->setVisible(true);
-        newGame_button->setVisible(true);
-        quitGame_button->setVisible(true);
+        displayInfo(titleImage);
+        displayInfo(newGame_button);
+        displayInfo(quitGame_button);
+
+        hideInfo(restartGame_button);
+        //hideInfo(menu);
+
+        hideLife();
     }
     else if(*game_state == RUNNING_GAME)
     {
-        titleImage->setVisible(false);
-        gameOverImage->setVisible(false);
-        newGame_button->setVisible(false);
-        quitGame_button->setVisible(false);
+        hideInfo(titleImage);
+        hideInfo(gameOverImage);
+        hideInfo(newGame_button);
+        hideInfo(restartGame_button);
+        hideInfo(quitGame_button);
+        //displayInfo(menu);
+
+        displayLife();
     }
     else if(*game_state == GAME_OVER)
     {
-        gameOverImage->setVisible(true);
-        newGame_button->setVisible(true);
-        quitGame_button->setVisible(true);
+        displayInfo(gameOverImage);
+        displayInfo(restartGame_button);
+        restartGame_button->setEnabled(true);
+        displayInfo(quitGame_button);
+        //hideInfo(menu);
+
+        life = 0;   // on affiche une barre de vie vide en cas de game over
     }
 
     if(screen_width != width || screen_height != height)
@@ -67,6 +85,8 @@ void ScreenManager::updateState(float width, float height)
         screen_width = width;
         screen_height = height;
     }
+
+    updateLife(life);
 }
 
 void ScreenManager::displayPain(bool state)
@@ -94,6 +114,24 @@ void ScreenManager::init_newGame_button(irr::video::IVideoDriver *driver)
     newGame_button->setPressedImage(newGame);
     newGame_button->setAlignment(ig::EGUIA_CENTER, ig::EGUIA_CENTER, ig::EGUIA_CENTER, ig::EGUIA_CENTER);
     newGame->drop();
+}
+
+void ScreenManager::init_restartGame_button(irr::video::IVideoDriver *driver)
+{
+    restartGame_button = g->addButton(ic::rect<irr::s32>(screen_width/2 - screen_width/4, screen_height/2 - screen_height/12,
+                                                     screen_width/2 + screen_width/4, screen_height/2 + screen_height/12),
+                                  0,
+                                  RESTART_GAME_BUTTON);
+
+    iv::ITexture* restartGame = driver->getTexture("data/NewGameUnpressed.png");
+    restartGame_button->setScaleImage(true);
+    restartGame_button->setImage(restartGame);
+
+    restartGame = driver->getTexture("data/NewGamePressed.png");
+    restartGame_button->setPressedImage(restartGame);
+    restartGame_button->setAlignment(ig::EGUIA_CENTER, ig::EGUIA_CENTER, ig::EGUIA_CENTER, ig::EGUIA_CENTER);
+
+    restartGame->drop();
 }
 
 void ScreenManager::init_quitGame_button(irr::video::IVideoDriver *driver)
@@ -128,7 +166,7 @@ void ScreenManager::init_gameOver(irr::video::IVideoDriver *driver)
 {
     iv::ITexture * basicTexture = driver->getTexture("data/gameOver.png");
     gameOverImage = g->addImage(ic::rect<irr::s32>(screen_width/2 - screen_width/3, screen_height/4 - screen_height/12,
-                                                screen_width/2 + screen_width/3, screen_height/4 + screen_height/12));
+                                                   screen_width/2 + screen_width/3, screen_height/4 + screen_height/12));
     gameOverImage->setScaleImage(false);
     gameOverImage->setImage(basicTexture);
     gameOverImage->setVisible(false);
@@ -144,4 +182,44 @@ void ScreenManager::init_pain(irr::video::IVideoDriver *driver)
     painImage->setColor(iv::SColor(50, 255, 0, 0));
     painImage->setVisible(false);
     painImage->setAlignment(ig::EGUIA_UPPERLEFT, ig::EGUIA_LOWERRIGHT, ig::EGUIA_UPPERLEFT, ig::EGUIA_LOWERRIGHT);
+}
+
+void ScreenManager::init_life(irr::video::IVideoDriver *driver)
+{
+    float horizontalOffset = 0.0f;
+    fullHeartTexture = driver->getTexture("data/fullHeart.png");
+    emptyHeartTexture = driver->getTexture("data/emptyHeart.png");
+
+    for (int index = 0; index < 5; ++index)
+    {
+        LifeImage.push_back(g->addImage(ic::rect<irr::s32>(5 + horizontalOffset, 20, 5 + screen_width/18 + horizontalOffset, 20 + screen_height/14)));
+        LifeImage[index]->setScaleImage(true);
+        LifeImage[index]->setImage(fullHeartTexture);
+        LifeImage[index]->setVisible(true);
+        LifeImage[index]->setAlignment(ig::EGUIA_UPPERLEFT, ig::EGUIA_UPPERLEFT, ig::EGUIA_UPPERLEFT, ig::EGUIA_UPPERLEFT);
+        horizontalOffset += screen_width/14;
+    }
+}
+
+void ScreenManager::updateLife(unsigned int life)
+{
+    for(unsigned int index = 0; index < LifeImage.size(); ++index)
+    {
+        if(index < life)
+            LifeImage[index]->setImage(fullHeartTexture);
+        else
+            LifeImage[index]->setImage(emptyHeartTexture);
+    }
+}
+
+void ScreenManager::displayLife()
+{
+    for(ig::IGUIImage* lifeIm : LifeImage)
+        displayInfo(lifeIm);
+}
+
+void ScreenManager::hideLife()
+{
+    for(ig::IGUIImage* lifeIm : LifeImage)
+        hideInfo(lifeIm);
 }

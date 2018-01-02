@@ -14,6 +14,9 @@
 #define STEALTH_SPEED 100.0f
 #define ENEMY_SPEED 80.0f
 
+#define RAY_LENGTH 1000.0f
+#define MAX_LIFE 5
+
 namespace ic = irr::core;
 namespace is = irr::scene;
 namespace iv = irr::video;
@@ -38,7 +41,7 @@ public:
      * @param _speed : vitesse par defaut du personnage
      */
     Characters(is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation, float _speed)
-        : node(_node), animation(_animation), speed(_speed), isAttacking(false), life(5), isSuffering(false) {node->setMD2Animation(animation);}
+        :node(_node), animation(_animation), speed(_speed), isAttacking(false), life(MAX_LIFE), isSuffering(false) {node->setMD2Animation(animation);}
 
     /**
      * @brief Destructeur
@@ -65,6 +68,12 @@ public:
     const ic::vector3df &getRotation() const;
 
     /**
+     * @brief Renvoie la valeur de vie du personnage
+     * @return life : valeur de la vie du personnage
+     */
+    int getLife() const;
+
+    /**
      * @brief Fonction virtuelle de prise de degat
      * @return aucun dans cette classe
      */
@@ -83,6 +92,7 @@ protected:
 
     is::IAnimatedMeshSceneNode* node;   /*!< pointeur sur le node du personnage */
     is::EMD2_ANIMATION_TYPE animation;  /*!< type d animation actuelle affectee au personnage */
+
     float speed;                        /*!< vitesse de deplacement du personnage */
     bool isAttacking;                   /*!< bool designant si le personnage est en train d attaquer */
     int life;                           /*!< compte de points de vie */

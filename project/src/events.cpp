@@ -29,14 +29,14 @@ EventReceiver::EventReceiver(State_List * _game_state)
     }
 }
 
-bool EventReceiver::event_handler(const f32 frameDeltaTime, float width, float height)
+void EventReceiver::event_handler(const f32 frameDeltaTime, float width, float height, bool &playerIsAttacking, float &angleCamera)
 {
     screen_width = width;
     screen_height = height;
-    bool attack = false;
+    playerIsAttacking = false;
 
-    if(*game_state == RUNNING_GAME)
-        attack = mouse_handler();
+    if(*game_state != START_SCREEN)
+        playerIsAttacking = mouse_handler();
     else
         camera_rotation(frameDeltaTime);
 
@@ -44,11 +44,9 @@ bool EventReceiver::event_handler(const f32 frameDeltaTime, float width, float h
     const wchar_t* szName = player_display.c_str();
     menu->window->getElementFromId(0)->setText(szName);
 
-
+    angleCamera = angle_camera;
     keyboard_handler(frameDeltaTime);
     MouseState.updateMouse();
-
-    return attack;
 }
 
 /*------------------------------------------------------------------------*\
@@ -58,6 +56,8 @@ void EventReceiver::keyboard_handler(const f32 frameDeltaTime)
 {
     if(IsKeyDown(KEY_ESCAPE))
         exit(0);
+    if(IsKeyTriggered(KEY_KEY_I))
+        focus_mouse = !focus_mouse;
 
     if(*game_state == RUNNING_GAME) {
         if((IsKeyTriggered(KEY_KEY_Z) || IsKeyTriggered(KEY_KEY_S) || IsKeyTriggered(KEY_KEY_D) || IsKeyTriggered(KEY_KEY_Q)))
@@ -90,9 +90,6 @@ void EventReceiver::keyboard_handler(const f32 frameDeltaTime)
 
         if(IsKeyDown(KEY_SPACE))
             player->jump(frameDeltaTime);
-
-        if(IsKeyTriggered(KEY_KEY_I))
-            focus_mouse = !focus_mouse;
     }
 
     // Reset released or first pressed keys
@@ -228,7 +225,8 @@ void EventReceiver::gui_event(const SEvent &event)
         switch(id)
         {
         case MENU_NEW_GAME:
-            // Faire quelque chose ici !
+            *game_state = RESTART_GAME;
+            focus_mouse = true;
             break;
         case MENU_QUIT:
             exit(0);
@@ -272,6 +270,8 @@ void EventReceiver::gui_event(const SEvent &event)
             *game_state = RUNNING_GAME;
             focus_mouse = true;
         }
+        else if (id == RESTART_GAME_BUTTON)
+            *game_state = RESTART_GAME;
         else if (id == QUIT_GAME_BUTTON)
             exit(0);
     }

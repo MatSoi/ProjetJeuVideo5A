@@ -16,6 +16,7 @@ enum State_List
 {
     START_SCREEN,
     RUNNING_GAME,
+    RESTART_GAME,
     GAME_OVER
 };
 

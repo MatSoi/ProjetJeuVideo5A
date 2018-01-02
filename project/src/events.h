@@ -66,14 +66,14 @@ public:
 
     /**
      * @brief Gestionnaire d evenements
-     * Gestionnaire appele a chaque rafraichissement par scene.cpp,
-     * appelle les differents gestionnaires d evenements clavier et souris.
+     * Gestionnaire appele a chaque rafraichissement par scene.cpp, appelle les differents gestionnaires d evenements clavier et souris.
      * @param frameDeltaTime : delta de temps entre deux frames, permet des mouvements identiques quelque soit la vitesse de rafraichissement
      * @param width : largeur de la fenetre de jeu
      * @param height : longueur de la fenetre de jeu
-     * @return true si le joueur a clique, false sinon
+     * @param playerIsAttacking : reference passee a true lorsque le joueur attaque
+     * @param angleCamera : reference sur l angle horizontal de la camera
      */
-    bool event_handler(const f32 frameDeltaTime, float width, float height);
+    void event_handler(const f32 frameDeltaTime, float width, float height, bool &playerIsAttacking, float &angleCamera);
 
     /**
      * @brief Initialise le pour sur le GUI

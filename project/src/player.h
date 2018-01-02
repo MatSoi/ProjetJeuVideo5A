@@ -43,7 +43,7 @@ public:
      * @param _speed : vitesse de deplacement
      */
     Player (is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation = is::EMAT_STAND, float _speed = NORMAL_SPEED)
-        : Characters (_node, _animation, _speed), isFurtive(false), isWalking(false) {node->setPosition(ic:: vector3df ( 0 , 0 , 0));}
+        : Characters (_node, _animation, _speed), isFurtive(false), isWalking(false) {}
 
     /**
      * @brief Destructeur
@@ -84,10 +84,11 @@ public:
      * le/les ennemis.
      * @param collMan : Manager de collision de la scene
      * @param camera : camera de la scene
+     * @param angleCamera : angle de la camera, pour faire tourner le joueur dans la bonne orientation
      * @return retour : vector contenant l ID de l ennemi touche et la distance
      * (si on ne touche rien, ce vector contient juste {-1, -1}
      */
-    std::vector<int> attack(scene::ISceneCollisionManager *collMan, const is::ICameraSceneNode* camera);
+    std::vector<int> attack(scene::ISceneCollisionManager *collMan, const is::ICameraSceneNode* camera, const float &angleCamera);
 
     /**
      * @brief Fonction appellee lorsque le joueur est touche par un ennemi
@@ -129,6 +130,17 @@ private:
      * @brief Fonction qui lance l animation de mort du joueur.
      */
     void die();
+
+    /**
+     * @brief Tourne le joueur dans le sens de l angle en parametre.
+     * @param angleCamera : reference constante sur l angle de la camera.
+     */
+    void setLook(const float &angleCamera);
+
+    /**
+     * @brief Lance l animation d attaque.
+     */
+    void animAttack();
 
     bool isFurtive;     /*!< bool designant si le joueur est en mode furtif */
     bool isWalking;     /*!< bool designant si le joueur est en train de marcher */

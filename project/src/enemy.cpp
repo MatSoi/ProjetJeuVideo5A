@@ -125,7 +125,7 @@ bool Enemy::playerIsInEnemyView(const ic::vector3df& playerPosition, irr::scene:
                 //Raycast de l'ennemi vers le joueur et verification de hit
                 ic::line3d<irr::f32> ray;
                 ray.start = enemyPos;
-                ray.end = ray.start + (playerPosition - ray.start).normalize() * 1000.0f;
+                ray.end = ray.start + (playerPosition - ray.start).normalize() * RAY_LENGTH;
 
 
                 ic::vector3df intersection;

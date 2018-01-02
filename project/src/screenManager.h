@@ -6,6 +6,7 @@
 #include "irrlicht.h"
 #include "game_states.h"
 #include "iostream"
+#include "vector"
 
 /*!
  * \file screenManager.h
@@ -40,8 +41,9 @@ public:
      * Change aussi la taille de l imagede degats en consequence.
      * @param width : largeur de l ecran.
      * @param height : hauteur de l ecran.
+     * @param life : valeur de vie du joueur.
      */
-    void updateState(float width, float height);
+    void updateState(float width, float height, int life);
 
     /**
      * @brief Getteur sur le pointeur sur l interface utilisateur graphique.
@@ -80,6 +82,8 @@ private:
      */
     void init_newGame_button(irr::video::IVideoDriver *driver);
 
+    void init_restartGame_button(irr::video::IVideoDriver *driver);
+
     /**
      * @brief Initialise le bouton de quitter le jeu.
      * @param driver : pointeur sur le driver pour charger les images.
@@ -104,6 +108,28 @@ private:
      */
     void init_pain(irr::video::IVideoDriver *driver);
 
+    /**
+     * @brief Initilialise la barre de vie
+     * @param driver : pointeur sur le driver pour charger les images.
+     */
+    void init_life(irr::video::IVideoDriver *driver);
+
+    /**
+     * @brief Met a jour la barre de vie en fonction de la valeur de la vie.
+     * @param life : valeur de la vie.
+     */
+    void updateLife(unsigned int life);
+
+    /**
+     * @brief Affiche la barre de vie.
+     */
+    void displayLife();
+
+    /**
+     * @brief Cache la barre de vie.
+     */
+    void hideLife();
+
     ig::IGUIEnvironment *g;                 /*!< pointeur sur l'interface graphique */
     ig::ICursorControl* cursor;             /*!< pointeur sur le curseur de la souris */
     Menu* menu;                             /*!< pointeur sur le menu */
@@ -118,10 +144,44 @@ private:
 
     ig::IGUIImage* titleImage;              /*!< image utilisee pour afficher le titre */
     ig::IGUIImage* gameOverImage;           /*!< image utilisee pour afficher le game over */
+
+    std::vector<ig::IGUIImage*> LifeImage;  /*!< image utilisee pour afficher le game over */
+    iv::ITexture *fullHeartTexture;
+    iv::ITexture *emptyHeartTexture;
+
     ig::IGUIButton *newGame_button;         /*!< bouton de nouveau jeu */
+    ig::IGUIButton *restartGame_button;     /*!< bouton pour recommencer le jeu */
     ig::IGUIButton *quitGame_button;        /*!< bouton pour quitter le jeu */
 
     State_List *game_state;                 /*!< Etat du jeu */
 };
+
+template<typename T>
+/**
+ * @brief Affiche une information si elle n est pas deja affichee.
+ * @param info : information a afficher
+ */
+void displayInfo(T info)
+{
+    if(!info->isVisible())
+    {
+        info->setVisible(true);
+        info->setEnabled(true);
+    }
+}
+
+template<typename T>
+/**
+ * @brief Cache une information si elle n est pas deja affichee.
+ * @param info : information a cacher
+ */
+void hideInfo(T info)
+{
+    if(info->isVisible())
+    {
+        info->setVisible(false);
+        info->setEnabled(false);
+    }
+}
 
 #endif

@@ -118,10 +118,10 @@ void SceneDebug::run()
         screen_width = device->getVideoDriver()->getScreenSize().Width;
         screen_height = device->getVideoDriver()->getScreenSize().Height;
 
-        scManager->updateState(screen_width, screen_height);
+//        scManager->updateState(screen_width, screen_height);
 
-        if(receiver.event_handler(frameDeltaTime, screen_width, screen_height))
-            playerAttack();
+//        if(receiver.event_handler(frameDeltaTime, screen_width, screen_height))
+//            playerAttack();
 
         if(!player.isDead())
             if(enemy.behavior(player.getPosition(), collMan))

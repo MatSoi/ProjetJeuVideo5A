@@ -47,8 +47,9 @@ protected:
      * @param frameDeltaTime : temps d actualisation
      * @param playerIsAttacking : true si le joueur attaque, false sinon
      * @param painFrame : frame d affichage de la douleur
+     * @param angleCamera : angle horizontal de la camera
      */
-    void runTheGame(const f32 frameDeltaTime, bool playerIsAttacking, float &painFrame);
+    void runTheGame(const f32 frameDeltaTime, const bool &playerIsAttacking, float &painFrame, const float &angleCamera);
 
     /**
      * @brief Fonction d'initialisation de la map
@@ -83,7 +84,7 @@ protected:
     /**
      * @brief Fonction appellee lorsque le joueur attaque : tape l'ennemi en face si a distance < ATTACK_DIST
      */
-    void playerAttack();
+    void playerAttack(const float &angleCamera);
 
     /**
      * @brief Fonction d'affichage d'element de debug dans la window de debug
@@ -105,9 +106,11 @@ protected:
 
     is:: IAnimatedMesh *meshMap;            /*!< pointeur sur le mesh de la map */
     is:: IMeshSceneNode *nodeMap;           /*!< pointeur sur le node de la map */
+    scene::ITriangleSelector* selectorMap;  /*!< selecteur de la map */
 
     is::IAnimatedMesh *meshPlayer;          /*!< pointeur sur le mesh du joueur */
     is::IAnimatedMeshSceneNode *nodePlayer; /*!< pointeur sur le node du joueur */
+    ic::vector3df radiusPlayer;             /*!< rayon du joueur */
 
     is::IAnimatedMesh *meshEnemy;           /*!< pointeur sur le mesh de l'ennemi */
     is::IAnimatedMeshSceneNode *nodeEnemy;  /*!< pointeur sur le node de l'ennemi */
@@ -119,7 +122,6 @@ protected:
 
     float screen_width, screen_height;      /*!< dimensions de la fenetre de jeu */
     State_List *game_state;                 /*!< Etat du jeu */
-    bool initialized;                       /*!< indique si le joueur et les enemis sont initialises */
 };
 
 #endif // SCENE_H
