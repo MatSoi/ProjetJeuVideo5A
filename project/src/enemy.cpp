@@ -8,7 +8,7 @@
 
 void Enemy::getHitted()
 {
-    if(isAlerted)
+    if(isPlayerVisible)
     {
         life -= 1;
     }
@@ -46,17 +46,13 @@ void Enemy::idle()
     updateAnimation(is::EMAT_STAND);
 }
 
-void Enemy::resetRotation()
-{
-    node->setRotation(initialRotation);//Reset de la rotation de l'enemie sur la rotation initiale
-}
 
 bool Enemy::canAttack()
 {
     if(isAttacking)
         return false;
 
-    if (((life == 1) || (distWithPlayer <= ATTACK_DIST_ENEMY && !isSuffering)) && isAlerted)
+    if (((life == 1) || (distWithPlayer <= ATTACK_DIST_ENEMY && !isSuffering)) && isPlayerVisible)
     {
         attack();
         return true;
@@ -143,13 +139,19 @@ bool Enemy::isPlayerInEnemyView(const ic::vector3df& playerPosition, irr::scene:
                 if(selectedSceneNode)
                     if(selectedSceneNode->getID() == ID_PLAYER)
                     {
-                        isAlerted = true;
+                        if(!isAlerted)//Si non alerté auparavant : devient alerte et sauvegarde sa position actuelle
+                        {
+                            isAlerted = true;
+                            alertedPositions.push_back(getPosition());
+                        }
+
+                        isPlayerVisible = true;
                         return true;
                     }
             }
         }
     }
-    isAlerted = false;
+    isPlayerVisible = false;
     return false;
 }
 
@@ -158,8 +160,10 @@ const int& Enemy::getAngleViewEnemy() const
     return angleViewEnemy;
 }
 
-void Enemy::followPlayer(ic::vector3df playerPosition, const irr::f32 frameDeltaTime, int sizePositions)
+void Enemy::followPlayer(ic::vector3df playerPosition, const irr::f32 frameDeltaTime)
 {
+    int sizePositions = alertedPositions.size()-1;
+
     ic::vector3df direction = playerPosition - getPosition();
     //Correct enemy rotation according to the direction
     float angleDirection = direction.getHorizontalAngle().Y;
@@ -168,36 +172,81 @@ void Enemy::followPlayer(ic::vector3df playerPosition, const irr::f32 frameDelta
     if(distWithPlayer > ATTACK_DIST_ENEMY - 5)
     {
         //Bouge l'ennemi vers le joueur
-        node->setPosition(node->getPosition() + frameDeltaTime * direction);
+        node->setPosition(node->getPosition() + frameDeltaTime * direction.normalize() * speed);
         //Affecte une animation de course pour l'enemie
         run();
 
         //Si la distance entre la position de l'ennemi et la derniere enregistre, on enregistre position actuelle
-        if(getPosition().getDistanceFrom(positions[sizePositions])>100.0f)
-            positions.push_back(getPosition());
+        if(getPosition().getDistanceFrom(alertedPositions[sizePositions])>100.0f)
+            alertedPositions.push_back(getPosition());
     }
     else
         idle();
 }
 
-void Enemy::getBackToOriginalPosition(const irr::f32 frameDeltaTime, int sizePositions)
+void Enemy::getBackToOriginalPosition(const irr::f32 frameDeltaTime)
 {
-    if(sizePositions != 0  && (getPosition().getDistanceFrom(positions[sizePositions])<30.0f))//Si derniere position enregistre est rejoint et qu'il ne s'agit pas de la premiere position, on la supprime et on continue
+    int sizePositions = alertedPositions.size()-1;
+
+    //Suppression d'une position si rejointe
+    if(sizePositions != 0  && (getPosition().getDistanceFrom(alertedPositions[sizePositions])<30.0f))//Si derniere position enregistre est rejoint et qu'il ne s'agit pas de la premiere position, on la supprime et on continue
     {
-        positions.erase(sizePositions);
+        alertedPositions.erase(sizePositions);
         sizePositions--;
     }
 
-    ic::vector3df direction = positions[sizePositions] - getPosition();
-    //Ajuste la direction de l'enemi avec la direction
-    float angleDirection = direction.getHorizontalAngle().Y;
-    node->setRotation(ic::vector3df(0,angleDirection - 90,0));
+    //Arret de l'etat alerte si sur la premiere position
+    if(sizePositions == 0 && (getPosition().getDistanceFrom(alertedPositions[0])<20.0f))//Si il s'agit de la derniere position ou allé et qu'on est arrivé, sorti de l'état alerte
+    {
+        isAlerted = false;
+        alertedPositions.erase(0);
+    }
+    //Gestion du déplacement entre les positions
+    else
+    {
+        ic::vector3df direction = alertedPositions[sizePositions] - getPosition();
+        //Ajuste la direction de l'enemi avec la direction
+        float angleDirection = direction.getHorizontalAngle().Y;
+        node->setRotation(ic::vector3df(0,angleDirection - 90,0));
 
-    //Avance l'enemi vers la position anterieur
-    node->setPosition(node->getPosition() + frameDeltaTime * direction);
+        //Avance l'enemi vers la position anterieur
+        node->setPosition(node->getPosition() + frameDeltaTime * direction);
 
-    //Animation de run
-    run();
+        //Animation de run
+        run();
+    }
+}
+
+void Enemy::followPath(const irr::f32 frameDeltaTime)
+{
+    if(followedPath.sizePath >= 1)//Si le chemin contient au moins 2 points
+    {
+        //Si proche du prochain point du path, passe au suivant
+        if(getPosition().getDistanceFrom(followedPath.pathPositions[followedPath.currentPathNumber])<30.0f)
+        {
+            //Lorsque proche du point, declenchement du timer du chemin et attente jusqu'a depasser la limite
+            if(followedPath.pathTimer < followedPath.timerLimit)
+            {
+                idle();
+                followedPath.pathTimer+=frameDeltaTime;
+                return;
+            }
+            followedPath.pathTimer = 0;//Reset du timer pour le prochain point
+
+            followedPath.currentPathNumber += 1;//Incremente la position du chemin parcouru
+            followedPath.currentPathNumber %= followedPath.sizePath+1;
+        }
+
+        ic::vector3df direction = followedPath.pathPositions[followedPath.currentPathNumber] - getPosition();
+        //Correct enemy rotation according to the direction
+        float angleDirection = direction.getHorizontalAngle().Y;
+        node->setRotation(ic::vector3df(0,angleDirection - 90,0));
+
+        //Bouge l'ennemi vers le joueur
+        node->setPosition(node->getPosition() + frameDeltaTime * direction.normalize() * speed);
+        //Affecte une animation de course pour l'enemie
+        run();
+    }
 }
 
 bool Enemy::normalBehaviour(ic::vector3df playerPosition, const irr::f32 frameDeltaTime, is::ISceneCollisionManager* collMan)
@@ -205,21 +254,19 @@ bool Enemy::normalBehaviour(ic::vector3df playerPosition, const irr::f32 frameDe
     if (!life)
         return false;
 
-    int sizePositions = positions.size()-1;
-
     if(isPlayerInEnemyView(playerPosition,collMan))//Si je joueur est visible par l'ennemie
-        followPlayer(playerPosition, frameDeltaTime, sizePositions);
+    {
+        followPlayer(playerPosition, frameDeltaTime);
+    }
     else
     {
-        if(getPosition().getDistanceFrom(positions[0]) > 30)//Si enemie n'est pas sur sa position initiale
+        if(isAlerted)//Si enemie en alerte,retour sur la position de départ
         {
-            getBackToOriginalPosition (frameDeltaTime, sizePositions);
+            getBackToOriginalPosition (frameDeltaTime);
         }
-        else //Si rien a faire donc sur sa position de départ
-            //Set animation to idle et reset rotation
+        else //Si non alerte,  parcours normal
         {
-            idle();
-            resetRotation();
+            followPath(frameDeltaTime);
         }
     }
 
