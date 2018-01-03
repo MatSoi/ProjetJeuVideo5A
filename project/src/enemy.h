@@ -120,6 +120,10 @@ private:
      */
     void getBackToOriginalPosition(const irr::f32 frameDeltaTime);
 
+    /**
+     * @brief Fonction de suivi du chemin par l'ennemi, il parcours les positions en s'arretant quelques ms a l'arrivée sur chaque positions
+     * @param frameDeltaTime : delta T entre les frames
+     */
     void followPath(const irr::f32 frameDeltaTime);
 
     /**

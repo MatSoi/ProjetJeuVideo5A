@@ -18,7 +18,17 @@ namespace ic = irr::core;
 class Path
 {
 public:
+
+    /**
+     * @brief Constructeur de chemin
+     */
     Path() : currentPathNumber (0), sizePath(0), pathTimer(0.0f), timerLimit(0.8f) {}
+
+    /**
+     * @brief Initialisation d'un chemin rectangulaire centré sur center et de taille 2 * radius
+     * @param center : centre du chemin rectangulaire
+     * @param radius : "rayon" du chemin
+     */
     void initRectangularPath(ic::vector3df center, int radius);
 
     ic::array<ic::vector3df> pathPositions; /*!< Positions successives pour le path follow de l'ennemi */
