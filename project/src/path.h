@@ -18,11 +18,15 @@ namespace ic = irr::core;
 class Path
 {
 public:
+    /**
+     * @brief Constructeur vide
+     */
+    Path() {}
 
     /**
      * @brief Constructeur de chemin
      */
-    Path() : currentPathNumber (0), sizePath(0), pathTimer(0.0f), timerLimit(0.8f) {}
+    Path(int _currentPathNumber): currentPathNumber(_currentPathNumber), sizePath(0), pathTimer(0.0f), timerLimit(0.8f) {}
 
     /**
      * @brief Initialisation d'un chemin rectangulaire centré sur center et de taille 2 * radius
@@ -32,10 +36,10 @@ public:
     void initRectangularPath(ic::vector3df center, int radius);
 
     ic::array<ic::vector3df> pathPositions; /*!< Positions successives pour le path follow de l'ennemi */
-    int currentPathNumber;  /*!< Numero de la position actuelle du path suivi */
-    int sizePath;   /*!< Nombre de positions dans le path */
-    float pathTimer; /*!< Timer du chemin pour attentes entre les positions du chemin */
-    float timerLimit;  /*!< Limite du timer pour définir l'attente */
+    int currentPathNumber;                  /*!< Numero de la position actuelle du path suivi */
+    int sizePath;                           /*!< Nombre de positions dans le path */
+    float pathTimer;                        /*!< Timer du chemin pour attentes entre les positions du chemin */
+    float timerLimit;                       /*!< Limite du timer pour définir l'attente */
 };
 
 #endif // PATH_H

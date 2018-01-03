@@ -34,7 +34,6 @@ public:
      */
     Enemy () {}
 
-
     /**
      * @brief Constructeur d initialisation.
      * Constructeur appelant simplement celui issu de l heritage avec la classe Characters
@@ -42,13 +41,7 @@ public:
      * @param _animation : premiere animation
      * @param _speed : vitesse de deplacement
      */
-    Enemy (is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation = is::EMAT_STAND, float _speed = ENEMY_SPEED)
-        : Characters (_node, _animation, _speed), angleViewEnemy(30), rayonDetection(300), isPlayerVisible(false), isAlerted(false)
-    {
-        node->setVisible(true);
-        followedPath.initRectangularPath(getPosition(), 100);//Initialisation d'un chemin rectangulaire centre sur l'ennemi
-        node->setPosition(followedPath.pathPositions[0]);//La position de l'ennemi est place sur la premiere position du chemin
-    }
+    Enemy (is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation = is::EMAT_STAND, float _speed = ENEMY_SPEED);
 
     /**
      * @brief Fonction pour savoir si le joueur est dans le champ de vision de l'ennemi
@@ -155,6 +148,7 @@ private:
     int distWithPlayer;                 /*!< distance avec le joueur */
     ic::array<ic::vector3df> alertedPositions; /*!< Positions successives de l'ennemi pour retour en etat non alerte */
     Path followedPath;  /*!< Path suivi par l'ennemi */
+    bool hitted;
 };
 
 #endif

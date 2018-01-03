@@ -35,7 +35,7 @@ void EventReceiver::event_handler(const f32 frameDeltaTime, float width, float h
     screen_height = height;
     playerIsAttacking = false;
 
-    if(*game_state != START_SCREEN)
+    if(*game_state == RUNNING_GAME)
         playerIsAttacking = mouse_handler();
     else
         camera_rotation(frameDeltaTime);
@@ -136,12 +136,20 @@ void EventReceiver::camera_rotation(const f32 frameDeltaTime)
 
     float conv = M_PI/180.0f;
 
+    ic::vector3df target = ic::vector3df();
+    float rayon = 1500.0f;
+
+    if(*game_state == GAME_OVER) {
+        target = player->getPosition() + ic::vector3df(0, HIGHT_TARGET, 0);
+        rayon = 50.0f;
+    }
+
     float theta = angle_camera * conv - M_PI_2;
     float phi = 45.0f * -conv + M_PI_2;
 
-    position.X = 1500.0f * std::sin(phi) * std::sin(theta);
-    position.Y = 1500.0f * std::cos(phi);
-    position.Z = 1500.0f * std::sin(phi) * std::cos(theta);
+    position.X = rayon * std::sin(phi) * std::sin(theta) + target.X;
+    position.Y = rayon * std::cos(phi) + target.Y;
+    position.Z = rayon * std::sin(phi) * std::cos(theta) + target.Z;
     camera->setPosition(position);
 
     angle_camera += 10.0f * frameDeltaTime;

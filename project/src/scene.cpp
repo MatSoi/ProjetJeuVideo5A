@@ -22,6 +22,7 @@ Scene::Scene() : screen_width(960), screen_height(600), game_state(new State_Lis
 
 void Scene::init()
 {
+    initEnemyPosition();
     initMap();
     initTextures();
     initPlayer();
@@ -96,25 +97,64 @@ void Scene::initEnemy()
     // Chargement de notre personnage
     meshEnemy = smgr->getMesh("data/tris.md2");
 
-    // Attachement de notre personnage dans la scène
-    nodeEnemy = smgr->addAnimatedMeshSceneNode(meshEnemy, 0, ID_ENEMY);
-    nodeEnemy->setMaterialFlag(iv::EMF_LIGHTING, false);
-    nodeEnemy->setMaterialTexture(0, textures[1]);
-    nodeEnemy->setPosition(core:: vector3df (100 , 0, 100));
-
-    //Calcul radius de la BBox du node Enemy
-    const core::aabbox3d<f32>& box = nodeEnemy->getBoundingBox();
-    radiusEnemy = 1.3f*(box.MaxEdge - box.getCenter());
-    // Et l'animateur/collisionneur
-    setupMapCollider(nodeEnemy, radiusEnemy);
-
-    scene::ITriangleSelector* selector;
-    selector = smgr->createTriangleSelectorFromBoundingBox(nodeEnemy);
-    nodeEnemy->setTriangleSelector(selector);
-    selector->drop();
+    for (std::map<int, ic::vector3df>::iterator it = positionEnemyMap.begin(); it!=positionEnemyMap.end(); ++it)
+    {
+        // Attachement de notre personnage dans la scène
+        nodeEnemyMap[it->first] = smgr->addAnimatedMeshSceneNode(meshEnemy, 0, it->first);
+        nodeEnemyMap[it->first]->setMaterialFlag(iv::EMF_LIGHTING, false);
+        nodeEnemyMap[it->first]->setMaterialTexture(0, textures[1]);
+        nodeEnemyMap[it->first]->setPosition(it->second);
 
 
-    enemy = Enemy(nodeEnemy);
+        //Calcul radius de la BBox du node Enemy
+        const core::aabbox3d<f32>& box = nodeEnemyMap[it->first]->getBoundingBox();
+        radiusEnemy = 1.3f*(box.MaxEdge - box.getCenter());
+        // Et l'animateur/collisionneur
+        setupMapCollider(nodeEnemyMap[it->first], radiusEnemy);
+
+        scene::ITriangleSelector* selector;
+        selector = smgr->createTriangleSelectorFromBoundingBox(nodeEnemyMap[it->first]);
+        nodeEnemyMap[it->first]->setTriangleSelector(selector);
+        selector->drop();
+
+        enemyMap[it->first] = Enemy(nodeEnemyMap[it->first]);
+    }
+}
+
+void Scene::initEnemyPosition()
+{
+    int id = 1 << 2;
+    for (int i = 0; i < ENEMY_NUMBER; ++i)
+    {
+        ic::vector3df position;
+        switch (id)
+        {
+        case(ID_ENEMY_1):
+            position = ic::vector3df(100, 0, 100);
+            break;
+        case(ID_ENEMY_2):
+            position = ic::vector3df(-400, 115, 480);
+            break;
+        case(ID_ENEMY_3):
+            position = ic::vector3df(-400, 111, -280);
+            break;
+        case(ID_ENEMY_4):
+            position = ic::vector3df(600, 111, 480);
+            break;
+        case(ID_ENEMY_5):
+            position = ic::vector3df(600, 111, -280);
+            break;
+        case(ID_ENEMY_6):
+            position = ic::vector3df(625, 240, 1100);
+            break;
+        case(ID_ENEMY_7):
+            position = ic::vector3df(620, 272, -771);
+            break;
+        default:;
+        }
+        positionEnemyMap[id] = position;
+        id = 1 << (i + 3);
+    }
 }
 
 void Scene::initCamera()
@@ -137,12 +177,12 @@ void Scene::playerAttack(const float &angleCamera)
     int ID = attack[0];
     int dist = attack[1];
 
-    if (ID != -1)
+    if (ID != -1 && ID != ID_MAP)
     {
         std::wstring wstr = L"ID: " + std::to_wstring(ID) + L" Distance: "+ std::to_wstring(dist);
         debugDisplay(wstr, 1);
-        if (ID == ID_ENEMY && dist <= ATTACK_DIST)
-            enemy.getHitted();
+        if (dist <= ATTACK_DIST)
+            enemyMap[ID].getHitted();
     }
 }
 
@@ -154,6 +194,7 @@ void Scene::debugDisplay(std::wstring wstr, int ind)
 
 void Scene::run()
 {
+    srand(time(NULL));
     init();
 
     bool playerIsAttacking = false;
@@ -197,14 +238,17 @@ void Scene::run()
 void Scene::restartGame()
 {
     nodePlayer->removeAnimators();
-    nodePlayer->setPosition(ic::vector3df(-240.0f , 6.0f, -16.0f));
+    nodePlayer->setPosition(ic::vector3df(-240.0f, 6.0f, -16.0f));
     setupMapCollider(nodePlayer, radiusPlayer);
     player = Player(nodePlayer);
 
-    nodeEnemy->removeAnimators();
-    nodeEnemy->setPosition(core:: vector3df (100 , 0, 100));
-    setupMapCollider(nodeEnemy, radiusEnemy);
-    enemy = Enemy(nodeEnemy);
+    for (std::map<int, Enemy>::iterator it = enemyMap.begin(); it!=enemyMap.end(); ++it)
+    {
+        nodeEnemyMap[it->first]->removeAnimators();
+        nodeEnemyMap[it->first]->setPosition(positionEnemyMap[it->first]);
+        setupMapCollider(nodeEnemyMap[it->first], radiusEnemy);
+        it->second = Enemy(nodeEnemyMap[it->first]);
+    }
 }
 
 void Scene::runTheGame(const f32 frameDeltaTime, const bool &playerIsAttacking, float &painFrame, const float &angleCamera)
@@ -214,15 +258,16 @@ void Scene::runTheGame(const f32 frameDeltaTime, const bool &playerIsAttacking, 
 
     if(!player.isDead())
     {
-        if(enemy.normalBehaviour(player.getPosition(), frameDeltaTime, collMan))
-        {
-            player.getHitted();
-            scManager->displayPain(true);
-        }
+        for (std::map<int, Enemy>::iterator it = enemyMap.begin(); it!=enemyMap.end(); ++it)
+            if(it->second.normalBehaviour(player.getPosition(), frameDeltaTime, collMan))
+            {
+                player.getHitted();
+                scManager->displayPain(true);
+            }
     }
     else
     {
-        *game_state = GAME_OVER; // A CHANGER
+        *game_state = GAME_OVER;
         scManager->displayPain(false);
     }
 

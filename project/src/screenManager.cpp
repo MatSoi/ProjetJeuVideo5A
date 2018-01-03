@@ -123,11 +123,11 @@ void ScreenManager::init_restartGame_button(irr::video::IVideoDriver *driver)
                                   0,
                                   RESTART_GAME_BUTTON);
 
-    iv::ITexture* restartGame = driver->getTexture("data/NewGameUnpressed.png");
+    iv::ITexture* restartGame = driver->getTexture("data/RestartUnpressed.png");
     restartGame_button->setScaleImage(true);
     restartGame_button->setImage(restartGame);
 
-    restartGame = driver->getTexture("data/NewGamePressed.png");
+    restartGame = driver->getTexture("data/RestartPressed.png");
     restartGame_button->setPressedImage(restartGame);
     restartGame_button->setAlignment(ig::EGUIA_CENTER, ig::EGUIA_CENTER, ig::EGUIA_CENTER, ig::EGUIA_CENTER);
 

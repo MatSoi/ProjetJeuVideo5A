@@ -6,9 +6,19 @@
 
 #include "enemy.h"
 
+Enemy::Enemy(is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation, float _speed)
+    : Characters (_node, _animation, _speed), angleViewEnemy(45), rayonDetection(300), isPlayerVisible(false), isAlerted(false), hitted(false)
+{
+    int startingPos = rand()%4;
+    followedPath = Path(startingPos);
+    followedPath.initRectangularPath(getPosition(), 100);//Initialisation d'un chemin rectangulaire centre sur l'ennemi
+    node->setPosition(followedPath.pathPositions[startingPos]);//La position de l'ennemi est place sur la premiere position du chemin
+    node->setVisible(true);
+}
+
 void Enemy::getHitted()
 {
-    if(isPlayerVisible)
+    if(isAlerted)
     {
         life -= 1;
     }
@@ -19,6 +29,8 @@ void Enemy::getHitted()
         pain();
     else
         die();
+
+    hitted = true;
 }
 
 void Enemy::pain()
@@ -82,6 +94,7 @@ void Enemy::OnAnimationEnd(is::IAnimatedMeshSceneNode *node)
     isSuffering = false;
     isAttacking = false;
 }
+
 
 bool Enemy::isPlayerInEnemyView(const ic::vector3df& playerPosition, irr::scene::ISceneCollisionManager *collMan)
 {
@@ -254,7 +267,9 @@ bool Enemy::normalBehaviour(ic::vector3df playerPosition, const irr::f32 frameDe
     if (!life)
         return false;
 
-    if(isPlayerInEnemyView(playerPosition,collMan))//Si je joueur est visible par l'ennemie
+    isPlayerInEnemyView(playerPosition, collMan);
+
+    if(isPlayerVisible || hitted)//Si je joueur est visible par l'ennemie
     {
         followPlayer(playerPosition, frameDeltaTime);
     }
@@ -270,5 +285,6 @@ bool Enemy::normalBehaviour(ic::vector3df playerPosition, const irr::f32 frameDe
         }
     }
 
+    hitted = false;
     return canAttack();
 }

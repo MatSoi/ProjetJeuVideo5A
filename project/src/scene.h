@@ -8,6 +8,9 @@
 #include "ID_list.h"
 #include "game_states.h"
 #include "screenManager.h"
+#include <map>
+#include <ctime>
+#include <cstdlib>
 
 /*!
  * \file scene.h
@@ -16,6 +19,7 @@
  */
 
 #define ATTACK_DIST 50
+#define ENEMY_NUMBER 7
 
 /**
  * @brief Classe Scene
@@ -82,6 +86,11 @@ protected:
     void initEnemy();
 
     /**
+     * @brief Initialise la map des positions de depart des ennemis
+     */
+    void initEnemyPosition();
+
+    /**
      * @brief Fonction d'initialisation de la camera
      */
     void initCamera();
@@ -118,18 +127,18 @@ protected:
     is:: IMeshSceneNode *nodeMap;           /*!< pointeur sur le node de la map */
     scene::ITriangleSelector* selectorMap;  /*!< selecteur de la map */
 
+    Player player;                          /*!< classe joueur */
     is::IAnimatedMesh *meshPlayer;          /*!< pointeur sur le mesh du joueur */
     is::IAnimatedMeshSceneNode *nodePlayer; /*!< pointeur sur le node du joueur */
     core::vector3df radiusPlayer;
 
-    is::IAnimatedMesh *meshEnemy;           /*!< pointeur sur le mesh de l'ennemi */
-    is::IAnimatedMeshSceneNode *nodeEnemy;  /*!< pointeur sur le node de l'ennemi */
+    std::map<int, Enemy> enemyMap;                              /*!< map avec cle ID et valeur l'ennemi */
+    is::IAnimatedMesh *meshEnemy;                               /*!< pointeur sur le mesh de l'ennemi */
+    std::map<int, is::IAnimatedMeshSceneNode *> nodeEnemyMap;   /*!< map avec cle ID et valeur pointeur sur le node de l'ennemi */
+    std::map<int, ic::vector3df> positionEnemyMap;              /*!< map avec cle ID et position de depart de l'ennemi */
     core::vector3df radiusEnemy;
 
     is::ICameraSceneNode *camera;           /*!< pointeur sur la camera */
-
-    Player player;                          /*!< classe joueur */
-    Enemy enemy;                            /*!< classe enemy */
 
     float screen_width, screen_height;      /*!< dimensions de la fenetre de jeu */
     State_List *game_state;                 /*!< Etat du jeu */
