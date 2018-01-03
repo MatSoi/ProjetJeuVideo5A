@@ -1,10 +1,13 @@
 #ifndef SCENE_H
 #define SCENE_H
+
 #include "player.h"
 #include "enemy.h"
 #include "events.h"
 #include "menu.h"
 #include "ID_list.h"
+#include "game_states.h"
+#include "screenManager.h"
 
 /*!
  * \file scene.h
@@ -13,20 +16,6 @@
  */
 
 #define ATTACK_DIST 50
-
-/*! Enumeration definissant des ID donnant des propriétés de selectionnabilité aux nodes */
-enum
-{
-    // I use this ISceneNode ID to indicate a scene node that is
-    // not pickable by getSceneNodeAndCollisionPointFromRay()
-    ID_IsNotPickable = 0,
-
-    // I use this flag in ISceneNode IDs to indicate that the
-    // scene node can be picked by ray selection.
-    IDFlag_IsPickable = 1,
-
-    IDEnemy = 2
-};
 
 /**
  * @brief Classe Scene
@@ -41,16 +30,29 @@ public:
     Scene();
 
     /**
-     * @brief Fonction d'initialisation globale qui appelle les differentes fonctions d'initialisations elementaires
-     */
-    void init();
-
-    /**
      * @brief Boucle principale du programme
      */
     void run();
 
 protected:
+    /**
+     * @brief Reinitialise le joueur et les ennemis
+     */
+    void restartGame();
+
+    /**
+     * @brief Fonction d'initialisation globale qui appelle les differentes fonctions d'initialisations elementaires
+     */
+    void init();
+
+    /**
+     * @brief Routine de fonctionement du jeu quand le joueur est en vie.
+     * @param frameDeltaTime : temps d actualisation
+     * @param playerIsAttacking : true si le joueur attaque, false sinon
+     * @param painFrame : frame d affichage de la douleur
+     * @param angleCamera : angle horizontal de la camera
+     */
+    void runTheGame(const f32 frameDeltaTime, const bool &playerIsAttacking, float &painFrame, const float &angleCamera);
 
     /**
      * @brief Fonction d'initialisation de la map
@@ -66,6 +68,13 @@ protected:
      * @brief Fonction d'initialisation du joueur
      */
     void initPlayer();
+
+    /**
+     * @brief Initialise le collisionneur avec la map pour le node en parametre.
+     * @param node : pointeur sur le node.
+     * @param radius : reference constante sur le rayon du node associe
+     */
+    void setupMapCollider(is::IAnimatedMeshSceneNode *node, const ic::vector3df &radius);
 
     /**
      * @brief Fonction d'initialisation des ennemis
@@ -85,7 +94,7 @@ protected:
     /**
      * @brief Fonction appellee lorsque le joueur attaque : tape l'ennemi en face si a distance < ATTACK_DIST
      */
-    void playerAttack();
+    void playerAttack(const float &angleCamera);
 
     /**
      * @brief Fonction d'affichage d'element de debug dans la window de debug
@@ -94,39 +103,36 @@ protected:
      */
     void debugDisplay(std::wstring wstr, int ind);
 
-
     // Le gestionnaire d'événements
-    EventReceiver receiver;/*!< event receiver */
-    std::vector<iv::ITexture*> textures;/*!< tableau des textures des personnages */
+    EventReceiver receiver;                 /*!< event receiver */
+    std::vector<iv::ITexture*> textures;    /*!< tableau des textures des personnages */
 
     // Création de la fenêtre et du système de rendu.
-    IrrlichtDevice *device;/*!< pointeur sur le device */
-    iv::IVideoDriver    *driver;/*!< pointeur sur le driver */
-    is::ISceneManager   *smgr;/*!< pointeur sur le manager de scene */
-    ig::IGUIEnvironment *gui;/*!< pointeur sur l'interface graphique */
-    is::ISceneCollisionManager* collMan;/*!< pointeur sur le gestionnaire de collision */
-    Menu* menu;/*!< pointeur sur le menu */
+    IrrlichtDevice *device;                 /*!< pointeur sur le device */
+    iv::IVideoDriver    *driver;            /*!< pointeur sur le driver */
+    is::ISceneManager   *smgr;              /*!< pointeur sur le manager de scene */
+    is::ISceneCollisionManager* collMan;    /*!< pointeur sur le gestionnaire de collision */
+    ScreenManager *scManager;               /*!< pointeur sur le manager de l ecran */
 
-    is:: IAnimatedMesh *meshMap;/*!< pointeur sur le mesh de la map */
-    is:: IMeshSceneNode *nodeMap;/*!< pointeur sur le node de la map */
+    is:: IAnimatedMesh *meshMap;            /*!< pointeur sur le mesh de la map */
+    is:: IMeshSceneNode *nodeMap;           /*!< pointeur sur le node de la map */
+    scene::ITriangleSelector* selectorMap;  /*!< selecteur de la map */
 
-    is::IAnimatedMesh *meshPlayer;/*!< pointeur sur le mesh du joueur */
-    is::IAnimatedMeshSceneNode *nodePlayer;/*!< pointeur sur le node du joueur */
+    is::IAnimatedMesh *meshPlayer;          /*!< pointeur sur le mesh du joueur */
+    is::IAnimatedMeshSceneNode *nodePlayer; /*!< pointeur sur le node du joueur */
+    core::vector3df radiusPlayer;
 
-    is::IAnimatedMesh *meshEnemy;/*!< pointeur sur le mesh de l'ennemi */
-    is::IAnimatedMeshSceneNode *nodeEnemy;/*!< pointeur sur le node de l'ennemi */
+    is::IAnimatedMesh *meshEnemy;           /*!< pointeur sur le mesh de l'ennemi */
+    is::IAnimatedMeshSceneNode *nodeEnemy;  /*!< pointeur sur le node de l'ennemi */
+    core::vector3df radiusEnemy;
 
-    is::ICameraSceneNode *camera;/*!< pointeur sur la camera */
+    is::ICameraSceneNode *camera;           /*!< pointeur sur la camera */
 
-    // Choix de la police de caractères
-    ig::IGUISkin* skin;/*!< pointeur sur le style de la police d'ecriture */
-    ig::IGUIFont* font;/*!< pointeur sur la taille de la police d'ecriture */
+    Player player;                          /*!< classe joueur */
+    Enemy enemy;                            /*!< classe enemy */
 
-    ig::ICursorControl* cursor;/*!< pointeur sur le curseur de la souris */
-
-    Player player;/*!< classe joueur */
-    Enemy enemy;/*!< classe enemy */
-
+    float screen_width, screen_height;      /*!< dimensions de la fenetre de jeu */
+    State_List *game_state;                 /*!< Etat du jeu */
 };
 
 #endif // SCENE_H

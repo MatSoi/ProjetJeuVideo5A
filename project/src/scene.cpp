@@ -1,28 +1,23 @@
+/*!
+ * \file scene.cpp
+ * \brief Implementation des fonctions de la classe Scene.
+ * \author SOIGNON Matthieu et PASTOR Mickael
+ */
+
 #include "scene.h"
 
-Scene::Scene()
+Scene::Scene() : screen_width(960), screen_height(600), game_state(new State_List(START_SCREEN))
 {
     // Création de la fenêtre et du système de rendu.
     device = createDevice(iv::EDT_OPENGL,
-                          ic::dimension2d<u32>(960, 600),
+                          ic::dimension2d<u32>(screen_width, screen_height),
                           16, false, false, false, &receiver);
     driver = device->getVideoDriver();
     smgr = device->getSceneManager();
-    gui = device->getGUIEnvironment();
     collMan = smgr->getSceneCollisionManager();
-    cursor = device->getCursorControl();
+    receiver = EventReceiver(game_state);
 
-    // Création de la GUI
-    // Choix de la police de caractères
-    skin = gui->getSkin();
-    font = gui->getFont("data/fontlucida.png");
-    skin->setFont(font);
-
-    // La barre de menu
-    menu = new Menu();
-    menu->create_menu(gui);
-    // Une fenêtre pour différents réglages
-    menu->create_window(gui);
+    scManager = new ScreenManager(device, driver, screen_width, screen_height, game_state);
 }
 
 void Scene::init()
@@ -52,6 +47,10 @@ void Scene::initMap()
     nodeMap = smgr ->addOctreeSceneNode(meshMap ->getMesh (0), nullptr, ID_MAP, 1024);
     //  Translation  pour  que  nos  personnages  soient  dans le décor
     nodeMap ->setPosition(ic:: vector3df ( -1300 , -104 , -1249));
+
+    // Création du triangle selector
+    selectorMap = smgr->createOctreeTriangleSelector(nodeMap->getMesh(), nodeMap);
+    nodeMap->setTriangleSelector(selectorMap);
 }
 
 void Scene::initPlayer()
@@ -63,32 +62,33 @@ void Scene::initPlayer()
     nodePlayer = smgr->addAnimatedMeshSceneNode(meshPlayer, nullptr, ID_PLAYER);
     nodePlayer->setMaterialFlag(iv::EMF_LIGHTING, false);
     nodePlayer->setMaterialTexture(0, textures[2]);
-    nodePlayer->setPosition(ic:: vector3df ( 0 , 0 , 0));
-
-    // Création du triangle selector
-    scene::ITriangleSelector* selector;
-    selector = smgr->createOctreeTriangleSelector(nodeMap->getMesh(), nodeMap);
-    nodeMap->setTriangleSelector(selector);
+    nodePlayer->setPosition(ic::vector3df (-240.0f , 10.0f, -16.0f));
 
     //Calcul radius de la BBox du node player
     const core::aabbox3d<f32>& box = nodePlayer->getBoundingBox();
-    core::vector3df radius = 1.3f*(box.MaxEdge - box.getCenter());
+    radiusPlayer = 1.3f*(box.MaxEdge - box.getCenter());
     // Et l'animateur/collisionneur
-    scene::ISceneNodeAnimator *anim;
-    anim = smgr->createCollisionResponseAnimator(selector,
-                                                 nodePlayer,  // Le noeud que l'on veut gérer
-                                                 radius, // "rayons" de la caméra
-                                                 ic::vector3df(0, -10, 0),  // gravité
-                                                 ic::vector3df(0, -10, 0));  // décalage du centre
-    nodePlayer->addAnimator(anim);
-    selector->drop();
-    anim->drop();
+    setupMapCollider(nodePlayer, radiusPlayer);
 
+
+    is::ITriangleSelector* selector;
     selector = smgr->createTriangleSelectorFromBoundingBox(nodePlayer);
     nodePlayer->setTriangleSelector(selector);
     selector->drop();
 
     player = Player(nodePlayer);
+}
+
+void Scene::setupMapCollider(scene::IAnimatedMeshSceneNode *node, const core::vector3df &radius)
+{
+    scene::ISceneNodeAnimator *anim;
+    anim = smgr->createCollisionResponseAnimator(selectorMap,
+                                                 node,  // Le noeud que l'on veut gérer
+                                                 radius, // "rayons" de la caméra
+                                                 ic::vector3df(0, -10, 0),  // gravité
+                                                 ic::vector3df(0, -10, 0));  // décalage du centre
+    node->addAnimator(anim);
+    anim->drop();
 }
 
 void Scene::initEnemy()
@@ -100,31 +100,19 @@ void Scene::initEnemy()
     nodeEnemy = smgr->addAnimatedMeshSceneNode(meshEnemy, 0, ID_ENEMY);
     nodeEnemy->setMaterialFlag(iv::EMF_LIGHTING, false);
     nodeEnemy->setMaterialTexture(0, textures[1]);
-    nodeEnemy->setPosition(core:: vector3df ( 100 , 130 , 100));
-
-    // Création du triangle selector
-    scene::ITriangleSelector* selector;
-    selector = smgr->createOctreeTriangleSelector(nodeMap->getMesh(), nodeMap);
-    nodeMap->setTriangleSelector(selector);
+    nodeEnemy->setPosition(core:: vector3df (100 , 0, 100));
 
     //Calcul radius de la BBox du node Enemy
     const core::aabbox3d<f32>& box = nodeEnemy->getBoundingBox();
-    core::vector3df radius = 1.3f*(box.MaxEdge - box.getCenter());
+    radiusEnemy = 1.3f*(box.MaxEdge - box.getCenter());
     // Et l'animateur/collisionneur
-    scene::ISceneNodeAnimator *anim;
-    anim = smgr->createCollisionResponseAnimator(selector,
-                                                 nodeEnemy,  // Le noeud que l'on veut gérer
-                                                 radius, // "rayons" de la caméra
-                                                 ic::vector3df(0, -10, 0),  // gravité
-                                                 ic::vector3df(0, -10, 0));  // décalage du centre
-    nodeEnemy->addAnimator(anim);
-    selector->drop();
+    setupMapCollider(nodeEnemy, radiusEnemy);
 
+    scene::ITriangleSelector* selector;
     selector = smgr->createTriangleSelectorFromBoundingBox(nodeEnemy);
     nodeEnemy->setTriangleSelector(selector);
     selector->drop();
 
-    anim->drop();
 
     enemy = Enemy(nodeEnemy);
 }
@@ -137,15 +125,15 @@ void Scene::initCamera()
 
 void Scene::initReceiver()
 {
-    receiver.set_gui(gui);
+    receiver.set_gui(scManager->getGui());
     receiver.set_player(&player);
-    receiver.set_camera(camera, cursor);
-    receiver.set_menu(menu);
+    receiver.set_camera(camera, scManager->getCursor());
+    receiver.set_menu(scManager->getMenu());
 }
 
-void Scene::playerAttack()
+void Scene::playerAttack(const float &angleCamera)
 {
-    std::vector<int> attack = player.attack(collMan, camera);
+    std::vector<int> attack = player.attack(collMan, camera, angleCamera);
     int ID = attack[0];
     int dist = attack[1];
 
@@ -161,12 +149,16 @@ void Scene::playerAttack()
 void Scene::debugDisplay(std::wstring wstr, int ind)
 {
     const wchar_t* szName = wstr.c_str();
-    menu->window->getElementFromId(ind)->setText(szName);
+    scManager->getMenu()->window->getElementFromId(ind)->setText(szName);
 }
 
 void Scene::run()
 {
-    float width, height;
+    init();
+
+    bool playerIsAttacking = false;
+    float angleCamera = 0.0f;
+    float painFrame = 0;
 
     u32 then = device->getTimer()->getTime();
     while(device->run())
@@ -176,20 +168,70 @@ void Scene::run()
         const f32 frameDeltaTime = (f32)(now - then) / 1000.f; // Time in seconds
         then = now;
 
-        width = device->getVideoDriver()->getScreenSize().Width;
-        height = device->getVideoDriver()->getScreenSize().Height;
+        screen_width = device->getVideoDriver()->getScreenSize().Width;
+        screen_height = device->getVideoDriver()->getScreenSize().Height;
 
-        if(receiver.event_handler(frameDeltaTime, width, height))
-            playerAttack();
+        receiver.event_handler(frameDeltaTime, screen_width, screen_height, playerIsAttacking, angleCamera);
 
+        if(*game_state == RUNNING_GAME)
+            runTheGame(frameDeltaTime, playerIsAttacking, painFrame, angleCamera);
+        else if(*game_state == RESTART_GAME)
+        {
+            restartGame();
+            *game_state = RUNNING_GAME;
+        }
+
+        scManager->updateState(screen_width, screen_height, player.getLife());
         driver->beginScene(true, true, iv::SColor(0,50,100,255));
 
         // Dessin de la scène :
         smgr->drawAll();
         // Dessin de l'interface utilisateur :
-        gui->drawAll();
+        scManager->getGui()->drawAll();
 
         driver->endScene();
     }
     device->drop();
+}
+
+void Scene::restartGame()
+{
+    nodePlayer->removeAnimators();
+    nodePlayer->setPosition(ic::vector3df(-240.0f , 6.0f, -16.0f));
+    setupMapCollider(nodePlayer, radiusPlayer);
+    player = Player(nodePlayer);
+
+    nodeEnemy->removeAnimators();
+    nodeEnemy->setPosition(core:: vector3df (100 , 0, 100));
+    setupMapCollider(nodeEnemy, radiusEnemy);
+    enemy = Enemy(nodeEnemy);
+}
+
+void Scene::runTheGame(const f32 frameDeltaTime, const bool &playerIsAttacking, float &painFrame, const float &angleCamera)
+{
+    if(playerIsAttacking)
+        playerAttack(angleCamera);
+
+    if(!player.isDead())
+    {
+        if(enemy.normalBehaviour(player.getPosition(), frameDeltaTime, collMan))
+        {
+            player.getHitted();
+            scManager->displayPain(true);
+        }
+    }
+    else
+    {
+        *game_state = GAME_OVER; // A CHANGER
+        scManager->displayPain(false);
+    }
+
+    if(scManager->isVisiblePain())
+        painFrame += frameDeltaTime;
+
+    if(painFrame > 0.2f)
+    {
+        painFrame = 0;
+        scManager->displayPain(false);
+    }
 }

@@ -18,8 +18,8 @@
 /**************************************************************************\
  * EventReceiver::EventReceiver                                           *
 \**************************************************************************/
-EventReceiver::EventReceiver()
-    : gui(nullptr), player(nullptr), focus_mouse(true)
+EventReceiver::EventReceiver(State_List * _game_state)
+    : gui(nullptr), player(nullptr), angle_camera(0.0f), focus_mouse(false), game_state(_game_state)
 {
     //Initialize the key arrays
     for (u32 i=0; i<KEY_KEY_CODES_COUNT; ++i)
@@ -29,21 +29,24 @@ EventReceiver::EventReceiver()
     }
 }
 
-bool EventReceiver::event_handler(const f32 frameDeltaTime, float width, float height)
+void EventReceiver::event_handler(const f32 frameDeltaTime, float width, float height, bool &playerIsAttacking, float &angleCamera)
 {
     screen_width = width;
     screen_height = height;
-    bool attack = mouse_handler();
-    keyboard_handler(frameDeltaTime);
+    playerIsAttacking = false;
+
+    if(*game_state != START_SCREEN)
+        playerIsAttacking = mouse_handler();
+    else
+        camera_rotation(frameDeltaTime);
 
     std::wstring player_display = player->to_string();
     const wchar_t* szName = player_display.c_str();
     menu->window->getElementFromId(0)->setText(szName);
 
-
+    angleCamera = angle_camera;
+    keyboard_handler(frameDeltaTime);
     MouseState.updateMouse();
-
-    return attack;
 }
 
 /*------------------------------------------------------------------------*\
@@ -53,40 +56,41 @@ void EventReceiver::keyboard_handler(const f32 frameDeltaTime)
 {
     if(IsKeyDown(KEY_ESCAPE))
         exit(0);
-
-    if((IsKeyTriggered(KEY_KEY_Z) || IsKeyTriggered(KEY_KEY_S) || IsKeyTriggered(KEY_KEY_D) || IsKeyTriggered(KEY_KEY_Q)))
-        player->setWalkAnimation(); // on lance l animation de marche si une des touches de deplacement est pressee
-    if((IsKeyReleased(KEY_KEY_Z) || IsKeyReleased(KEY_KEY_S) || IsKeyReleased(KEY_KEY_D) || IsKeyReleased(KEY_KEY_Q)) &&
-            !(IsKeyDown(KEY_KEY_Z) || IsKeyDown(KEY_KEY_S) || IsKeyDown(KEY_KEY_D) || IsKeyDown(KEY_KEY_Q)))
-        player->setIdle();          // on arrete la marche si une des touches est relachee et que les autres ne sont pas pressees
-    // on pourrait enlever la partie IsKeyReleased mais on appelerait tout le temps setIdle
-
-    if(IsKeyTriggered(KEY_KEY_C))
-        player->setStealth();
-
-    //KEY DOWN
-    if(IsKeyDown(KEY_KEY_Z) && IsKeyDown(KEY_KEY_D))
-        player->move(frameDeltaTime, angle_camera + M_PI/4.0f);
-    else if(IsKeyDown(KEY_KEY_Z) && IsKeyDown(KEY_KEY_Q))
-        player->move(frameDeltaTime, angle_camera - M_PI/4.0f);
-    else if(IsKeyDown(KEY_KEY_S) && IsKeyDown(KEY_KEY_D))
-        player->move(frameDeltaTime, angle_camera + M_PI - M_PI/4.0f);
-    else if(IsKeyDown(KEY_KEY_S) && IsKeyDown(KEY_KEY_Q))
-        player->move(frameDeltaTime, angle_camera + M_PI + M_PI/4.0f);
-    else if(IsKeyDown(KEY_KEY_Z))
-        player->move(frameDeltaTime, angle_camera);
-    else if(IsKeyDown(KEY_KEY_S))
-        player->move(frameDeltaTime, angle_camera + M_PI);
-    else if(IsKeyDown(KEY_KEY_D))
-        player->move(frameDeltaTime, angle_camera + M_PI_2);
-    else if(IsKeyDown(KEY_KEY_Q))
-        player->move(frameDeltaTime, angle_camera - M_PI_2);
-
-    if(IsKeyDown(KEY_SPACE))
-        player->jump(frameDeltaTime);
-
     if(IsKeyTriggered(KEY_KEY_I))
         focus_mouse = !focus_mouse;
+
+    if(*game_state == RUNNING_GAME) {
+        if((IsKeyTriggered(KEY_KEY_Z) || IsKeyTriggered(KEY_KEY_S) || IsKeyTriggered(KEY_KEY_D) || IsKeyTriggered(KEY_KEY_Q)))
+            player->setWalkAnimation(); // on lance l animation de marche si une des touches de deplacement est pressee
+        if((IsKeyReleased(KEY_KEY_Z) || IsKeyReleased(KEY_KEY_S) || IsKeyReleased(KEY_KEY_D) || IsKeyReleased(KEY_KEY_Q)) &&
+                !(IsKeyDown(KEY_KEY_Z) || IsKeyDown(KEY_KEY_S) || IsKeyDown(KEY_KEY_D) || IsKeyDown(KEY_KEY_Q)))
+            player->setIdle();          // on arrete la marche si une des touches est relachee et que les autres ne sont pas pressees
+        // on pourrait enlever la partie IsKeyReleased mais on appelerait tout le temps setIdle
+
+        if(IsKeyTriggered(KEY_KEY_C))
+            player->setStealth();
+
+        //KEY DOWN
+        if(IsKeyDown(KEY_KEY_Z) && IsKeyDown(KEY_KEY_D))
+            player->move(frameDeltaTime, angle_camera + M_PI/4.0f);
+        else if(IsKeyDown(KEY_KEY_Z) && IsKeyDown(KEY_KEY_Q))
+            player->move(frameDeltaTime, angle_camera - M_PI/4.0f);
+        else if(IsKeyDown(KEY_KEY_S) && IsKeyDown(KEY_KEY_D))
+            player->move(frameDeltaTime, angle_camera + M_PI - M_PI/4.0f);
+        else if(IsKeyDown(KEY_KEY_S) && IsKeyDown(KEY_KEY_Q))
+            player->move(frameDeltaTime, angle_camera + M_PI + M_PI/4.0f);
+        else if(IsKeyDown(KEY_KEY_Z))
+            player->move(frameDeltaTime, angle_camera);
+        else if(IsKeyDown(KEY_KEY_S))
+            player->move(frameDeltaTime, angle_camera + M_PI);
+        else if(IsKeyDown(KEY_KEY_D))
+            player->move(frameDeltaTime, angle_camera + M_PI_2);
+        else if(IsKeyDown(KEY_KEY_Q))
+            player->move(frameDeltaTime, angle_camera - M_PI_2);
+
+        if(IsKeyDown(KEY_SPACE))
+            player->jump(frameDeltaTime);
+    }
 
     // Reset released or first pressed keys
     updateKeyState ();
@@ -103,6 +107,7 @@ bool EventReceiver::mouse_handler()
         cursor->setPosition(0.5f, 0.5f);
         return MouseState.isJustLPressed;
     }
+
     return false;
 }
 
@@ -123,6 +128,23 @@ void EventReceiver::camera_handler()
     camera->setTarget(target);
 
     angle_camera = theta + M_PI_2;
+}
+
+void EventReceiver::camera_rotation(const f32 frameDeltaTime)
+{
+    ic::vector3df position;
+
+    float conv = M_PI/180.0f;
+
+    float theta = angle_camera * conv - M_PI_2;
+    float phi = 45.0f * -conv + M_PI_2;
+
+    position.X = 1500.0f * std::sin(phi) * std::sin(theta);
+    position.Y = 1500.0f * std::cos(phi);
+    position.Z = 1500.0f * std::sin(phi) * std::cos(theta);
+    camera->setPosition(position);
+
+    angle_camera += 10.0f * frameDeltaTime;
 }
 
 void EventReceiver::mouse_event(const SEvent &event)
@@ -203,7 +225,8 @@ void EventReceiver::gui_event(const SEvent &event)
         switch(id)
         {
         case MENU_NEW_GAME:
-            // Faire quelque chose ici !
+            *game_state = RESTART_GAME;
+            focus_mouse = true;
             break;
         case MENU_QUIT:
             exit(0);
@@ -237,6 +260,20 @@ void EventReceiver::gui_event(const SEvent &event)
             gui->addMessageBox(L"Boite About", L"Texte présentant ce super jeu\nd'un intérêt incroyable");
             break;
         }
+    }
+        break;
+    case ig::EGET_BUTTON_CLICKED:
+    {
+        s32 id = event.GUIEvent.Caller->getID();
+        if (id == NEW_GAME_BUTTON)
+        {
+            *game_state = RUNNING_GAME;
+            focus_mouse = true;
+        }
+        else if (id == RESTART_GAME_BUTTON)
+            *game_state = RESTART_GAME;
+        else if (id == QUIT_GAME_BUTTON)
+            exit(0);
     }
         break;
     default:;

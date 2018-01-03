@@ -11,6 +11,7 @@
 #include <irrlicht.h>
 #include "menu.h"
 #include "player.h"
+#include "game_states.h"
 
 #define HIGHT_TARGET 30 // position haute de la camera
 
@@ -42,11 +43,17 @@ struct SMouseState
  */
 class EventReceiver : public IEventReceiver
 {
-public:
+public: 
     /**
-     * @brief Constructeur
+     * @brief Constructeur vide
      */
-    EventReceiver();
+    EventReceiver() {}
+
+    /**
+     * @brief Constructeur d initialisation
+     * @param _game_state : pointeur sur l etat du jeu
+     */
+    EventReceiver(State_List *_game_state);
 
     /**
      * @brief Fonction d evenements surchargee
@@ -59,14 +66,14 @@ public:
 
     /**
      * @brief Gestionnaire d evenements
-     * Gestionnaire appele a chaque rafraichissement par scene.cpp,
-     * appelle les differents gestionnaires d evenements clavier et souris.
+     * Gestionnaire appele a chaque rafraichissement par scene.cpp, appelle les differents gestionnaires d evenements clavier et souris.
      * @param frameDeltaTime : delta de temps entre deux frames, permet des mouvements identiques quelque soit la vitesse de rafraichissement
      * @param width : largeur de la fenetre de jeu
      * @param height : longueur de la fenetre de jeu
-     * @return true si le joueur a clique, false sinon
+     * @param playerIsAttacking : reference passee a true lorsque le joueur attaque
+     * @param angleCamera : reference sur l angle horizontal de la camera
      */
-    bool event_handler(const f32 frameDeltaTime, float width, float height);
+    void event_handler(const f32 frameDeltaTime, float width, float height, bool &playerIsAttacking, float &angleCamera);
 
     /**
      * @brief Initialise le pour sur le GUI
@@ -130,6 +137,12 @@ private:
     void camera_handler();
 
     /**
+     * @brief Fait tourner la camera autour de la carte de jeu
+     * @param frameDeltaTime : temps d actualisation
+     */
+    void camera_rotation(const f32 frameDeltaTime);
+
+    /**
      * @brief Mise a jour d une structure d evenements clavier
      * Remet a false toutes les entrees du tableau KeyEvent
      */
@@ -169,6 +182,8 @@ private:
     float angle_camera;                     /*!< Angle horizontal de camera */
     float screen_width, screen_height;      /*!< Dimensions de la fenetre de jeu */
     bool focus_mouse;                       /*!< Booleen a true quand les mouvements souris doivent etre consideres */
+
+    State_List* game_state;                 /*!< Etat du jeu */
 };
 
 #endif

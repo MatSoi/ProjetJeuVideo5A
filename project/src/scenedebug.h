@@ -51,8 +51,8 @@ private:
      */
     void enemyRaycastDebug();
 
-    is::ISceneNode * arrowParentDebug;          /*!< Pointeur sur le repere d'affichage des axes x,y et z */
-    std::vector<is::ISceneNode *> arrowsDebug;  /*!< Tableau des pointeurs sur les axes x,y et z */
+    is::ISceneNode * arrowParentDebug;              /*!< Pointeur sur le repere d'affichage des axes x,y et z */
+    std::vector<is::ISceneNode *> arrowsDebug;      /*!< Tableau des pointeurs sur les axes x,y et z */
     std::vector<scene::IBillboardSceneNode *> bill; /*!< Tableau de pointeurs sur les billboards d'affichage de la vision ennemi */
 };
 

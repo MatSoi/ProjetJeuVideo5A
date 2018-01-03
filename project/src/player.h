@@ -14,6 +14,8 @@
 #include "characters.h"
 #include "ID_list.h"
 
+#define END_MAP_Y -2000.0f
+
 using namespace irr;
 
 namespace ic = irr::core;
@@ -25,7 +27,6 @@ namespace ig = irr::gui;
  * @brief Classe Player, herite de la classe Characters
  * Represente le joueur, contient les fonctions propres à ses mouvements/positions
  */
-// classe correspondant au personnage principale
 class Player : public Characters
 {  
 public:
@@ -57,19 +58,6 @@ public:
     void move (const f32 frameDeltaTime, float angle);
 
     /**
-     * @brief Fonction de deplacement du node player vers l'arriere
-     * @param frameDeltaTime : temps écoulé entre la derniere frame et la frame actuelle
-     */
-    void moveBackward (const f32 frameDeltaTime);
-
-    /**
-     * @brief Fonction de rotation du node player en fonction de l'angle donnee
-     * @param frameDeltaTime : temps écoulé entre la derniere frame et la frame actuelle
-     * @param angle : angle utilise pour la rotation
-     */
-    void rotate (const f32 frameDeltaTime, float angle);
-
-    /**
      * @brief Fonction de saut du node player
      * @param frameDeltaTime : temps écoulé entre la derniere frame et la frame actuelle
      */
@@ -96,15 +84,16 @@ public:
      * le/les ennemis.
      * @param collMan : Manager de collision de la scene
      * @param camera : camera de la scene
+     * @param angleCamera : angle de la camera, pour faire tourner le joueur dans la bonne orientation
      * @return retour : vector contenant l ID de l ennemi touche et la distance
      * (si on ne touche rien, ce vector contient juste {-1, -1}
      */
-    std::vector<int> attack(scene::ISceneCollisionManager *collMan, const is::ICameraSceneNode* camera);
+    std::vector<int> attack(scene::ISceneCollisionManager *collMan, const is::ICameraSceneNode* camera, const float &angleCamera);
 
     /**
      * @brief Fonction appellee lorsque le joueur est touche par un ennemi
      */
-    bool getHitted();
+    void getHitted();
 
     /**
      * @brief Fonction d'affichage des informations de debug du node player
@@ -125,7 +114,39 @@ public:
      */
     void OnAnimationEnd(is::IAnimatedMeshSceneNode* node);
 
+    /**
+     * @brief Renseigne de l etat vivant ou mort du joueur.
+     * @return true si le joueur est mort, false sinon.
+     */
+    bool isDead();
+
+    /**
+     * @brief Remet les variables de la classe en etat par defaut.
+     */
+    void reset();
+
 private:
+    /**
+     * @brief Fonction qui passe l ennemi en etat de prise de degat, et qui lance l animation correspondante.
+     */
+    void pain();
+
+    /**
+     * @brief Fonction qui lance l animation de mort du joueur.
+     */
+    void die();
+
+    /**
+     * @brief Tourne le joueur dans le sens de l angle en parametre.
+     * @param angleCamera : reference constante sur l angle de la camera.
+     */
+    void setLook(const float &angleCamera);
+
+    /**
+     * @brief Lance l animation d attaque.
+     */
+    void animAttack();
+
     bool isFurtive;     /*!< bool designant si le joueur est en mode furtif */
     bool isWalking;     /*!< bool designant si le joueur est en train de marcher */
 };

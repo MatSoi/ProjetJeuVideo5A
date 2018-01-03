@@ -3,7 +3,7 @@
 
 /*!
  * \file gui_ids.h
- * \brief Enumerationdes actions avec le menu
+ * \brief Enumeration des actions avec le menu
  * \author SOIGNON Matthieu et PASTOR Mickael
  */
 
@@ -31,7 +31,11 @@ enum Window_menu
     MENU_TRIANGLES,
     MENU_TRANSPARENCY,
     MENU_ABOUT,
-    MENU_DEBUG_BOX
+    MENU_DEBUG_BOX,
+
+    NEW_GAME_BUTTON,
+    RESTART_GAME_BUTTON,
+    QUIT_GAME_BUTTON
 };
 
 #endif
