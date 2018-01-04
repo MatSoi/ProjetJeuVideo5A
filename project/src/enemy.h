@@ -21,6 +21,10 @@ namespace iv = irr::video;
 namespace ig = irr::gui;
 
 #define ATTACK_DIST_ENEMY 45
+#define ANGLE_NORMAL 60
+#define ANGLE_FURTIF 45
+#define RAYON_NORMAL 500
+#define RAYON_FURTIF 300
 
 /**
  * @brief Classe Enemy, herite de la classe Characters
@@ -53,7 +57,7 @@ public:
      * @param playerPosition : position du joueur
      * @param collMan : pointeur sur le gestionnaire de collision
      */
-    bool isPlayerInEnemyView(const ic::vector3df& playerPosition, irr::scene::ISceneCollisionManager *collMan);
+    void isPlayerInEnemyView(const ic::vector3df& playerPosition, irr::scene::ISceneCollisionManager *collMan);
 
     /**
      * @brief Access a l'angle de vue de l'ennemi (1/2 du vrai angle de vision)
@@ -77,7 +81,7 @@ public:
      * @param frameDeltaTime : delta t entre les frames
      * @param collMan : manager de collision
      */
-    bool normalBehaviour(ic::vector3df playerPosition, const irr::f32 frameDeltaTime, irr::scene::ISceneCollisionManager *collMan);
+    bool normalBehaviour(ic::vector3df playerPosition, const irr::f32 frameDeltaTime, irr::scene::ISceneCollisionManager *collMan, bool isPlayerFurtif);
 
     /**
      * @brief Fonction de prise de degats.
@@ -98,18 +102,16 @@ private:
     void idle();
 
     /**
-     * @brief Methode utilisé pour suivre le joueur, avance simplement la position de l'ennemi en direction du joueur selon le delta T en mettant une animation de run
-     * Si la distance entre la position actuelle de l'ennemi et sa position precedemment enregistre est superieur a X, on l'enregistre
+     * @brief Methode utilisé pour suivre le joueur, avance simplement la position de l'ennemi en direction du joueur selon le delta T en mettant une animation de run.
+     * Si la distance entre la position actuelle de l'ennemi et sa position precedemment enregistre est superieur a X, on l'enregistre.
      * @param playerPosition : la position actuelle du joueur
      * @param frameDeltaTime : le delta t correspondant a la frame actuelle
-     * @param sizePositions : la taille du tableau de positions
      */
     void followPlayer(ic::vector3df playerPosition, const irr::f32 frameDeltaTime);
 
     /**
      * @brief Fonction de retour a la position initiale de l'ennemi : l'ennemi parcours les positions enregistre jusqu'a arrive a celle de départ
      * @param frameDeltaTime : delta T entre les frames, utilisé pour déplacé l'ennemi
-     * @param sizePositions : la taille du tableau de positions
      */
     void getBackToOriginalPosition(const irr::f32 frameDeltaTime);
 
@@ -122,7 +124,7 @@ private:
     /**
      * @brief Determine si l ennemi peut attaquer ou non.
      * Il peut attaquer s il n est pas deja en train, s il ne subit pas une attaque (sauf s il lui reste un point de vie unique).
-     * @return true si on peut attaquer, false sinon.
+     * @return true si l ennemi peut attaquer, false sinon.
      */
     bool canAttack();
 
@@ -140,6 +142,16 @@ private:
      * @brief Initialisation aléatoire du path suivi par l'ennemi
      */
     void randomPath();
+
+    /**
+    * @brief Met a jour les variables de detection en fonction de l etat d alerte de l ennemi.
+    */
+    void updateDetectParameter(bool isPlayerFurtif);
+
+    /**
+    * @brief Met a jour la vitesse en fonction de l etat d alerte de l ennemi.
+    */
+    void updateSpeed();
 
     /**
      * @brief Fonction qui passe l ennemi en etat de prise d attaque, et qui lance l animation correspondante.

@@ -13,6 +13,7 @@
 #define NORMAL_SPEED 150.0f
 #define STEALTH_SPEED 100.0f
 #define ENEMY_SPEED 80.0f
+#define ENEMY_SPEED_ALERTED 120.0f
 
 #define RAY_LENGTH 1000.0f
 #define MAX_LIFE 5

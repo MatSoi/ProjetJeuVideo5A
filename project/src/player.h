@@ -125,6 +125,13 @@ public:
      */
     void reset();
 
+
+    /**
+    * @brief Retourne la valeur de isFurtive
+    * @return true si le joueur est en position furtive, false sinon
+    */
+    bool isPlayerFurtif() const;
+
 private:
     /**
      * @brief Fonction qui passe l ennemi en etat de prise de degat, et qui lance l animation correspondante.
