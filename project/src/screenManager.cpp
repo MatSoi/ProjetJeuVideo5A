@@ -151,8 +151,7 @@ void ScreenManager::init_quitGame_button(irr::video::IVideoDriver *driver)
 void ScreenManager::init_title(irr::video::IVideoDriver *driver)
 {
     iv::ITexture * basicTexture = driver->getTexture("data/Title.png");
-    titleImage = g->addImage(ic::rect<irr::s32>(0, 0,
-                             screen_width, screen_height/2 - screen_height/50));
+    titleImage = g->addImage(ic::rect<irr::s32>(0, 0, screen_width, screen_height/2 - screen_height/50));
     titleImage->setScaleImage(true);
     titleImage->setImage(basicTexture);
     titleImage->setVisible(false);
@@ -162,8 +161,7 @@ void ScreenManager::init_title(irr::video::IVideoDriver *driver)
 void ScreenManager::init_gameOver(irr::video::IVideoDriver *driver)
 {
     iv::ITexture * basicTexture = driver->getTexture("data/gameOver.png");
-    gameOverImage = g->addImage(ic::rect<irr::s32>(screen_width/8, 0,
-                             7 * screen_width/8, screen_height/2 - screen_height/12));
+    gameOverImage = g->addImage(ic::rect<irr::s32>(screen_width/8, 0, 7 * screen_width/8, screen_height/2 - screen_height/12));
     gameOverImage->setScaleImage(true);
     gameOverImage->setImage(basicTexture);
     gameOverImage->setVisible(false);

@@ -7,13 +7,28 @@
 #include "enemy.h"
 
 Enemy::Enemy(is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation, float _speed)
-    : Characters (_node, _animation, _speed), angleViewEnemy(ANGLE_NORMAL), rayonDetection(RAYON_NORMAL), isPlayerVisible(false), isAlerted(false), hitted(false)
+: Characters (_node, _animation, _speed), angleViewEnemy(ANGLE_NORMAL), rayonDetection(RAYON_NORMAL), isPlayerVisible(false), isAlerted(false), hitted(false)
 {
-    int startingPos = rand()%4;
-    followedPath = Path(startingPos);
-    followedPath.initRectangularPath(getPosition(), 100);       //Initialisation d'un chemin rectangulaire centre sur l'ennemi
-    node->setPosition(followedPath.pathPositions[startingPos]); //La position de l'ennemi est place sur la premiere position du chemin
+    //Use random path for enemies
+    followedPath = Path();
+    randomPath();
+
+    node->setPosition(followedPath.pathPositions[0]);//La position de l'ennemi est place sur la premiere position du chemin
     node->setVisible(true);
+}
+
+void Enemy::randomPath()
+{
+    int randomNumber = rand() % 4;
+
+    if(randomNumber==0)
+        followedPath.initRectangularPath(getPosition(), 100);
+    if(randomNumber==1)
+        followedPath.initXLinearPath(getPosition(), 100);
+    if(randomNumber==2)
+        followedPath.initZLinearPath(getPosition(), 100);
+    if(randomNumber==3)
+        followedPath.initCircularPath(getPosition(), 100, 10);
 }
 
 void Enemy::getHitted()
@@ -295,17 +310,17 @@ bool Enemy::normalBehaviour(ic::vector3df playerPosition, const irr::f32 frameDe
 
     isPlayerInEnemyView(playerPosition, collMan);
 
-    if(isPlayerVisible || hitted)       // Si je joueur est visible par l'ennemie ou s il a ete frappe entre deux maj
+    if(isPlayerVisible || hitted)// Si je joueur est visible par l'ennemie ou s il a ete frappe entre deux maj
     {
         followPlayer(playerPosition, frameDeltaTime);
     }
     else
     {
-        if(isAlerted)                   // Si enemie en alerte, retour sur la position de départ
+        if(isAlerted)// Si enemie en alerte, retour sur la position de dépar
         {
             getBackToOriginalPosition (frameDeltaTime);
         }
-        else                            // Si non alerte, parcours normal
+        else //Si non alerte,  parcours normal
         {
             followPath(frameDeltaTime);
         }

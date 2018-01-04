@@ -80,7 +80,6 @@ public:
      * @param playerPosition : la position du joueur
      * @param frameDeltaTime : delta t entre les frames
      * @param collMan : manager de collision
-     * @param isPlayerFurtif : true si le joueur est en position furtive, false sinon
      */
     bool normalBehaviour(ic::vector3df playerPosition, const irr::f32 frameDeltaTime, irr::scene::ISceneCollisionManager *collMan, bool isPlayerFurtif);
 
@@ -140,28 +139,33 @@ private:
     void die();
 
     /**
+     * @brief Initialisation aléatoire du path suivi par l'ennemi
+     */
+    void randomPath();
+
+    /**
+    * @brief Met a jour les variables de detection en fonction de l etat d alerte de l ennemi.
+    */
+    void updateDetectParameter(bool isPlayerFurtif);
+
+    /**
+    * @brief Met a jour la vitesse en fonction de l etat d alerte de l ennemi.
+    */
+    void updateSpeed();
+
+    /**
      * @brief Fonction qui passe l ennemi en etat de prise d attaque, et qui lance l animation correspondante.
      */
     void attack();
 
-    /**
-     * @brief Met a jour les variables de detection en fonction de l etat d alerte de l ennemi.
-     */
-    void updateDetectParameter(bool isPlayerFurtif);
-
-    /**
-     * @brief Met a jour la vitesse en fonction de l etat d alerte de l ennemi.
-     */
-    void updateSpeed();
-
-    int angleViewEnemy;                         /*!< Angle de vision de l'ennemi par rapport au centre de sa vision */
-    int rayonDetection;                         /*!< Rayon de detection de l ennemi */
-    bool isPlayerVisible;                       /*!< Booleen indiquant si le joueur est visible par l'ennemi */
-    bool isAlerted;                             /*!< Booleen indiquant si l'ennemi est en etat d'alerte */
-    int distWithPlayer;                         /*!< distance avec le joueur */
-    ic::array<ic::vector3df> alertedPositions;  /*!< Positions successives de l'ennemi pour retour en etat non alerte */
-    Path followedPath;                          /*!< Path suivi par l'ennemi */
-    bool hitted;                                /*!< Booleen indiquant si l ennemi a ete touche par une attaque */
+    int angleViewEnemy;                 /*!< Angle de vision de l'ennemi par rapport au centre de sa vision */
+    int rayonDetection;                 /*!< Rayon de detection de l ennemi */
+    bool isPlayerVisible;                 /*!< Booleen indiquant si le joueur est visible par l'ennemi */
+    bool isAlerted;                     /*!< Booleen indiquant si l'ennemi est en etat d'alerte */
+    int distWithPlayer;                 /*!< distance avec le joueur */
+    ic::array<ic::vector3df> alertedPositions; /*!< Positions successives de l'ennemi pour retour en etat non alerte */
+    Path followedPath;  /*!< Path suivi par l'ennemi */
+    bool hitted;
 };
 
 #endif

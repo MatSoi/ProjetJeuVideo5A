@@ -21,7 +21,7 @@ public:
     /**
      * @brief Constructeur vide
      */
-    Path() {}
+    Path(): currentPathNumber(0), sizePath(0), pathTimer(0.0f), timerLimit(0.8f) {}
 
     /**
      * @brief Constructeur de chemin
@@ -34,6 +34,39 @@ public:
      * @param radius : "rayon" du chemin
      */
     void initRectangularPath(ic::vector3df center, int radius);
+
+    /**
+     * @brief Initialisation d'un chemin linéaire selon x centré sur center et de taille 2 * radius
+     * @param center : centre du chemin
+     * @param radius : "rayon" du chemin
+     */
+    void initXLinearPath(ic::vector3df center, int radius);
+
+    /**
+     * @brief Initialisation d'un chemin linéaire selon z centré sur center et de taille 2 * radius
+     * @param center : centre du chemin
+     * @param radius : "rayon" du chemin
+     */
+    void initZLinearPath(ic::vector3df center, int radius);
+
+    /**
+     * @brief Initialisation d'un chemin circulaire centré sur center et de taille radius
+     * @param center : centre du chemin
+     * @param radius : rayon du chemin
+     */
+    void initCircularPath(ic::vector3df center, int radius, int nbrPos);
+
+    /**
+     * @brief Initialisation d'un chemin custom désigné par les positions passé en arguments
+     * @param customPositions : positions qui constituent le chemin custom
+     * @param customTimer : timer d'attente entre les positions pour ce chemin
+     */
+    void initCustomPath(ic::array<ic::vector3df> customPositions, float customTimer);
+
+    /**
+     * @brief Reset du path actuelle a null
+     */
+    void clearPath();
 
     ic::array<ic::vector3df> pathPositions; /*!< Positions successives pour le path follow de l'ennemi */
     int currentPathNumber;                  /*!< Numero de la position actuelle du path suivi */

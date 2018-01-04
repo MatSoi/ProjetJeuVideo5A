@@ -123,6 +123,9 @@ void Scene::initEnemy()
 
 void Scene::initEnemyPosition()
 {
+    //initialisation aleatoire pour path aleatoire des ennemis
+    srand(time(NULL));
+
     int id = 1 << 2;
     for (int i = 0; i < ENEMY_NUMBER; ++i)
     {
