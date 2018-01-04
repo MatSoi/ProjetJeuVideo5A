@@ -31,10 +31,6 @@ public:
      */
     void create_window(ig::IGUIEnvironment *gui);
 
-    bool isVisible();
-
-    void setVisible(bool visible);
-
     ig::IGUIWindow* window;     /*!< Pointeur sur la fenetre d affichage de debug */
     ig::IGUIContextMenu* menu;  /*!< Pointeur sur menu du jeu */
 };

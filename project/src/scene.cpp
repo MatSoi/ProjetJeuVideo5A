@@ -177,7 +177,7 @@ void Scene::playerAttack(const float &angleCamera)
     int ID = attack[0];
     int dist = attack[1];
 
-    if (ID != -1 && ID != ID_MAP)
+    if (enemyMap.find(ID) != enemyMap.end())
     {
         std::wstring wstr = L"ID: " + std::to_wstring(ID) + L" Distance: "+ std::to_wstring(dist);
         debugDisplay(wstr, 1);
@@ -259,7 +259,7 @@ void Scene::runTheGame(const f32 frameDeltaTime, const bool &playerIsAttacking, 
     if(!player.isDead())
     {
         for (std::map<int, Enemy>::iterator it = enemyMap.begin(); it!=enemyMap.end(); ++it)
-            if(it->second.normalBehaviour(player.getPosition(), frameDeltaTime, collMan))
+            if(it->second.normalBehaviour(player.getPosition(), frameDeltaTime, collMan, player.isPlayerFurtif()))
             {
                 player.getHitted();
                 scManager->displayPain(true);

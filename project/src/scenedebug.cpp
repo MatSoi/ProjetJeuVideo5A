@@ -25,6 +25,7 @@ void SceneDebug::initBillboardDebug()
 
 void SceneDebug::init()
 {
+    initEnemyPosition();
     initMap();
     initTextures();
     initPlayer();
