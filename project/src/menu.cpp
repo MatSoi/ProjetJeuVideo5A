@@ -49,7 +49,7 @@ void Menu::create_menu(ig::IGUIEnvironment *gui)
 void Menu::create_window(ig::IGUIEnvironment *gui)
 {
     // La fenêtre
-    window = gui->addWindow(ic::rect<s32>(0,80, 400,200), false, L"Box de debug");
+    window = gui->addWindow(ic::rect<s32>(0,20, 400,200), false, L"Box de debug");
     window->getCloseButton()->setVisible(false);
     window->setDrawBackground(true);
     window->setVisible(false);
@@ -57,4 +57,16 @@ void Menu::create_window(ig::IGUIEnvironment *gui)
     // Une zone d'édition de texte, précédée d'un label
     gui->addStaticText(L"Position Joueur", ic::rect<s32>(20, 30, 400, 200), false, false, window, 0);
     gui->addStaticText(L"Lancer de rayon", ic::rect<s32>(20, 45, 400, 200), false, false, window, 1);
+}
+
+bool Menu::isVisible()
+{
+    return menu->isVisible();
+}
+
+void Menu::setVisible(bool visible)
+{
+    menu->setVisible(visible);
+    if(window->isVisible() && !visible)
+        window->setVisible(visible);
 }

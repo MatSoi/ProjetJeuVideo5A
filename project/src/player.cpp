@@ -166,11 +166,6 @@ bool Player::isDead()
     return life == 0;
 }
 
-bool Player::isPlayerFurtif() const
-{
-    return isFurtive;
-}
-
 void Player::getHitted()
 {
     if(!life)
