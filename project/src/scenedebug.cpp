@@ -9,17 +9,17 @@
 void SceneDebug::initBillboardDebug()
 {
     // Add as much billboard for the angle.
-    for (int i=0; i<2*enemy.getAngleViewEnemy();i++)
+    for (int i=0; i<2*enemyMap[ID_ENEMY_1].getAngleViewEnemy();i++)
         bill.push_back(smgr->addBillboardSceneNode());
 
-    for (int i=0; i<2*enemy.getAngleViewEnemy();i++)
+    for (int i=0; i<2*enemyMap[ID_ENEMY_1].getAngleViewEnemy();i++)
     {
         bill[i]->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR );
         bill[i]->setMaterialTexture(0, driver->getTexture("data/particle.bmp"));
         bill[i]->setMaterialFlag(video::EMF_LIGHTING, false);
         bill[i]->setMaterialFlag(video::EMF_ZBUFFER, false);
         bill[i]->setSize(core::dimension2d<f32>(20.0f, 20.0f));
-        bill[i]->setID(ID_ENEMY); // This ensures that we don't accidentally ray-pick it
+        bill[i]->setID(ID_ENEMY_1); // This ensures that we don't accidentally ray-pick it
     }
 }
 
@@ -37,14 +37,14 @@ void SceneDebug::init()
 
 void SceneDebug::enemyRaycastDebug()
 {
-    for (int i=0; i<2 * enemy.getAngleViewEnemy();i++)
+    for (int i=0; i<2 * enemyMap[ID_ENEMY_1].getAngleViewEnemy();i++)
     {
         core::line3d<f32> ray;
-        ray.start = nodeEnemy->getPosition();
-        ic::vector3df enemyPos= nodeEnemy->getPosition();
-        ic::vector3df enemyRot= nodeEnemy->getRotation();
-        enemyPos.X += std::cos((enemyRot.Y + float(i - enemy.getAngleViewEnemy())) * M_PI / 180.0f);  // avance selon l angle en parametre
-        enemyPos.Z -= std::sin((enemyRot.Y + float(i - enemy.getAngleViewEnemy())) * M_PI / 180.0f);
+        ray.start = nodeEnemyMap[ID_ENEMY_1]->getPosition();
+        ic::vector3df enemyPos= nodeEnemyMap[ID_ENEMY_1]->getPosition();
+        ic::vector3df enemyRot= nodeEnemyMap[ID_ENEMY_1]->getRotation();
+        enemyPos.X += std::cos((enemyRot.Y + float(i - enemyMap[ID_ENEMY_1].getAngleViewEnemy())) * M_PI / 180.0f);  // avance selon l angle en parametre
+        enemyPos.Z -= std::sin((enemyRot.Y + float(i - enemyMap[ID_ENEMY_1].getAngleViewEnemy())) * M_PI / 180.0f);
 
         ray.end = ray.start + (enemyPos - ray.start).normalize() * 1000.0f;
 

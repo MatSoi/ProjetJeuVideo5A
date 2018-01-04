@@ -11,6 +11,7 @@
 #include <irrlicht.h>
 #include "characters.h"
 #include "ID_list.h"
+#include "path.h"
 #include <cmath>
 #include <iostream>
 
@@ -33,7 +34,6 @@ public:
      */
     Enemy () {}
 
-
     /**
      * @brief Constructeur d initialisation.
      * Constructeur appelant simplement celui issu de l heritage avec la classe Characters
@@ -41,12 +41,7 @@ public:
      * @param _animation : premiere animation
      * @param _speed : vitesse de deplacement
      */
-    Enemy (is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation = is::EMAT_STAND, float _speed = ENEMY_SPEED)
-        : Characters (_node, _animation, _speed), angleViewEnemy(30), rayonDetection(300), isAlerted(false), initialRotation (ic::vector3df(0,33.0f,0))
-    {
-        positions.push_back(node->getPosition());
-        node->setVisible(true);
-    }
+    Enemy (is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation = is::EMAT_STAND, float _speed = ENEMY_SPEED);
 
     /**
      * @brief Fonction pour savoir si le joueur est dans le champ de vision de l'ennemi
@@ -103,25 +98,26 @@ private:
     void idle();
 
     /**
-     * @brief Reset rotation sur rotation initiale
-     */
-    void resetRotation();
-
-    /**
      * @brief Methode utilisé pour suivre le joueur, avance simplement la position de l'ennemi en direction du joueur selon le delta T en mettant une animation de run
      * Si la distance entre la position actuelle de l'ennemi et sa position precedemment enregistre est superieur a X, on l'enregistre
      * @param playerPosition : la position actuelle du joueur
      * @param frameDeltaTime : le delta t correspondant a la frame actuelle
      * @param sizePositions : la taille du tableau de positions
      */
-    void followPlayer(ic::vector3df playerPosition, const irr::f32 frameDeltaTime, int sizePositions);
+    void followPlayer(ic::vector3df playerPosition, const irr::f32 frameDeltaTime);
 
     /**
      * @brief Fonction de retour a la position initiale de l'ennemi : l'ennemi parcours les positions enregistre jusqu'a arrive a celle de départ
      * @param frameDeltaTime : delta T entre les frames, utilisé pour déplacé l'ennemi
      * @param sizePositions : la taille du tableau de positions
      */
-    void getBackToOriginalPosition(const irr::f32 frameDeltaTime, int sizePositions);
+    void getBackToOriginalPosition(const irr::f32 frameDeltaTime);
+
+    /**
+     * @brief Fonction de suivi du chemin par l'ennemi, il parcours les positions en s'arretant quelques ms a l'arrivée sur chaque positions
+     * @param frameDeltaTime : delta T entre les frames
+     */
+    void followPath(const irr::f32 frameDeltaTime);
 
     /**
      * @brief Determine si l ennemi peut attaquer ou non.
@@ -147,10 +143,12 @@ private:
 
     int angleViewEnemy;                 /*!< Angle de vision de l'ennemi par rapport au centre de sa vision */
     int rayonDetection;                 /*!< Rayon de detection de l ennemi */
-    bool isAlerted;                     /*!< Booleen indiquant si l'ennemi est alerte */
+    bool isPlayerVisible;                 /*!< Booleen indiquant si le joueur est visible par l'ennemi */
+    bool isAlerted;                     /*!< Booleen indiquant si l'ennemi est en etat d'alerte */
     int distWithPlayer;                 /*!< distance avec le joueur */
-    ic::vector3df initialRotation;      /*!< Angle de rotation intiale de l'ennemi par rapport au centre de sa vision */
-    ic::array<ic::vector3df> positions; /*!< Positions successives de l'ennemi pour retour en arrière */
+    ic::array<ic::vector3df> alertedPositions; /*!< Positions successives de l'ennemi pour retour en etat non alerte */
+    Path followedPath;  /*!< Path suivi par l'ennemi */
+    bool hitted;
 };
 
 #endif

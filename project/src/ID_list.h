@@ -16,7 +16,13 @@ enum ID_List
 {
     ID_MAP = 1 << 0,
     ID_PLAYER = 1 << 1,
-    ID_ENEMY = 1 << 2
+    ID_ENEMY_1 = 1 << 2,
+    ID_ENEMY_2 = 1 << 3,
+    ID_ENEMY_3 = 1 << 4,
+    ID_ENEMY_4 = 1 << 5,
+    ID_ENEMY_5 = 1 << 6,
+    ID_ENEMY_6 = 1 << 7,
+    ID_ENEMY_7 = 1 << 8
 };
 
 #endif
