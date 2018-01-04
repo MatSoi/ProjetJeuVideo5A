@@ -8,23 +8,25 @@
 
 void SceneDebug::initBillboardDebug()
 {
-    // Add as much billboard for the angle.
-    for (int i=0; i<2*enemyMap[ID_ENEMY_1].getAngleViewEnemy();i++)
-        bill.push_back(smgr->addBillboardSceneNode());
-
-    for (int i=0; i<2*enemyMap[ID_ENEMY_1].getAngleViewEnemy();i++)
+    for (std::map<int, ic::vector3df>::iterator it = positionEnemyMap.begin(); it!=positionEnemyMap.end(); ++it)
     {
-        bill[i]->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR );
-        bill[i]->setMaterialTexture(0, driver->getTexture("data/particle.bmp"));
-        bill[i]->setMaterialFlag(video::EMF_LIGHTING, false);
-        bill[i]->setMaterialFlag(video::EMF_ZBUFFER, false);
-        bill[i]->setSize(core::dimension2d<f32>(20.0f, 20.0f));
-        bill[i]->setID(ID_ENEMY_1); // This ensures that we don't accidentally ray-pick it
+        // Add as much billboard for the angle.
+        for (int i=0; i<2*enemyMap[it->first].getAngleViewEnemy(); ++i)
+        {
+            bill.push_back(smgr->addBillboardSceneNode());
+            bill.back()->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR );
+            bill.back()->setMaterialTexture(0, driver->getTexture("data/particle.bmp"));
+            bill.back()->setMaterialFlag(video::EMF_LIGHTING, false);
+            bill.back()->setMaterialFlag(video::EMF_ZBUFFER, false);
+            bill.back()->setSize(core::dimension2d<f32>(20.0f, 20.0f));
+            bill.back()->setID(it->first); // This ensures that we don't accidentally ray-pick it
+        }
     }
 }
 
 void SceneDebug::init()
 {
+    initEnemyPosition();
     initMap();
     initTextures();
     initPlayer();
@@ -37,42 +39,47 @@ void SceneDebug::init()
 
 void SceneDebug::enemyRaycastDebug()
 {
-    for (int i=0; i<2 * enemyMap[ID_ENEMY_1].getAngleViewEnemy();i++)
+    for (std::map<int, ic::vector3df>::iterator it = positionEnemyMap.begin(); it!=positionEnemyMap.end(); ++it)
     {
-        core::line3d<f32> ray;
-        ray.start = nodeEnemyMap[ID_ENEMY_1]->getPosition();
-        ic::vector3df enemyPos= nodeEnemyMap[ID_ENEMY_1]->getPosition();
-        ic::vector3df enemyRot= nodeEnemyMap[ID_ENEMY_1]->getRotation();
-        enemyPos.X += std::cos((enemyRot.Y + float(i - enemyMap[ID_ENEMY_1].getAngleViewEnemy())) * M_PI / 180.0f);  // avance selon l angle en parametre
-        enemyPos.Z -= std::sin((enemyRot.Y + float(i - enemyMap[ID_ENEMY_1].getAngleViewEnemy())) * M_PI / 180.0f);
-
-        ray.end = ray.start + (enemyPos - ray.start).normalize() * 1000.0f;
-
-        // Tracks the current intersection point with the level or a mesh
-        core::vector3df intersection;
-        // Used to show with triangle has been hit
-        core::triangle3df hitTriangle;
-
-        scene::ISceneNode * selectedSceneNode =
-                collMan->getSceneNodeAndCollisionPointFromRay(
-                    ray,
-                    intersection, // This will be the position of the collision
-                    hitTriangle, // This will be the triangle hit in the collision
-                    ID_PLAYER | ID_MAP, // This ensures that only nodes that we have
-                    // set up to be pickable are considered
-                    0); // Check the entire scene (this is actually the implicit default)
-
-        // If the ray hit anything, move the billboard to the collision position
-        // and draw the triangle that was hit.
-        if(selectedSceneNode)
+        for (int i=0; i<2 * enemyMap[it->first].getAngleViewEnemy();i++)
         {
-            bill[i]->setVisible(true);
-            bill[i]->setPosition(intersection);
-        }
-        else
-            bill[i]->setVisible(false);
-    }
+            //Get the index of the billboard
+            int index = (std::distance(positionEnemyMap.begin(), it)) * (2 * enemyMap[it->first].getAngleViewEnemy()) + i;
 
+            core::line3d<f32> ray;
+            ray.start = nodeEnemyMap[it->first]->getPosition();
+            ic::vector3df enemyPos= nodeEnemyMap[it->first]->getPosition();
+            ic::vector3df enemyRot= nodeEnemyMap[it->first]->getRotation();
+            enemyPos.X += std::cos((enemyRot.Y + float(i - enemyMap[it->first].getAngleViewEnemy())) * M_PI / 180.0f);  // avance selon l angle en parametre
+            enemyPos.Z -= std::sin((enemyRot.Y + float(i - enemyMap[it->first].getAngleViewEnemy())) * M_PI / 180.0f);
+
+            ray.end = ray.start + (enemyPos - ray.start).normalize() * 1000.0f;
+
+            // Tracks the current intersection point with the level or a mesh
+            core::vector3df intersection;
+            // Used to show with triangle has been hit
+            core::triangle3df hitTriangle;
+
+            scene::ISceneNode * selectedSceneNode =
+                    collMan->getSceneNodeAndCollisionPointFromRay(
+                        ray,
+                        intersection, // This will be the position of the collision
+                        hitTriangle, // This will be the triangle hit in the collision
+                        ID_PLAYER | ID_MAP, // This ensures that only nodes that we have
+                        // set up to be pickable are considered
+                        0); // Check the entire scene (this is actually the implicit default)
+
+            // If the ray hit anything, move the billboard to the collision position
+            // and draw the triangle that was hit.
+            if(selectedSceneNode)
+            {
+                bill[index]->setVisible(true);
+                bill[index]->setPosition(intersection);
+            }
+            else
+                bill[index]->setVisible(false);
+        }
+    }
 }
 
 void SceneDebug::initArrowDebug()

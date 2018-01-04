@@ -21,7 +21,7 @@ public:
     /**
      * @brief Constructeur vide
      */
-    Path() {}
+    Path(): currentPathNumber(0), sizePath(0), pathTimer(0.0f), timerLimit(0.8f) {}
 
     /**
      * @brief Constructeur de chemin
@@ -34,6 +34,14 @@ public:
      * @param radius : "rayon" du chemin
      */
     void initRectangularPath(ic::vector3df center, int radius);
+
+    void initXLinearPath(ic::vector3df center, int radius);
+
+    void initZLinearPath(ic::vector3df center, int radius);
+
+    void initCircularPath(ic::vector3df center, int radius, int nbrPos);
+
+    void clearPath();
 
     ic::array<ic::vector3df> pathPositions; /*!< Positions successives pour le path follow de l'ennemi */
     int currentPathNumber;                  /*!< Numero de la position actuelle du path suivi */

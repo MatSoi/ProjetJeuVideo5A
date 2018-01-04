@@ -9,10 +9,9 @@
 Enemy::Enemy(is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation, float _speed)
     : Characters (_node, _animation, _speed), angleViewEnemy(45), rayonDetection(300), isPlayerVisible(false), isAlerted(false), hitted(false)
 {
-    int startingPos = rand()%4;
-    followedPath = Path(startingPos);
-    followedPath.initRectangularPath(getPosition(), 100);//Initialisation d'un chemin rectangulaire centre sur l'ennemi
-    node->setPosition(followedPath.pathPositions[startingPos]);//La position de l'ennemi est place sur la premiere position du chemin
+    followedPath = Path();
+    followedPath.initZLinearPath(getPosition(), 100);//Initialisation d'un chemin rectangulaire centre sur l'ennemi
+    node->setPosition(followedPath.pathPositions[0]);//La position de l'ennemi est place sur la premiere position du chemin
     node->setVisible(true);
 }
 
