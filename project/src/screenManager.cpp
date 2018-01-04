@@ -52,7 +52,9 @@ void ScreenManager::updateState(float width, float height, int life)
         displayInfo(titleImage);
         displayInfo(newGame_button);
         displayInfo(quitGame_button);
+
         hideInfo(restartGame_button);
+        //hideInfo(menu);
 
         hideLife();
     }
@@ -73,6 +75,7 @@ void ScreenManager::updateState(float width, float height, int life)
         displayInfo(restartGame_button);
         restartGame_button->setEnabled(true);
         displayInfo(quitGame_button);
+        //hideInfo(menu);
 
         life = 0;   // on affiche une barre de vie vide en cas de game over
     }
@@ -151,23 +154,23 @@ void ScreenManager::init_quitGame_button(irr::video::IVideoDriver *driver)
 void ScreenManager::init_title(irr::video::IVideoDriver *driver)
 {
     iv::ITexture * basicTexture = driver->getTexture("data/Title.png");
-    titleImage = g->addImage(ic::rect<irr::s32>(0, 0,
-                             screen_width, screen_height/2 - screen_height/50));
-    titleImage->setScaleImage(true);
+    titleImage = g->addImage(ic::rect<irr::s32>(screen_width/2 - screen_width/3, screen_height/4 - screen_height/12,
+                                                screen_width/2 + screen_width/3, screen_height/4 + screen_height/12));
+    titleImage->setScaleImage(false);
     titleImage->setImage(basicTexture);
     titleImage->setVisible(false);
-    titleImage->setAlignment(ig::EGUIA_UPPERLEFT, ig::EGUIA_LOWERRIGHT, ig::EGUIA_UPPERLEFT, ig::EGUIA_CENTER);
+    titleImage->setAlignment(ig::EGUIA_CENTER, ig::EGUIA_CENTER, ig::EGUIA_UPPERLEFT, ig::EGUIA_LOWERRIGHT);
 }
 
 void ScreenManager::init_gameOver(irr::video::IVideoDriver *driver)
 {
     iv::ITexture * basicTexture = driver->getTexture("data/gameOver.png");
-    gameOverImage = g->addImage(ic::rect<irr::s32>(screen_width/8, 0,
-                             7 * screen_width/8, screen_height/2 - screen_height/12));
-    gameOverImage->setScaleImage(true);
+    gameOverImage = g->addImage(ic::rect<irr::s32>(screen_width/2 - screen_width/3, screen_height/4 - screen_height/12,
+                                                   screen_width/2 + screen_width/3, screen_height/4 + screen_height/12));
+    gameOverImage->setScaleImage(false);
     gameOverImage->setImage(basicTexture);
     gameOverImage->setVisible(false);
-    gameOverImage->setAlignment(ig::EGUIA_UPPERLEFT, ig::EGUIA_LOWERRIGHT, ig::EGUIA_UPPERLEFT, ig::EGUIA_CENTER);
+    gameOverImage->setAlignment(ig::EGUIA_CENTER, ig::EGUIA_CENTER, ig::EGUIA_UPPERLEFT, ig::EGUIA_LOWERRIGHT);
 }
 
 void ScreenManager::init_pain(irr::video::IVideoDriver *driver)

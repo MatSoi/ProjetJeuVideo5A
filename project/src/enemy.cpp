@@ -7,13 +7,28 @@
 #include "enemy.h"
 
 Enemy::Enemy(is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation, float _speed)
-    : Characters (_node, _animation, _speed), angleViewEnemy(ANGLE_NORMAL), rayonDetection(RAYON_NORMAL), isPlayerVisible(false), isAlerted(false), hitted(false)
+    : Characters (_node, _animation, _speed), angleViewEnemy(45), rayonDetection(300), isPlayerVisible(false), isAlerted(false), hitted(false)
 {
-    int startingPos = rand()%4;
-    followedPath = Path(startingPos);
-    followedPath.initRectangularPath(getPosition(), 100);       //Initialisation d'un chemin rectangulaire centre sur l'ennemi
-    node->setPosition(followedPath.pathPositions[startingPos]); //La position de l'ennemi est place sur la premiere position du chemin
+    //Use random path for enemies
+    followedPath = Path();
+    randomPath();
+
+    node->setPosition(followedPath.pathPositions[0]);//La position de l'ennemi est place sur la premiere position du chemin
     node->setVisible(true);
+}
+
+void Enemy::randomPath()
+{
+    int randomNumber = rand() % 4;
+
+    if(randomNumber==0)
+        followedPath.initRectangularPath(getPosition(), 100);
+    if(randomNumber==1)
+        followedPath.initXLinearPath(getPosition(), 100);
+    if(randomNumber==2)
+        followedPath.initZLinearPath(getPosition(), 100);
+    if(randomNumber==3)
+        followedPath.initCircularPath(getPosition(), 100, 10);
 }
 
 void Enemy::getHitted()
@@ -64,8 +79,7 @@ bool Enemy::canAttack()
     if(isAttacking)
         return false;
 
-    // si l ennemi est suffisament proche, qu il voit le joueur et qu il est 1 de vie ou ne soit pas en train de souffrir
-    if(distWithPlayer <= ATTACK_DIST_ENEMY && isPlayerVisible && (life == 1 || !isSuffering))
+    if (((life == 1) || (distWithPlayer <= ATTACK_DIST_ENEMY && !isSuffering)) && isPlayerVisible)
     {
         attack();
         return true;
@@ -80,28 +94,6 @@ void Enemy::attack()
     node->setLoopMode(false);
     node->setAnimationEndCallback(this);
     node->setMD2Animation(is::EMAT_ATTACK);
-}
-
-void Enemy::updateDetectParameter(bool isPlayerFurtif)
-{
-    if(isPlayerFurtif && !isAlerted)    // si l ennemi n est pas alerte et que le joueur est en position furtive
-    {
-        angleViewEnemy = ANGLE_FURTIF;  // alors son angle de vision est plus faible
-        rayonDetection = RAYON_FURTIF;  // et il voit le joueur de moins loin
-    }
-    else
-    {
-        angleViewEnemy = ANGLE_NORMAL;
-        rayonDetection = RAYON_NORMAL;
-    }
-}
-
-void Enemy::updateSpeed()
-{
-    if(isAlerted)
-        speed = ENEMY_SPEED_ALERTED;
-    else
-        speed = ENEMY_SPEED;
 }
 
 void Enemy::OnAnimationEnd(is::IAnimatedMeshSceneNode *node)
@@ -119,7 +111,7 @@ void Enemy::OnAnimationEnd(is::IAnimatedMeshSceneNode *node)
 }
 
 
-void Enemy::isPlayerInEnemyView(const ic::vector3df& playerPosition, irr::scene::ISceneCollisionManager *collMan)
+bool Enemy::isPlayerInEnemyView(const ic::vector3df& playerPosition, irr::scene::ISceneCollisionManager *collMan)
 {
     distWithPlayer = playerPosition.getDistanceFrom(getPosition());
     if(distWithPlayer < rayonDetection)//Si le joueur se trouve dans le cercle  => check dans le cone de vision de l'enemi
@@ -182,12 +174,13 @@ void Enemy::isPlayerInEnemyView(const ic::vector3df& playerPosition, irr::scene:
                         }
 
                         isPlayerVisible = true;
-                        return;
+                        return true;
                     }
             }
         }
     }
     isPlayerVisible = false;
+    return false;
 }
 
 const int& Enemy::getAngleViewEnemy() const
@@ -284,33 +277,29 @@ void Enemy::followPath(const irr::f32 frameDeltaTime)
     }
 }
 
-bool Enemy::normalBehaviour(ic::vector3df playerPosition, const irr::f32 frameDeltaTime, is::ISceneCollisionManager* collMan, bool isPlayerFurtif)
+bool Enemy::normalBehaviour(ic::vector3df playerPosition, const irr::f32 frameDeltaTime, is::ISceneCollisionManager* collMan)
 {
     if (!life)
         return false;
 
-    updateDetectParameter(isPlayerFurtif);
-
-    updateSpeed();
-
     isPlayerInEnemyView(playerPosition, collMan);
 
-    if(isPlayerVisible || hitted)       // Si je joueur est visible par l'ennemie ou s il a ete frappe entre deux maj
+    if(isPlayerVisible || hitted)//Si je joueur est visible par l'ennemie
     {
         followPlayer(playerPosition, frameDeltaTime);
     }
     else
     {
-        if(isAlerted)                   // Si enemie en alerte, retour sur la position de départ
+        if(isAlerted)//Si enemie en alerte,retour sur la position de départ
         {
             getBackToOriginalPosition (frameDeltaTime);
         }
-        else                            // Si non alerte, parcours normal
+        else //Si non alerte,  parcours normal
         {
             followPath(frameDeltaTime);
         }
     }
 
-    hitted = false;                     // on remet toujours ce booleen a false en fin de maj
-    return canAttack();                 // on verifie a la fin de la maj si l ennemi peut attaquer
+    hitted = false;
+    return canAttack();
 }

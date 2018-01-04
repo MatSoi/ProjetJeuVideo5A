@@ -123,6 +123,9 @@ void Scene::initEnemy()
 
 void Scene::initEnemyPosition()
 {
+    //initialisation aleatoire pour path aleatoire des ennemis
+    srand(time(NULL));
+
     int id = 1 << 2;
     for (int i = 0; i < ENEMY_NUMBER; ++i)
     {
@@ -177,7 +180,7 @@ void Scene::playerAttack(const float &angleCamera)
     int ID = attack[0];
     int dist = attack[1];
 
-    if (enemyMap.find(ID) != enemyMap.end())
+    if (ID != -1 && ID != ID_MAP)
     {
         std::wstring wstr = L"ID: " + std::to_wstring(ID) + L" Distance: "+ std::to_wstring(dist);
         debugDisplay(wstr, 1);
@@ -259,7 +262,7 @@ void Scene::runTheGame(const f32 frameDeltaTime, const bool &playerIsAttacking, 
     if(!player.isDead())
     {
         for (std::map<int, Enemy>::iterator it = enemyMap.begin(); it!=enemyMap.end(); ++it)
-            if(it->second.normalBehaviour(player.getPosition(), frameDeltaTime, collMan, player.isPlayerFurtif()))
+            if(it->second.normalBehaviour(player.getPosition(), frameDeltaTime, collMan))
             {
                 player.getHitted();
                 scManager->displayPain(true);
