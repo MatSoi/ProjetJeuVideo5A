@@ -14,14 +14,15 @@
 #include "characters.h"
 #include "ID_list.h"
 
-#define END_MAP_Y -2000.0f
-
 using namespace irr;
 
 namespace ic = irr::core;
 namespace is = irr::scene;
 namespace iv = irr::video;
 namespace ig = irr::gui;
+
+#define NORMAL_SPEED 150.0f
+#define STEALTH_SPEED 100.0f
 
 /**
  * @brief Classe Player, herite de la classe Characters
@@ -115,21 +116,14 @@ public:
     void OnAnimationEnd(is::IAnimatedMeshSceneNode* node);
 
     /**
-     * @brief Renseigne de l etat vivant ou mort du joueur.
-     * @return true si le joueur est mort, false sinon.
-     */
-    bool isDead();
-
-    /**
      * @brief Remet les variables de la classe en etat par defaut.
      */
     void reset();
 
-
     /**
-    * @brief Retourne la valeur de isFurtive
-    * @return true si le joueur est en position furtive, false sinon
-    */
+     * @brief Retourne la valeur de isFurtive
+     * @return true si le joueur est en position furtive, false sinon
+     */
     bool isPlayerFurtif() const;
 
 private:

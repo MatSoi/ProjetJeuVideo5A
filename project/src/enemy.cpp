@@ -310,17 +310,17 @@ bool Enemy::normalBehaviour(ic::vector3df playerPosition, const irr::f32 frameDe
 
     isPlayerInEnemyView(playerPosition, collMan);
 
-    if(isPlayerVisible || hitted)// Si je joueur est visible par l'ennemie ou s il a ete frappe entre deux maj
+    if(isPlayerVisible || hitted)       // Si je joueur est visible par l'ennemie ou s il a ete frappe entre deux maj
     {
         followPlayer(playerPosition, frameDeltaTime);
     }
     else
     {
-        if(isAlerted)// Si enemie en alerte, retour sur la position de dépar
+        if(isAlerted)                   // Si enemie en alerte, retour sur la position de départ
         {
             getBackToOriginalPosition (frameDeltaTime);
         }
-        else //Si non alerte,  parcours normal
+        else                            // Si non alerte, parcours normal
         {
             followPath(frameDeltaTime);
         }

@@ -33,3 +33,14 @@ int Characters::getLife() const
 {
     return life;
 }
+
+bool Characters::isDead()
+{
+    if(node->getPosition().Y < END_MAP_Y)
+    {
+        die();
+        life = 0;
+    }
+
+    return life == 0;
+}

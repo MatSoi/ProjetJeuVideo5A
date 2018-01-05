@@ -19,6 +19,8 @@ namespace is = irr::scene;
 namespace iv = irr::video;
 namespace ig = irr::gui;
 
+#define MAX_LIFE 5
+
 /**
  * @brief Classe ScreenManager
  *  Gere les affichages a faire sur l ecran (gameover, vie, etc...)
@@ -34,7 +36,7 @@ public:
      * @param _screen_height : longueur de l ecran.
      * @param _game_state : pointeur sur l etat du jeu.
      */
-    ScreenManager(irr::IrrlichtDevice* device, iv::IVideoDriver *driver, float _screen_width, float _screen_height, State_List *_game_state);
+    ScreenManager(irr::IrrlichtDevice* device, iv::IVideoDriver *driver, float _screen_width, float _screen_height, State_List *_game_state, int _enemyLeft);
 
     /**
      * @brief Met a jour les parametres de dimensions de l ecran.
@@ -43,7 +45,7 @@ public:
      * @param height : hauteur de l ecran.
      * @param life : valeur de vie du joueur.
      */
-    void updateState(float width, float height, int life);
+    void updateState(float width, float height, int life, int _enemyLeft);
 
     /**
      * @brief Getteur sur le pointeur sur l interface utilisateur graphique.
@@ -80,39 +82,66 @@ private:
      * @brief Initialise le bouton de nouveau jeu.
      * @param driver : pointeur sur le driver pour charger les images.
      */
-    void init_newGame_button(irr::video::IVideoDriver *driver);
+    void init_newGame_button(iv::IVideoDriver *driver);
 
-    void init_restartGame_button(irr::video::IVideoDriver *driver);
+    /**
+     * @brief Initialise le bouton pour recommencer le jeu.
+     * @param driver : pointeur sur le driver pour charger les images.
+     */
+    void init_restartGame_button(iv::IVideoDriver *driver);
 
     /**
      * @brief Initialise le bouton de quitter le jeu.
      * @param driver : pointeur sur le driver pour charger les images.
      */
-    void init_quitGame_button(irr::video::IVideoDriver *driver);
+    void init_quitGame_button(iv::IVideoDriver *driver);
 
     /**
      * @brief Initialise l image du titre.
      * @param driver : pointeur sur le driver pour charger les images.
      */
-    void init_title(irr::video::IVideoDriver *driver);
+    void init_title(iv::IVideoDriver *driver);
 
     /**
      * @brief Initialise l image du game over.
      * @param driver : pointeur sur le driver pour charger les images.
      */
-    void init_gameOver(irr::video::IVideoDriver *driver);
+    void init_gameOver(iv::IVideoDriver *driver);
+
+    /**
+     * @brief Initialise l image de victoire.
+     * @param driver : pointeur sur le driver pour charger les images.
+     */
+    void init_victory(iv::IVideoDriver *driver);
+
+    /**
+     * @brief Initialise l image des ennemis restants.
+     * @param driver : pointeur sur le driver pour charger les images.
+     */
+    void init_enemyLeftImage(iv::IVideoDriver *driver);
+
+    /**
+     * @brief Initialise l image des nombres.
+     */
+    void init_numberImage();
+
+    /**
+     * @brief Initialise la texture des chiffres.
+     * @param driver : pointeur sur le driver pour charger les images.
+     */
+    void init_numberText(iv::IVideoDriver *driver);
 
     /**
      * @brief Initialise l image de la douleur.
      * @param driver : pointeur sur le driver pour charger les images.
      */
-    void init_pain(irr::video::IVideoDriver *driver);
+    void init_pain(iv::IVideoDriver *driver);
 
     /**
      * @brief Initilialise la barre de vie
      * @param driver : pointeur sur le driver pour charger les images.
      */
-    void init_life(irr::video::IVideoDriver *driver);
+    void init_life(iv::IVideoDriver *driver);
 
     /**
      * @brief Met a jour la barre de vie en fonction de la valeur de la vie.
@@ -121,14 +150,9 @@ private:
     void updateLife(unsigned int life);
 
     /**
-     * @brief Affiche la barre de vie.
+     * @brief Met a jour l affichaga du nombre d ennemis restants
      */
-    void displayLife();
-
-    /**
-     * @brief Cache la barre de vie.
-     */
-    void hideLife();
+    void updateNumber();
 
     ig::IGUIEnvironment *g;                 /*!< pointeur sur l'interface graphique */
     ig::ICursorControl* cursor;             /*!< pointeur sur le curseur de la souris */
@@ -144,6 +168,10 @@ private:
 
     ig::IGUIImage* titleImage;              /*!< image utilisee pour afficher le titre */
     ig::IGUIImage* gameOverImage;           /*!< image utilisee pour afficher le game over */
+    ig::IGUIImage* victoryImage;            /*!< image utilisee pour afficher la victoire */
+    ig::IGUIImage* enemyLeftImage;          /*!< image utilisee pour afficher les ennemis restants */
+    std::vector<ig::IGUIImage*> numberImage;/*!< images utilisees pour afficher les nombres */
+    std::vector<iv::ITexture*> numberText;  /*!< textures utilisees pour afficher les chiffres */
 
     std::vector<ig::IGUIImage*> LifeImage;  /*!< image utilisee pour afficher le game over */
     iv::ITexture *fullHeartTexture;
@@ -154,6 +182,7 @@ private:
     ig::IGUIButton *quitGame_button;        /*!< bouton pour quitter le jeu */
 
     State_List *game_state;                 /*!< Etat du jeu */
+    int enemyLeft;                          /*!< nombre d ennemis restants */
 };
 
 template<typename T>
@@ -183,5 +212,26 @@ void hideInfo(T info)
         info->setEnabled(false);
     }
 }
+
+/**
+ * @brief Affiche un vector d images passe en parametre.
+ * @param vecIm :  reference sur le vector d images
+ */
+inline void displayVectImage(std::vector<ig::IGUIImage *> &vecIm)
+{
+    for(ig::IGUIImage* image : vecIm)
+        displayInfo(image);
+}
+
+/**
+ * @brief Cache un vector d images passe en parametre.
+ * @param vecIm :  reference sur le vector d images
+ */
+inline void hideVectImage(std::vector<ig::IGUIImage *> &vecIm)
+{
+    for(ig::IGUIImage* image : vecIm)
+        hideInfo(image);
+}
+
 
 #endif

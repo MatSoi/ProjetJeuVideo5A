@@ -136,12 +136,13 @@ protected:
     is::IAnimatedMesh *meshEnemy;                               /*!< pointeur sur le mesh de l'ennemi */
     std::map<int, is::IAnimatedMeshSceneNode *> nodeEnemyMap;   /*!< map avec cle ID et valeur pointeur sur le node de l'ennemi */
     std::map<int, ic::vector3df> positionEnemyMap;              /*!< map avec cle ID et position de depart de l'ennemi */
-    core::vector3df radiusEnemy;
+    core::vector3df radiusEnemy;                                /*!< rayon d un ennemi typique, necessaire pour les collisions apres restart */
 
     is::ICameraSceneNode *camera;           /*!< pointeur sur la camera */
 
     float screen_width, screen_height;      /*!< dimensions de la fenetre de jeu */
     State_List *game_state;                 /*!< Etat du jeu */
+    int enemyLeft;                          /*!< nombre d ennemis restants */
 };
 
 #endif // SCENE_H

@@ -10,10 +10,8 @@
 #include <vector>
 #include <irrlicht.h>
 
-#define NORMAL_SPEED 150.0f
-#define STEALTH_SPEED 100.0f
-#define ENEMY_SPEED 80.0f
-#define ENEMY_SPEED_ALERTED 120.0f
+#define END_MAP_Y -2000.0f
+
 
 #define RAY_LENGTH 1000.0f
 #define MAX_LIFE 5
@@ -79,6 +77,13 @@ public:
      * @return aucun dans cette classe
      */
     virtual void getHitted() = 0;
+
+    /**
+     * @brief Renseigne de l etat vivant ou mort du personnage.
+     * @return true si le personnage est mort, false sinon.
+     */
+    bool isDead();
+
 
 protected:
     /**

@@ -6,8 +6,9 @@
 
 #include "scene.h"
 
-Scene::Scene() : screen_width(960), screen_height(600), game_state(new State_List(START_SCREEN))
+Scene::Scene() : screen_width(960), screen_height(600), game_state(new State_List(START_SCREEN)), enemyLeft(ENEMY_NUMBER)
 {
+    srand(time(NULL));
     // Création de la fenêtre et du système de rendu.
     device = createDevice(iv::EDT_OPENGL,
                           ic::dimension2d<u32>(screen_width, screen_height),
@@ -17,7 +18,9 @@ Scene::Scene() : screen_width(960), screen_height(600), game_state(new State_Lis
     collMan = smgr->getSceneCollisionManager();
     receiver = EventReceiver(game_state);
 
-    scManager = new ScreenManager(device, driver, screen_width, screen_height, game_state);
+    scManager = new ScreenManager(device, driver, screen_width, screen_height, game_state, enemyLeft);
+
+    init();
 }
 
 void Scene::init()
@@ -123,9 +126,6 @@ void Scene::initEnemy()
 
 void Scene::initEnemyPosition()
 {
-    //initialisation aleatoire pour path aleatoire des ennemis
-    srand(time(NULL));
-
     int id = 1 << 2;
     for (int i = 0; i < ENEMY_NUMBER; ++i)
     {
@@ -197,9 +197,6 @@ void Scene::debugDisplay(std::wstring wstr, int ind)
 
 void Scene::run()
 {
-    srand(time(NULL));
-    init();
-
     bool playerIsAttacking = false;
     float angleCamera = 0.0f;
     float painFrame = 0;
@@ -225,7 +222,7 @@ void Scene::run()
             *game_state = RUNNING_GAME;
         }
 
-        scManager->updateState(screen_width, screen_height, player.getLife());
+        scManager->updateState(screen_width, screen_height, player.getLife(), enemyLeft);
         driver->beginScene(true, true, iv::SColor(0,50,100,255));
 
         // Dessin de la scène :
@@ -256,21 +253,40 @@ void Scene::restartGame()
 
 void Scene::runTheGame(const f32 frameDeltaTime, const bool &playerIsAttacking, float &painFrame, const float &angleCamera)
 {
+    int deadEnemy = 0;
+
     if(playerIsAttacking)
         playerAttack(angleCamera);
 
-    if(!player.isDead())
-    {
-        for (std::map<int, Enemy>::iterator it = enemyMap.begin(); it!=enemyMap.end(); ++it)
-            if(it->second.normalBehaviour(player.getPosition(), frameDeltaTime, collMan, player.isPlayerFurtif()))
+    for (std::map<int, Enemy>::iterator it = enemyMap.begin(); it!=enemyMap.end(); ++it)
+        if(it->second.isDead())
+            deadEnemy++;
+        else if(it->second.normalBehaviour(player.getPosition(), frameDeltaTime, collMan, player.isPlayerFurtif()))
+        {
+            player.getHitted();
+            if(player.isDead())
             {
-                player.getHitted();
-                scManager->displayPain(true);
+                *game_state = GAME_OVER;
+                it->second.updateAnimation(is::EMAT_FLIP);
+                scManager->displayPain(false);
+                return;
             }
-    }
-    else
+            painFrame = 0;
+            scManager->displayPain(true);
+        }
+
+    enemyLeft = ENEMY_NUMBER - deadEnemy;
+
+    if(player.isDead())
     {
         *game_state = GAME_OVER;
+        scManager->displayPain(false);
+    }
+
+    if(!enemyLeft && *game_state != GAME_OVER)
+    {
+        *game_state = VICTORY;
+        player.updateAnimation(is::EMAT_FLIP);
         scManager->displayPain(false);
     }
 
@@ -278,8 +294,6 @@ void Scene::runTheGame(const f32 frameDeltaTime, const bool &playerIsAttacking, 
         painFrame += frameDeltaTime;
 
     if(painFrame > 0.2f)
-    {
-        painFrame = 0;
         scManager->displayPain(false);
-    }
+
 }

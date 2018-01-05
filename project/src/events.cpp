@@ -139,7 +139,7 @@ void EventReceiver::camera_rotation(const f32 frameDeltaTime)
     ic::vector3df target = ic::vector3df();
     float rayon = 1500.0f;
 
-    if(*game_state == GAME_OVER) {
+    if(*game_state != START_SCREEN) {
         target = player->getPosition() + ic::vector3df(0, HIGHT_TARGET, 0);
         rayon = 50.0f;
     }

@@ -17,6 +17,7 @@ enum State_List
     START_SCREEN,
     RUNNING_GAME,
     RESTART_GAME,
+    VICTORY,
     GAME_OVER
 };
 

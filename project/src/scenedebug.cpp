@@ -32,9 +32,7 @@ void SceneDebug::init()
     initPlayer();
     initEnemy();
     initCamera();
-    initArrowDebug();
     initReceiver();
-    initBillboardDebug();
 }
 
 void SceneDebug::enemyRaycastDebug()
@@ -109,7 +107,8 @@ void SceneDebug::initArrowDebug()
 
 void SceneDebug::run()
 {
-    init();
+    initArrowDebug();
+    initBillboardDebug();
 
     bool playerIsAttacking = false;
     float angleCamera = 0.0f;
@@ -136,7 +135,7 @@ void SceneDebug::run()
             *game_state = RUNNING_GAME;
         }
 
-        scManager->updateState(screen_width, screen_height, player.getLife());
+        scManager->updateState(screen_width, screen_height, player.getLife(), enemyLeft);
 
         enemyRaycastDebug();
         arrowParentDebug->setPosition(player.getPosition());
