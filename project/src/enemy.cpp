@@ -6,8 +6,8 @@
 
 #include "enemy.h"
 
-Enemy::Enemy(is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation, float _speed)
-: Characters (_node, _animation, _speed), angleViewEnemy(ANGLE_NORMAL), rayonDetection(RAYON_NORMAL), isPlayerVisible(false), isAlerted(false), hitted(false)
+Enemy::Enemy(is::IAnimatedMeshSceneNode* _node, is::IBillboardSceneNode *_billAlerted, is::EMD2_ANIMATION_TYPE _animation, float _speed)
+: Characters (_node, _animation, _speed), angleViewEnemy(ANGLE_NORMAL), rayonDetection(RAYON_NORMAL), isPlayerVisible(false), isAlerted(false), hitted(false), billAlerted(_billAlerted)
 {
     //Use random path for enemies
     followedPath = Path();
@@ -61,6 +61,7 @@ void Enemy::die()
     node->setLoopMode(false);
     node->setAnimationEndCallback(this);
     node->setMD2Animation(is::EMAT_CROUCH_DEATH);
+    billAlerted->setVisible(false);
 }
 
 void Enemy::run()
@@ -311,21 +312,19 @@ bool Enemy::normalBehaviour(ic::vector3df playerPosition, const irr::f32 frameDe
     isPlayerInEnemyView(playerPosition, collMan);
 
     if(isPlayerVisible || hitted)       // Si je joueur est visible par l'ennemie ou s il a ete frappe entre deux maj
-    {
         followPlayer(playerPosition, frameDeltaTime);
-    }
     else
     {
         if(isAlerted)                   // Si enemie en alerte, retour sur la position de départ
-        {
             getBackToOriginalPosition (frameDeltaTime);
-        }
         else                            // Si non alerte, parcours normal
-        {
             followPath(frameDeltaTime);
-        }
     }
 
     hitted = false;                     // on remet toujours ce booleen a false en fin de maj
+
+    billAlerted->setPosition(node->getPosition() + ic::vector3df(0, 35, 0));
+    billAlerted->setVisible(isAlerted); // billboard au dessus de la tete de l ennemi et affiche si alerte
+
     return canAttack();                 // on verifie a la fin de la maj si l ennemi peut attaquer
 }

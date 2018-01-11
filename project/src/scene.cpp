@@ -120,7 +120,15 @@ void Scene::initEnemy()
         nodeEnemyMap[it->first]->setTriangleSelector(selector);
         selector->drop();
 
-        enemyMap[it->first] = Enemy(nodeEnemyMap[it->first]);
+        billAlerted[it->first] = smgr->addBillboardSceneNode();
+        billAlerted[it->first]->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+        billAlerted[it->first]->setMaterialTexture(0, driver->getTexture("data/excla.png"));
+        billAlerted[it->first]->setMaterialFlag(video::EMF_LIGHTING, false);
+        billAlerted[it->first]->setMaterialFlag(video::EMF_ZBUFFER, false);
+        billAlerted[it->first]->setSize(core::dimension2d<f32>(5.0f, 10.0f));
+        billAlerted[it->first]->setID(it->first); // This ensures that we don't accidentally ray-pick it
+
+        enemyMap[it->first] = Enemy(nodeEnemyMap[it->first], billAlerted[it->first]);
     }
 }
 
@@ -247,7 +255,7 @@ void Scene::restartGame()
         nodeEnemyMap[it->first]->removeAnimators();
         nodeEnemyMap[it->first]->setPosition(positionEnemyMap[it->first]);
         setupMapCollider(nodeEnemyMap[it->first], radiusEnemy);
-        it->second = Enemy(nodeEnemyMap[it->first]);
+        it->second = Enemy(nodeEnemyMap[it->first], billAlerted[it->first]);
     }
 }
 

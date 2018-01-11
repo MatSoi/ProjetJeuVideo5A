@@ -137,6 +137,7 @@ protected:
     std::map<int, is::IAnimatedMeshSceneNode *> nodeEnemyMap;   /*!< map avec cle ID et valeur pointeur sur le node de l'ennemi */
     std::map<int, ic::vector3df> positionEnemyMap;              /*!< map avec cle ID et position de depart de l'ennemi */
     core::vector3df radiusEnemy;                                /*!< rayon d un ennemi typique, necessaire pour les collisions apres restart */
+    std::map<int, is::IBillboardSceneNode *> billAlerted;       /*!< Map de pointeurs sur les billboards d'affichage d alerte ennemi */
 
     is::ICameraSceneNode *camera;           /*!< pointeur sur la camera */
 

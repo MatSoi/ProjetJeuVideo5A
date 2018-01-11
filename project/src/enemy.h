@@ -47,7 +47,7 @@ public:
      * @param _animation : premiere animation
      * @param _speed : vitesse de deplacement
      */
-    Enemy (is::IAnimatedMeshSceneNode* _node, is::EMD2_ANIMATION_TYPE _animation = is::EMAT_STAND, float _speed = ENEMY_SPEED);
+    Enemy (is::IAnimatedMeshSceneNode* _node, is::IBillboardSceneNode* _billAlerted, is::EMD2_ANIMATION_TYPE _animation = is::EMAT_STAND, float _speed = ENEMY_SPEED);
 
     /**
      * @brief Fonction pour savoir si le joueur est dans le champ de vision de l'ennemi
@@ -169,6 +169,8 @@ private:
     ic::array<ic::vector3df> alertedPositions;  /*!< Positions successives de l'ennemi pour retour en etat non alerte */
     Path followedPath;                          /*!< Path suivi par l'ennemi */
     bool hitted;                                /*!< Booleen indiquant si l ennemi a ete touche par une attaque */
+
+    is::IBillboardSceneNode* billAlerted;       /*!< Billboard affiche si l ennemi est alerte */
 };
 
 #endif
