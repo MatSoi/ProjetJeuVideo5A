@@ -2,7 +2,11 @@
 
 ## Objectif
 
-Création d'un jeu vidéo de discrétion avec le moteur de jeu Irrlicht.  
+**Création d'un jeu vidéo de discrétion avec le moteur de jeu Irrlicht.**
+
+Vous devez tuer les ennemis présents sur la map pour gagner la partie. Ceux-ci s’approchent de vous pour vous attaquer lorsqu’ils vous détectent, chaque attaque ennemi vous enlève 1 de vos 5 cœurs de vie. Lorsque vous êtes détecté, il vous faut **5 coups pour tuer un ennemi**, tandis que vous tuer un ennemi en **1 coup si l’ennemi n’est pas alerté.**
+Lorsqu’un ennemi vous perd de vue, il reste alerté jusqu'à ce qu’il rejoigne sa position d’origine. S’il est frappé en état alerté, il se retourna pour vous rendre le coup et vous poursuivre à nouveau.                
+**Les ennemis non alertés suivent des chemins bien spécifiques, servez-vous en à votre avantage !**
 
 ## Pitch du jeu
 
