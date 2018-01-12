@@ -17,6 +17,7 @@ Avec vos amis squelettes, vous décidez d’organiser une partie de cache-cache.
 - **Clique gauche** : touche d'attaque
 - **ZQSD** : touches de déplacements
 - **C** : posture de furtivité (premier appui, second appui : retour à la posture normale)
+- **Echap** : quitter le jeu
 - **Espace** : saut non prévu dans le jeu, sert uniquement à des fins de debug (sur des cartes graphiques puissantes, le personnage peut se bloquer dans les marches...)
 
 ----------------------------------------------------------------------
