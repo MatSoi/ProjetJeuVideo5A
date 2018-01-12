@@ -130,7 +130,7 @@ protected:
     Player player;                          /*!< classe joueur */
     is::IAnimatedMesh *meshPlayer;          /*!< pointeur sur le mesh du joueur */
     is::IAnimatedMeshSceneNode *nodePlayer; /*!< pointeur sur le node du joueur */
-    core::vector3df radiusPlayer;
+    core::vector3df radiusPlayer;           /*!< rayon du joueur, necessaire pour les collisions apres restart */
 
     std::map<int, Enemy> enemyMap;                              /*!< map avec cle ID et valeur l'ennemi */
     is::IAnimatedMesh *meshEnemy;                               /*!< pointeur sur le mesh de l'ennemi */
