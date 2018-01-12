@@ -1,5 +1,5 @@
 /*!
- * \file player.cpp
+ * \file path.cpp
  * \brief Implementation des fonctions de la classe Path.
  * \author SOIGNON Matthieu et PASTOR Mickael
  */

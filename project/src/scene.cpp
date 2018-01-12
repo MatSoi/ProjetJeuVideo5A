@@ -161,7 +161,8 @@ void Scene::initEnemyPosition()
         case(ID_ENEMY_7):
             position = ic::vector3df(620, 272, -771);
             break;
-        default:;
+        default:
+            continue; // on initialise pas d ennemi si son id n existe pas
         }
         positionEnemyMap[id] = position;
         id = 1 << (i + 3);
@@ -283,7 +284,7 @@ void Scene::runTheGame(const f32 frameDeltaTime, const bool &playerIsAttacking, 
             scManager->displayPain(true);
         }
 
-    enemyLeft = ENEMY_NUMBER - deadEnemy;
+    enemyLeft = enemyMap.size() - deadEnemy; // si certains ennemis n ont pas ete initialises, on peut quand meme finir le jeu
 
     if(player.isDead())
     {

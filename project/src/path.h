@@ -53,6 +53,7 @@ public:
      * @brief Initialisation d'un chemin circulaire centré sur center et de taille radius
      * @param center : centre du chemin
      * @param radius : rayon du chemin
+     * @param nbrPos : nombre de points dans le cercle
      */
     void initCircularPath(ic::vector3df center, int radius, int nbrPos);
 

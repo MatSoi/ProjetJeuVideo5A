@@ -44,6 +44,7 @@ public:
      * @brief Constructeur d initialisation.
      * Constructeur appelant simplement celui issu de l heritage avec la classe Characters
      * @param _node : pointeur sur le node de l ennemi
+     * @param _billAlerted : pointeur sur le billboard d alerte
      * @param _animation : premiere animation
      * @param _speed : vitesse de deplacement
      */

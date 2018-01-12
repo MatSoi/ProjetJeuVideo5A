@@ -19,7 +19,7 @@ namespace is = irr::scene;
 namespace iv = irr::video;
 namespace ig = irr::gui;
 
-#define MAX_LIFE 5
+#define MAX_LIFE 5 // il faut garder la meme valeur que celle de characters.h
 
 /**
  * @brief Classe ScreenManager
@@ -35,6 +35,7 @@ public:
      * @param _screen_width : largeur de l ecran.
      * @param _screen_height : longueur de l ecran.
      * @param _game_state : pointeur sur l etat du jeu.
+     * @param _enemyLeft : nombre d ennemis restants a tuer
      */
     ScreenManager(irr::IrrlichtDevice* device, iv::IVideoDriver *driver, float _screen_width, float _screen_height, State_List *_game_state, int _enemyLeft);
 
@@ -44,6 +45,7 @@ public:
      * @param width : largeur de l ecran.
      * @param height : hauteur de l ecran.
      * @param life : valeur de vie du joueur.
+     * @param _enemyLeft : nombre d ennemis restants a tuer
      */
     void updateState(float width, float height, int life, int _enemyLeft);
 

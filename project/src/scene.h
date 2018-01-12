@@ -125,18 +125,18 @@ protected:
 
     is:: IAnimatedMesh *meshMap;            /*!< pointeur sur le mesh de la map */
     is:: IMeshSceneNode *nodeMap;           /*!< pointeur sur le node de la map */
-    scene::ITriangleSelector* selectorMap;  /*!< selecteur de la map */
+    is::ITriangleSelector* selectorMap;     /*!< selecteur de la map */
 
     Player player;                          /*!< classe joueur */
     is::IAnimatedMesh *meshPlayer;          /*!< pointeur sur le mesh du joueur */
     is::IAnimatedMeshSceneNode *nodePlayer; /*!< pointeur sur le node du joueur */
-    core::vector3df radiusPlayer;           /*!< rayon du joueur, necessaire pour les collisions apres restart */
+    ic::vector3df radiusPlayer;             /*!< rayon du joueur, necessaire pour les collisions apres restart */
 
     std::map<int, Enemy> enemyMap;                              /*!< map avec cle ID et valeur l'ennemi */
     is::IAnimatedMesh *meshEnemy;                               /*!< pointeur sur le mesh de l'ennemi */
     std::map<int, is::IAnimatedMeshSceneNode *> nodeEnemyMap;   /*!< map avec cle ID et valeur pointeur sur le node de l'ennemi */
     std::map<int, ic::vector3df> positionEnemyMap;              /*!< map avec cle ID et position de depart de l'ennemi */
-    core::vector3df radiusEnemy;                                /*!< rayon d un ennemi typique, necessaire pour les collisions apres restart */
+    ic::vector3df radiusEnemy;                                  /*!< rayon d un ennemi typique, necessaire pour les collisions apres restart */
     std::map<int, is::IBillboardSceneNode *> billAlerted;       /*!< Map de pointeurs sur les billboards d'affichage d alerte ennemi */
 
     is::ICameraSceneNode *camera;           /*!< pointeur sur la camera */
